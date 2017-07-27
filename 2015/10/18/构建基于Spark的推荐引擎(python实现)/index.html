@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="python,spark,推荐," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="这几天在看由人民邮电出版社出版的《Spark机器学习》（Machine Learning with Spark，Nick Pentreath），看的很是郁闷。这本书一会儿用python, 一会儿用scala。由于我很喜欢用python, 所以用Python把这本书的scala代码又实现了一遍。收获很大，比直接对着书敲scala要理解的更多，对整个推荐过程的理解更加深刻。当然，与实际应用中的推荐系统">
+<meta name="keywords" content="python,spark,推荐">
+<meta property="og:type" content="article">
+<meta property="og:title" content="构建基于Spark的小推荐系统demo">
+<meta property="og:url" content="http://yoursite.com/2015/10/18/构建基于Spark的推荐引擎(python实现)/index.html">
+<meta property="og:site_name" content="Yiyang&#39;s Blog">
+<meta property="og:description" content="这几天在看由人民邮电出版社出版的《Spark机器学习》（Machine Learning with Spark，Nick Pentreath），看的很是郁闷。这本书一会儿用python, 一会儿用scala。由于我很喜欢用python, 所以用Python把这本书的scala代码又实现了一遍。收获很大，比直接对着书敲scala要理解的更多，对整个推荐过程的理解更加深刻。当然，与实际应用中的推荐系统">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-07-26T14:32:12.109Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="构建基于Spark的小推荐系统demo">
+<meta name="twitter:description" content="这几天在看由人民邮电出版社出版的《Spark机器学习》（Machine Learning with Spark，Nick Pentreath），看的很是郁闷。这本书一会儿用python, 一会儿用scala。由于我很喜欢用python, 所以用Python把这本书的scala代码又实现了一遍。收获很大，比直接对着书敲scala要理解的更多，对整个推荐过程的理解更加深刻。当然，与实际应用中的推荐系统">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2015/10/18/构建基于Spark的推荐引擎(python实现)/"/>
+
+
+
+
+
+  <title>构建基于Spark的小推荐系统demo | Yiyang's Blog</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Yiyang's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/10/18/构建基于Spark的推荐引擎(python实现)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Yiyang Peng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/7233064.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Yiyang's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">构建基于Spark的小推荐系统demo</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-10-18T21:28:00+08:00">
+                2015-10-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/大数据/" itemprop="url" rel="index">
+                    <span itemprop="name">大数据</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>这几天在看由人民邮电出版社出版的《Spark机器学习》（Machine Learning with Spark，Nick Pentreath），看的很是郁闷。这本书一会儿用python, 一会儿用scala。由于我很喜欢用python, 所以用Python把这本书的scala代码又实现了一遍。收获很大，比直接对着书敲scala要理解的更多，对整个推荐过程的理解更加深刻。当然，与实际应用中的推荐系统相比，这只是个玩具而已。</p>
+<p>以下为我的python代码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">rawData = sc.textFile(<span class="string">"hdfs:///user/yy/ml-100k/u.data"</span>)</div><div class="line">rawData.first()</div></pre></td></tr></table></figure>
+<p>u’196\t242\t3\t881250949’<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 取出数据，仅需要用户、电影、评分</span></div><div class="line">rawRatings = rawData.map(<span class="keyword">lambda</span> line: line.split(<span class="string">'\t'</span>)[<span class="number">0</span>:<span class="number">3</span>])</div><div class="line">rawRatings.first()</div></pre></td></tr></table></figure></p>
+<p>[u’196’, u’242’, u’3’]<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> pyspark.mllib.recommendation <span class="keyword">as</span> rd</div><div class="line"></div><div class="line"><span class="comment"># 由于ALS模型需要由Rating记录构成的RDD作为参数，因此这里用rd.Rating方法封装数据</span></div><div class="line">ratings = rawRatings.map(<span class="keyword">lambda</span> (user, movie, rating): rd.Rating(int(user), int(movie), float(rating)))</div><div class="line">ratings.first()</div></pre></td></tr></table></figure></p>
+<p>Rating(user=196, product=242, rating=3.0)<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 训练ALS模型</span></div><div class="line">model = rd.ALS.train(ratings, <span class="number">50</span>, <span class="number">10</span>, <span class="number">0.01</span>)</div><div class="line">model.userFeatures</div></pre></td></tr></table></figure></p>
+<p><bound method="" matrixfactorizationmodel.userfeatures="" of="" <pyspark.mllib.recommendation.matrixfactorizationmodel="" object="" at="" 0x7f68d9b3fbd0="">&gt;<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 利用该模型预测789用户对123电影的评分</span></div><div class="line">predictedRating = model.predict(<span class="number">789</span>, <span class="number">123</span>)</div><div class="line"><span class="keyword">print</span> predictedRating</div></pre></td></tr></table></figure></bound></p>
+<p>3.00704909501</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 给789用户推荐的前10个商品</span></div><div class="line">topKRecs = model.recommendProducts(<span class="number">789</span>, <span class="number">10</span>)</div><div class="line">topKRecs</div></pre></td></tr></table></figure>
+<p>[Rating(user=789, product=708, rating=5.645492560638761),<br>     Rating(user=789, product=482, rating=5.632324542725622),<br>     Rating(user=789, product=502, rating=5.621572563993868),<br>     Rating(user=789, product=603, rating=5.5589276689720055),<br>     Rating(user=789, product=23, rating=5.552174994200555),<br>     Rating(user=789, product=182, rating=5.429093418196553),<br>     Rating(user=789, product=484, rating=5.424060744309293),<br>     Rating(user=789, product=479, rating=5.416303074919905),<br>     Rating(user=789, product=1020, rating=5.350687998038177),<br>     Rating(user=789, product=494, rating=5.341673625528914)]</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">movies = sc.textFile(<span class="string">'hdfs:///user/yy/ml-100k/u.item'</span>)</div><div class="line">movies.first()</div></pre></td></tr></table></figure>
+<p>u’1|Toy Story (1995)|01-Jan-1995||<a href="http://us.imdb.com/M/title-exact?Toy%20Story%20(1995)|0|0|0|1|1|1|0|0|0|0|0|0|0|0|0|0|0|0|0" target="_blank" rel="external">http://us.imdb.com/M/title-exact?Toy%20Story%20(1995)|0|0|0|1|1|1|0|0|0|0|0|0|0|0|0|0|0|0|0</a>‘</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">movies_fields = movies.map(<span class="keyword">lambda</span> line: line.split(<span class="string">'|'</span>))</div><div class="line">title_data = movies_fields.map(<span class="keyword">lambda</span> fields: (int(fields[<span class="number">0</span>]), fields[<span class="number">1</span>])).collect()</div><div class="line">titles = dict(title_data)</div><div class="line">titles[<span class="number">123</span>]</div></pre></td></tr></table></figure>
+<p>u’Frighteners, The (1996)’</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># keyBy从ratings RDD创建一个键值对RDD，选取user为主键</span></div><div class="line"><span class="comment"># lookup返回给定键的数据</span></div><div class="line">moviesForUser = ratings.keyBy(<span class="keyword">lambda</span> rating: rating.user).lookup(<span class="number">789</span>) <span class="comment"># 返回的是list</span></div><div class="line">moviesForUser[<span class="number">0</span>:<span class="number">10</span>] <span class="comment"># 结果为789对他看过的电影给出的评分</span></div></pre></td></tr></table></figure>
+<p>[Rating(user=789, product=1012, rating=4.0),<br>     Rating(user=789, product=127, rating=5.0),<br>     Rating(user=789, product=475, rating=5.0),<br>     Rating(user=789, product=93, rating=4.0),<br>     Rating(user=789, product=1161, rating=3.0),<br>     Rating(user=789, product=286, rating=1.0),<br>     Rating(user=789, product=293, rating=4.0),<br>     Rating(user=789, product=9, rating=5.0),<br>     Rating(user=789, product=50, rating=5.0),<br>     Rating(user=789, product=294, rating=3.0)]</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># sorted(list, key=lambda..., reverse=True)是对list的排序函数</span></div><div class="line"><span class="comment"># sc.parallelize(data)并行化数据，转换为rdd后才能用map方法</span></div><div class="line">moviesForUser = sorted(moviesForUser, key=<span class="keyword">lambda</span> r: r.rating, reverse=<span class="keyword">True</span>)[<span class="number">0</span>:<span class="number">10</span>]</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[(titles[r.product], r.rating) <span class="keyword">for</span> r <span class="keyword">in</span> moviesForUser]</div></pre></td></tr></table></figure>
+<p>[(u’Godfather, The (1972)’, 5.0),<br>     (u’Trainspotting (1996)’, 5.0),<br>     (u’Dead Man Walking (1995)’, 5.0),<br>     (u’Star Wars (1977)’, 5.0),<br>     (u’Swingers (1996)’, 5.0),<br>     (u’Leaving Las Vegas (1995)’, 5.0),<br>     (u’Bound (1996)’, 5.0),<br>     (u’Fargo (1996)’, 5.0),<br>     (u’Last Supper, The (1995)’, 5.0),<br>     (u’Private Parts (1997)’, 4.0)]</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[(titles[r.product], r.rating) <span class="keyword">for</span> r <span class="keyword">in</span> topKRecs]</div></pre></td></tr></table></figure>
+<p>[(u’Sex, Lies, and Videotape (1989)’, 5.645492560638761),<br>     (u’Some Like It Hot (1959)’, 5.632324542725622),<br>     (u’Bananas (1971)’, 5.621572563993868),<br>     (u’Rear Window (1954)’, 5.5589276689720055),<br>     (u’Taxi Driver (1976)’, 5.552174994200555),<br>     (u’GoodFellas (1990)’, 5.429093418196553),<br>     (u’Maltese Falcon, The (1941)’, 5.424060744309293),<br>     (u’Vertigo (1958)’, 5.416303074919905),<br>     (u’Gaslight (1944)’, 5.350687998038177),<br>     (u’His Girl Friday (1940)’, 5.341673625528914)]</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">itemId = <span class="number">567</span></div><div class="line">itemVec = model.productFeatures().lookup(itemId)[<span class="number">0</span>]</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> scipy.spatial.distance <span class="keyword">import</span> cosine</div><div class="line"></div><div class="line"><span class="comment"># cosine函数实际上是是求1-cosine,便于我们后面的排序，对1-cosine从小到大排等价于对cosine从大到小排</span></div><div class="line">sims = model.productFeatures().map(<span class="keyword">lambda</span> (id, factorVec): (id, cosine(factorVec, itemVec)))</div><div class="line">sims.first()</div></pre></td></tr></table></figure>
+<p>(16, 0.48041293748773517)</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sortedSims = sims.sortBy(<span class="keyword">lambda</span> s: s[<span class="number">1</span>]).take(<span class="number">10</span>)</div><div class="line">sortedSims</div></pre></td></tr></table></figure>
+<p>[(567, 0.0),<br>     (413, 0.27774090532944073),<br>     (24, 0.28293701045346031),<br>     (184, 0.29302471333565439),<br>     (352, 0.29389332298954041),<br>     (1376, 0.30311195834153437),<br>     (201, 0.30636099292020724),<br>     (741, 0.31300444242427816),<br>     (685, 0.31398875037205187),<br>     (686, 0.31444575073270353)]</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">print</span> titles[itemId]</div><div class="line">[(titles[id], sim) <span class="keyword">for</span> (id, sim) <span class="keyword">in</span> sortedSims]</div></pre></td></tr></table></figure>
+<p>Wes Craven’s New Nightmare (1994)</p>
+<p>[(u”Wes Craven’s New Nightmare (1994)”, 0.0),<br>     (u’Tales from the Crypt Presents: Bordello of Blood (1996)’,<br>      0.27774090532944073),<br>     (u’Rumble in the Bronx (1995)’, 0.28293701045346031),<br>     (u’Army of Darkness (1993)’, 0.29302471333565439),<br>     (u’Spice World (1997)’, 0.29389332298954041),<br>     (u’Meet Wally Sparks (1997)’, 0.30311195834153437),<br>     (u’Evil Dead II (1987)’, 0.30636099292020724),<br>     (u’Last Supper, The (1995)’, 0.31300444242427816),<br>     (u’Executive Decision (1996)’, 0.31398875037205187),<br>     (u’Perfect World, A (1993)’, 0.31444575073270353)]</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">actualRating = moviesForUser[<span class="number">0</span>]</div><div class="line">predictedRating = model.predict(<span class="number">789</span>, actualRating.product)</div><div class="line">squaredError = (actualRating.rating - predictedRating) ** <span class="number">2</span></div><div class="line"><span class="keyword">print</span> <span class="string">"实际评分: %f, 预测评分: %f, 方差: %f. "</span> % (actualRating.rating, predictedRating, squaredError)</div></pre></td></tr></table></figure>
+<p>实际评分: 5.000000, 预测评分: 5.042951, 方差: 0.001845. </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">usersProducts = ratings.map(<span class="keyword">lambda</span> r: (r.user, r.product))</div><div class="line"><span class="comment"># predictAll方法以对(int, int)形式的rdd作为参数，这点与scala不同，scala直接用predict</span></div><div class="line">predictions = model.predictAll(usersProducts).map(<span class="keyword">lambda</span> r: ((r.user, r.product), r.rating))</div><div class="line">predictions.first()</div></pre></td></tr></table></figure>
+<p>((368, 320), 4.883538186965982)</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 形成一个(user, movie)做主键，(实际评分，预测评分)做值的rdd</span></div><div class="line">ratingsAndPredictions = ratings.map(<span class="keyword">lambda</span> r: ((r.user, r.product), r.rating)).join(predictions)</div><div class="line">ratingsAndPredictions.first()</div></pre></td></tr></table></figure>
+<p>((506, 568), (5.0, 4.512168968112584))</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># MSE = ratingsAndPredictions.map(lambda ((user, product), (actual, predicted)): (actual - predicted) ** 2)\</span></div><div class="line"><span class="comment"># .reduce(lambda x,y: x + y) / ratingsAndPredictions.count()</span></div><div class="line"><span class="comment"># 用sum()和reduce(lambda x,y: x+y)是一样的</span></div><div class="line">MSE = ratingsAndPredictions.map(<span class="keyword">lambda</span> ((user, product), (actual, predicted)): (actual - predicted) ** <span class="number">2</span>).sum() \</div><div class="line">/ ratingsAndPredictions.count()</div><div class="line"><span class="keyword">print</span> <span class="string">"Mean Squared Error ="</span>, MSE</div><div class="line"></div><div class="line"><span class="keyword">import</span> math</div><div class="line">RMSE = math.sqrt(MSE)</div><div class="line"><span class="keyword">print</span> <span class="string">"Root Mean Squared Error ="</span>, RMSE</div></pre></td></tr></table></figure>
+<p>Mean Squared Error = 0.0839340560353<br>    Root Mean Squared Error = 0.28971374844</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 计算APK(Average Precision at K metric)K值平均准确率</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">avgPrecisionK</span><span class="params">(actual, predicted, k)</span>:</span></div><div class="line">    predK = predicted[<span class="number">0</span>:k]</div><div class="line">    score = <span class="number">0.0</span></div><div class="line">    numHits = <span class="number">0.0</span></div><div class="line">    <span class="keyword">for</span> i, p <span class="keyword">in</span> enumerate(predK):</div><div class="line">        <span class="keyword">if</span>(p <span class="keyword">in</span> actual):</div><div class="line">            numHits += <span class="number">1</span></div><div class="line">            score += numHits / float(i + <span class="number">1</span>)</div><div class="line">    <span class="keyword">if</span>(len(actual) == <span class="number">0</span>):</div><div class="line">        <span class="keyword">return</span> <span class="number">1.0</span></div><div class="line">    <span class="keyword">else</span>:</div><div class="line">        <span class="keyword">return</span> score / float(min(len(actual), k))</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">actualMovies = [mu.product <span class="keyword">for</span> mu <span class="keyword">in</span> moviesForUser]</div><div class="line"><span class="keyword">print</span> actualMovies</div></pre></td></tr></table></figure>
+<p>[127, 475, 9, 50, 150, 276, 129, 100, 741, 1012]</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">predictedMovies = [tkr.product <span class="keyword">for</span> tkr <span class="keyword">in</span> topKRecs]</div><div class="line"><span class="keyword">print</span> predictedMovies</div></pre></td></tr></table></figure>
+<p>[708, 482, 502, 603, 23, 182, 484, 479, 1020, 494]</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">apk10 = avgPrecisionK(actualMovies, predictedMovies, <span class="number">10</span>)</div><div class="line"><span class="keyword">print</span> apk10</div><div class="line"><span class="comment"># 这里APK得分为0，表明模型在维该用户做相关电影预测上的表现并不理想</span></div></pre></td></tr></table></figure>
+<p>0.0</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</div><div class="line">itemFactors = model.productFeatures().map(<span class="keyword">lambda</span> (id, factor): factor).collect()</div><div class="line">itemMatrix = np.array(itemFactors)</div><div class="line"><span class="keyword">print</span> itemMatrix.shape</div></pre></td></tr></table></figure>
+<p>(1682, 50)</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">imBroadcast = sc.broadcast(itemMatrix)</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">scoresForUser = model.userFeatures().map(<span class="keyword">lambda</span> (userId, array): (userId, np.dot(imBroadcast.value, array)))</div><div class="line">allRecs = scoresForUser.map(<span class="keyword">lambda</span> (userId, scores): </div><div class="line">                            (userId, sorted(zip(np.arange(<span class="number">1</span>, scores.size), scores), key=<span class="keyword">lambda</span> x: x[<span class="number">1</span>], reverse=<span class="keyword">True</span>))</div><div class="line">                           ).map(<span class="keyword">lambda</span> (userId, sortedScores): (userId, np.array(sortedScores, dtype=int)[:,<span class="number">0</span>]))</div><div class="line"><span class="keyword">print</span> allRecs.first()[<span class="number">0</span>]</div><div class="line"><span class="keyword">print</span> allRecs.first()[<span class="number">1</span>]</div></pre></td></tr></table></figure>
+<p>16<br>    [1274  453  135 …,  631  412   96]</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># groupByKey返回(int, ResultIterable), 其中ResultIterable.data才是数据</span></div><div class="line">userMovies = ratings.map(<span class="keyword">lambda</span> r: (r.user, r.product)).groupByKey()</div><div class="line"><span class="keyword">print</span> userMovies.first()[<span class="number">0</span>]</div><div class="line"><span class="keyword">print</span> userMovies.first()[<span class="number">1</span>].data</div></pre></td></tr></table></figure>
+<p>2<br>    [237, 300, 100, 127, 285, 289, 304, 272, 278, 288, 286, 275, 302, 296, 292, 251, 50, 314, 297, 290, 312, 281, 13, 280, 303, 308, 307, 257, 316, 315, 301, 313, 279, 299, 298, 19, 277, 282, 111, 258, 295, 242, 283, 276, 1, 305, 14, 287, 291, 293, 294, 310, 309, 306, 25, 273, 10, 311, 269, 255, 284, 274]</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">K = <span class="number">10</span></div><div class="line">MAPK = allRecs.join(userMovies).map(<span class="keyword">lambda</span> (userId, (predicted, actual)):</div><div class="line">                                    avgPrecisionK(actual.data, predicted, K)</div><div class="line">                                   ).sum() / allRecs.count()</div><div class="line"><span class="keyword">print</span> <span class="string">"Mean Average Precision at K ="</span>, MAPK</div></pre></td></tr></table></figure>
+<p>Mean Average Precision at K = 0.024641131815</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 使用MLlib内置的评估函数计算MSE,RMSE</span></div><div class="line"><span class="keyword">from</span> pyspark.mllib.evaluation <span class="keyword">import</span> RegressionMetrics</div><div class="line">predictedAndTrue = ratingsAndPredictions.map(<span class="keyword">lambda</span> ((user, product), (predicted, actual)): (predicted, actual))</div><div class="line">regressionMetrics = RegressionMetrics(predictedAndTrue)</div><div class="line"><span class="keyword">print</span> <span class="string">"Mean Squared Error ="</span>, regressionMetrics.meanSquaredError</div><div class="line"><span class="keyword">print</span> <span class="string">"Root Mean Squared Error ="</span>, regressionMetrics.rootMeanSquaredError</div></pre></td></tr></table></figure>
+<p>Mean Squared Error = 0.0839340560353<br>    Root Mean Squared Error = 0.28971374844</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 使用MLlib内置的评估函数计算MAP, 它取所有物品来计算，不是取前K个，因此不用设定K值,故不叫MAPK</span></div><div class="line"><span class="keyword">from</span> pyspark.mllib.evaluation <span class="keyword">import</span> RankingMetrics</div><div class="line">predictedAndTrueForRanking = allRecs.join(userMovies).map(<span class="keyword">lambda</span> (userId, (predicted, actual)):</div><div class="line">                                                        (map(int, list(predicted)), actual.data))</div><div class="line">rankingMetrics = RankingMetrics(predictedAndTrueForRanking)</div><div class="line"><span class="keyword">print</span> <span class="string">"Mean Average Precision ="</span>, rankingMetrics.meanAveragePrecision</div></pre></td></tr></table></figure>
+<p>Mean Average Precision = 0.0668399759999</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 用我们自己实现的方法来计算MAPK，当K值较大时，结果同上面一样</span></div><div class="line">K = <span class="number">2000</span></div><div class="line">MAPK2000 = allRecs.join(userMovies).map(<span class="keyword">lambda</span> (userId, (predicted, actual)):</div><div class="line">                                    avgPrecisionK(actual.data, predicted, K)</div><div class="line">                                   ).sum() / allRecs.count()</div><div class="line"><span class="keyword">print</span> <span class="string">"Mean Average Precision at 2000 ="</span>, MAPK2000</div></pre></td></tr></table></figure>
+<p>Mean Average Precision at 2000 = 0.0668399759999</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+            <a href="/tags/spark/" rel="tag"># spark</a>
+          
+            <a href="/tags/推荐/" rel="tag"># 推荐</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/01/02/MLlib里几个简单的分类模型(python)/" rel="prev" title="MLlib里几个简单的分类模型">
+                MLlib里几个简单的分类模型 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/7233064.jpg"
+               alt="Yiyang Peng" />
+          <p class="site-author-name" itemprop="name">Yiyang Peng</p>
+           
+              <p class="site-description motion-element" itemprop="description">Try try try Never mind</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">27</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">27</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/yiyang186" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/peng-yiyang-88" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  知乎
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yiyang Peng</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

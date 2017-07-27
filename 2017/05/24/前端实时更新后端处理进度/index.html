@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="django,jquery," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="交互逻辑： 点击页面的“提交”button，向后台发送数据处理请求； 后台处理数据； 前端根据后台的处理进度实时更新进度条。  个人愚见：能在前端估计出进度的尽量在前端做伪实时的进度条(像发送文件那种)，这才是上策；实在没法估计后台计算时间，又实在是等的久的让人难熬的才这么干，这是下下策。  功能实现：前端HTML Html页面用boostrap的进度条,  进度条由2个div嵌套而成，修改内层d">
+<meta name="keywords" content="django,jquery">
+<meta property="og:type" content="article">
+<meta property="og:title" content="前端实时更新后端处理进度">
+<meta property="og:url" content="http://yoursite.com/2017/05/24/前端实时更新后端处理进度/index.html">
+<meta property="og:site_name" content="Yiyang&#39;s Blog">
+<meta property="og:description" content="交互逻辑： 点击页面的“提交”button，向后台发送数据处理请求； 后台处理数据； 前端根据后台的处理进度实时更新进度条。  个人愚见：能在前端估计出进度的尽量在前端做伪实时的进度条(像发送文件那种)，这才是上策；实在没法估计后台计算时间，又实在是等的久的让人难熬的才这么干，这是下下策。  功能实现：前端HTML Html页面用boostrap的进度条,  进度条由2个div嵌套而成，修改内层d">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://img.blog.csdn.net/20170524194815680?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcTF3MmUzcjQ0NzA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170524194715913?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcTF3MmUzcjQ0NzA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:updated_time" content="2017-07-27T06:07:20.843Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="前端实时更新后端处理进度">
+<meta name="twitter:description" content="交互逻辑： 点击页面的“提交”button，向后台发送数据处理请求； 后台处理数据； 前端根据后台的处理进度实时更新进度条。  个人愚见：能在前端估计出进度的尽量在前端做伪实时的进度条(像发送文件那种)，这才是上策；实在没法估计后台计算时间，又实在是等的久的让人难熬的才这么干，这是下下策。  功能实现：前端HTML Html页面用boostrap的进度条,  进度条由2个div嵌套而成，修改内层d">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20170524194815680?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcTF3MmUzcjQ0NzA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/05/24/前端实时更新后端处理进度/"/>
+
+
+
+
+
+  <title>前端实时更新后端处理进度 | Yiyang's Blog</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Yiyang's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/24/前端实时更新后端处理进度/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Yiyang Peng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/7233064.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Yiyang's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">前端实时更新后端处理进度</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-24T19:38:00+08:00">
+                2017-05-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作/" itemprop="url" rel="index">
+                    <span itemprop="name">操作</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="交互逻辑："><a href="#交互逻辑：" class="headerlink" title="交互逻辑："></a>交互逻辑：</h1><ol>
+<li>点击页面的“提交”button，向后台发送数据处理请求；</li>
+<li>后台处理数据；</li>
+<li>前端根据后台的处理进度实时更新进度条。</li>
+</ol>
+<p><strong>个人愚见</strong>：能在前端估计出进度的尽量在前端做伪实时的进度条(像发送文件那种)，这才是上策；实在没法估计后台计算时间，又实在是等的久的让人难熬的才这么干，这是下下策。</p>
+<hr>
+<h1 id="功能实现："><a href="#功能实现：" class="headerlink" title="功能实现："></a>功能实现：</h1><h2 id="前端"><a href="#前端" class="headerlink" title="前端"></a>前端</h2><h3 id="HTML"><a href="#HTML" class="headerlink" title="HTML"></a>HTML</h3><ol>
+<li>Html页面用boostrap的进度条,  进度条由2个div嵌套而成，修改内层div的width可以更新进度，外层div (id=”prog_out”) , 内层div (id=”prog_in”)；</li>
+<li>给button绑定一个onclick方法”submit_query()”。<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"prog_out"</span> <span class="attr">class</span>=<span class="string">"progress progress-striped active"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"prog_in"</span> <span class="attr">class</span>=<span class="string">"progress-bar progress-bar-success"</span> <span class="attr">role</span>=<span class="string">"progressbar"</span> <span class="attr">aria-valuenow</span>=<span class="string">"0"</span> <span class="attr">aria-valuemin</span>=<span class="string">"0"</span> <span class="attr">aria-valuemax</span>=<span class="string">"100"</span> <span class="attr">style</span>=<span class="string">"width: 0%;"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">"button"</span> <span class="attr">class</span>=<span class="string">"btn btn-default"</span> <span class="attr">onclick</span>=<span class="string">"submit_query()"</span>&gt;</span>提交<span class="tag">&lt;/<span class="name">button</span>&gt;</span></div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h3 id="javascript"><a href="#javascript" class="headerlink" title="javascript"></a>javascript</h3><ol>
+<li>在onclick方法中设置一个setInterval函数，用于持续请求后台进度，不断更新进度条；</li>
+<li>向后台发送数据处理请求，当该请求成功返回后结束setInterval函数，并更改进度条样式。</li>
+<li>由于setInterval和getJSON的回调函数都是异步执行，这里就相当于做了个登记，将任务加入队列。因此submit_query不必等待他俩就可以顺利结束。<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">submit_query</span>(<span class="params">btn</span>)</span>&#123;</div><div class="line">    <span class="keyword">var</span> sitv = setInterval(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">	    <span class="keyword">var</span> prog_url = ...                   <span class="comment">// prog_url指请求进度的url，后面会在django中设置</span></div><div class="line">	    $.getJSON(prog_url, <span class="function"><span class="keyword">function</span>(<span class="params">res</span>)</span>&#123; </div><div class="line">	        $(<span class="string">'#prog_in'</span>).width(res + <span class="string">'%'</span>);     <span class="comment">// 改变进度条进度，注意这里是内层的div， res是后台返回的进度</span></div><div class="line">	    &#125;);</div><div class="line">    &#125;, <span class="number">1000</span>);                                 <span class="comment">// 每1秒查询一次后台进度</span></div><div class="line">    </div><div class="line">    <span class="keyword">var</span> this_url = ...                        <span class="comment">// 指当前页面的url</span></div><div class="line">    <span class="keyword">var</span> yourjson = ...</div><div class="line">    $.getJSON(thisurl, yourjson, <span class="function"><span class="keyword">function</span>(<span class="params">res</span>)</span>&#123; </div><div class="line">	    <span class="comment">// ...</span></div><div class="line">        clearInterval(sitv);                   <span class="comment">// 此时请求成功返回结果了，结束对后台进度的查询</span></div><div class="line">        $(<span class="string">'#prog_out'</span>).attr(<span class="string">"class"</span>, <span class="string">"progress progress-bar-success"</span>); <span class="comment">// 修改进度条外层div的class, 改为完成形态</span></div><div class="line">    &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="后端"><a href="#后端" class="headerlink" title="后端"></a>后端</h2><p>我这里使用的后端为<strong>Django</strong>, 使用别的后端思路相当。<br>2.2.1. 设置两个url, 一个指向处理数据的的函数，另一个指向请求进度的函数</p>
+<h3 id="urls-py"><a href="#urls-py" class="headerlink" title="urls.py"></a>urls.py</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">url(<span class="string">r'^thisiurl$'</span>, views.process_data, name=<span class="string">'process'</span>), <span class="comment"># 处理数据的url, 当前页面的地址</span></div><div class="line">url(<span class="string">r'^progressurl$'</span>, views.show_progress, name=<span class="string">'progress'</span>), <span class="comment"># 查询进度的url, 不需要html页面</span></div><div class="line"><span class="comment"># thisiurl和progressurl用自己的url</span></div></pre></td></tr></table></figure>
+<h3 id="views-py"><a href="#views-py" class="headerlink" title="views.py"></a>views.py</h3><p>用全局变量记录处理进度，process_data函数负责具体任务，同时更新后台进度值，show_progress负责将当前进度值返回给前端。当全局变量不被识别的时候使用global关键字。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">num_progress = <span class="number">0</span> <span class="comment"># 当前的后台进度值（不喜欢全局变量也可以很轻易地换成别的方法代替）</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">process_data</span><span class="params">(request)</span>:</span></div><div class="line">    <span class="comment"># ...</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">12345</span>):</div><div class="line">	    <span class="comment"># ... 数据处理业务</span></div><div class="line">	    num_progress = i * <span class="number">100</span> / <span class="number">12345</span>; <span class="comment"># 更新后台进度值，因为想返回百分数所以乘100</span></div><div class="line">    <span class="keyword">return</span> JsonResponse(res, safe=<span class="keyword">False</span>)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">show_progress</span><span class="params">(request)</span>:</span></div><div class="line">    <span class="keyword">return</span> JsonResponse(num_progress, safe=<span class="keyword">False</span>)</div></pre></td></tr></table></figure></p>
+<hr>
+<h1 id="实现效果"><a href="#实现效果" class="headerlink" title="实现效果"></a>实现效果</h1><p>未完成形态<br><img src="http://img.blog.csdn.net/20170524194815680?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcTF3MmUzcjQ0NzA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"></p>
+<p>完成形态<br><img src="http://img.blog.csdn.net/20170524194715913?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcTF3MmUzcjQ0NzA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/django/" rel="tag"># django</a>
+          
+            <a href="/tags/jquery/" rel="tag"># jquery</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/05/02/如何理解EM算法/" rel="next" title="如何理解EM算法">
+                <i class="fa fa-chevron-left"></i> 如何理解EM算法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/7233064.jpg"
+               alt="Yiyang Peng" />
+          <p class="site-author-name" itemprop="name">Yiyang Peng</p>
+           
+              <p class="site-description motion-element" itemprop="description">Try try try Never mind</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">27</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">27</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/yiyang186" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/peng-yiyang-88" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  知乎
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#交互逻辑："><span class="nav-number">1.</span> <span class="nav-text">交互逻辑：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#功能实现："><span class="nav-number">2.</span> <span class="nav-text">功能实现：</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#前端"><span class="nav-number">2.1.</span> <span class="nav-text">前端</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#HTML"><span class="nav-number">2.1.1.</span> <span class="nav-text">HTML</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#javascript"><span class="nav-number">2.1.2.</span> <span class="nav-text">javascript</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#后端"><span class="nav-number">2.2.</span> <span class="nav-text">后端</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#urls-py"><span class="nav-number">2.2.1.</span> <span class="nav-text">urls.py</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#views-py"><span class="nav-number">2.2.2.</span> <span class="nav-text">views.py</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实现效果"><span class="nav-number">3.</span> <span class="nav-text">实现效果</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yiyang Peng</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

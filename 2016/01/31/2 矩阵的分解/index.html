@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="矩阵," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="矩阵分解 (decomposition, factorization)是将矩阵拆解为数个矩阵的乘积或加和的过程，可分为三角分解、满秩分解、QR分解、Jordan分解、SVD（奇异值）分解和谱分解等，其中三角分解(LU分解)是高斯消元法的另一种表现形式，在本科的线性代数里已经被我们用烂了，Jordan分解在上一章线性代数引论“求Jordan标准形”里已经介绍。这一章只介绍QR分解、满秩分解、SVD（">
+<meta name="keywords" content="矩阵">
+<meta property="og:type" content="article">
+<meta property="og:title" content="几种常用矩阵分解">
+<meta property="og:url" content="http://yoursite.com/2016/01/31/2 矩阵的分解/index.html">
+<meta property="og:site_name" content="Yiyang&#39;s Blog">
+<meta property="og:description" content="矩阵分解 (decomposition, factorization)是将矩阵拆解为数个矩阵的乘积或加和的过程，可分为三角分解、满秩分解、QR分解、Jordan分解、SVD（奇异值）分解和谱分解等，其中三角分解(LU分解)是高斯消元法的另一种表现形式，在本科的线性代数里已经被我们用烂了，Jordan分解在上一章线性代数引论“求Jordan标准形”里已经介绍。这一章只介绍QR分解、满秩分解、SVD（">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://img.blog.csdn.net/20160929153348292">
+<meta property="og:image" content="http://img.blog.csdn.net/20160131104725445">
+<meta property="og:image" content="http://img.blog.csdn.net/20160929152827925">
+<meta property="og:updated_time" content="2017-07-26T14:48:06.712Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="几种常用矩阵分解">
+<meta name="twitter:description" content="矩阵分解 (decomposition, factorization)是将矩阵拆解为数个矩阵的乘积或加和的过程，可分为三角分解、满秩分解、QR分解、Jordan分解、SVD（奇异值）分解和谱分解等，其中三角分解(LU分解)是高斯消元法的另一种表现形式，在本科的线性代数里已经被我们用烂了，Jordan分解在上一章线性代数引论“求Jordan标准形”里已经介绍。这一章只介绍QR分解、满秩分解、SVD（">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20160929153348292">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/01/31/2 矩阵的分解/"/>
+
+
+
+
+
+  <title>几种常用矩阵分解 | Yiyang's Blog</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Yiyang's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/01/31/2 矩阵的分解/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Yiyang Peng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/7233064.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Yiyang's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">几种常用矩阵分解</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-01-31T12:40:00+08:00">
+                2016-01-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数学/" itemprop="url" rel="index">
+                    <span itemprop="name">数学</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>矩阵分解 (decomposition, factorization)是将矩阵拆解为数个矩阵的乘积或加和的过程，可分为三角分解、满秩分解、QR分解、Jordan分解、SVD（奇异值）分解和谱分解等，其中三角分解(LU分解)是高斯消元法的另一种表现形式，在本科的线性代数里已经被我们用烂了，Jordan分解在上一章线性代数引论“求Jordan标准形”里已经介绍。这一章只介绍QR分解、满秩分解、SVD（奇异值）分解和谱分解。</p>
+<h1 id="QR分解"><a href="#QR分解" class="headerlink" title="QR分解"></a>QR分解</h1><ul>
+<li><p>描述<br>A=QR<br>A是满秩方阵，Q是正交矩阵，R是上三角阵，分解唯一<br>A=UR(把正交矩阵换成酉矩阵也一样)<br>如果A只是列满秩，($A_{m×n}, n≤m$, 秩为n)那么<br>$A_{m×n} = Q_{m×n}R_{n×n}$, Q只要满足n个列向量标准正交即可，R还是上三角阵</p>
+</li>
+<li><p>QR分解步骤</p>
+</li>
+</ul>
+<ol>
+<li>求r(A)判断A是否满秩</li>
+<li>按列分块$A=(x_1,  x_2,  x_3)$，正交化为$y_1, y_2,y_3$, 单位化为$z_1, z_2, z_3$</li>
+<li>令<br>$$Q=(z_1,z_2,z_3)$$<br>$$<br>R= \left(<br>\begin{matrix}<br>||y_1|| &amp; (x_2, z_1) &amp; (x_3, z_1) \\<br>0 &amp; ||y_2|| &amp; (x_3, z_2) \\<br>0 &amp; 0 &amp; ||y_3||<br>\end{matrix}<br>\right)<br>$$</li>
+<li>最后，A=QR</li>
+</ol>
+<ul>
+<li>scipy代码演示<br><img src="http://img.blog.csdn.net/20160929153348292" alt="这里写图片描述"></li>
+</ul>
+<h1 id="满秩分解"><a href="#满秩分解" class="headerlink" title="满秩分解"></a>满秩分解</h1><ul>
+<li><p>描述<br>任一矩阵可分解为一个列满秩与行满秩矩阵的乘积，但分解不唯一<br>$A_{m×n} = F_{m×r} G_{r×n}$ (A的秩为r)</p>
+</li>
+<li><p>满秩分解方法</p>
+</li>
+</ul>
+<ol>
+<li>经初等行变换化为简化阶梯型<br><img src="http://img.blog.csdn.net/20160131104725445" alt="这里写图片描述"></li>
+<li>取H中是单位向量的列的序号，找出A中对应序号的列组成F</li>
+<li>取H中的非0行（前r行）作为G</li>
+<li>最后，A=FG</li>
+</ol>
+<h1 id="奇异值分解"><a href="#奇异值分解" class="headerlink" title="奇异值分解"></a>奇异值分解</h1><ul>
+<li><p>描述</p>
+<ul>
+<li><strong>奇异值</strong>：复矩阵$A_{m \times n}^r$(秩为r)，$A^HA$有n个特征值，按<strong>从大到小</strong>的顺序排列，保证$ \lambda_1 \geq  \lambda_2 \geq   … \geq \lambda_n$，有前r个为正，后n-r个为0，称 $σ_i=\sqrt{λ_i}$为A的奇异值，前r个$\sigma_1 \geq \sigma_2 \geq … \geq \sigma_r$为正奇异值。</li>
+<li><strong>奇异值分解</strong>：$A=USV^H$<br>$A_{m×n}^r  = U_{m×m} S_{m×n} V^H_{n×n}$<br>其中，U和V为酉矩阵(见上一章)，S为A的奇异值组成的对角阵，前r个为正奇异值，后n-r个全为0<br>$$A=U\left(<br>\begin{matrix}<br>S_r &amp; 0 \\<br>0 &amp; 0<br>\end{matrix}<br>\right)V^H$$</li>
+</ul>
+</li>
+<li><p>奇异值分解步骤：</p>
+</li>
+</ul>
+<ol>
+<li>计算$A^HA$的n个特征值并按从大到小排序得到$λ_i(i=1…n)$, 取平方根得到奇异值$σ_i$</li>
+<li>计算这n个特征值$λ_i$对应的特征向量$α_i$，并schmidt正交化，得到标准正交特征向量$α_1, α_2, … α_r, α_{r+1}, … , α_n$。令$V_1=(α_1, … α_r), V_2=(α_{r+1}, … , α_n), V=(V_1, V_2)$;令$S_r=diag(σ_1, … σ_r)，(\sigma_1 \geq \sigma_2 \geq … \geq \sigma_r)$</li>
+<li>计算$U_1=(β_1, … β_r) =AV_1S_r^{-1}$</li>
+<li>求出$N(A^H)$的一组标准正交基$β_{r+1}, … β_m$(即求$A^H$齐次方程组的一组基础解系，也需要schmidt正交化)。令$U_2=(β_{r+1}, … β_m), U=(U_1, U_2)$, 则<br>$$A=U\left(<br>\begin{matrix}<br>S_r &amp; 0 \\<br>0 &amp; 0<br>\end{matrix}<br>\right)V^H$$</li>
+</ol>
+<ul>
+<li>scipy演示代码<br><img src="http://img.blog.csdn.net/20160929152827925" alt="这里写图片描述"></li>
+</ul>
+<h1 id="谱分解"><a href="#谱分解" class="headerlink" title="谱分解"></a>谱分解</h1><ul>
+<li><p>描述<br>N阶方阵$A_{n \times n}$的n个特征值称为A的谱（谱分解是对于单纯矩阵而言的）</p>
+</li>
+<li><p>谱分解步骤：</p>
+</li>
+</ul>
+<ol>
+<li>以A的线性无关的特征向量为列组成矩阵P，将P按列分块$P=(X_1, X_2, …, X_n)$</li>
+<li>求$P^{-1}$, 将$P^{-1}$按行分块   $P^{-1}=(Y_1, Y_2, …, Y_n)^T$</li>
+<li>则A的谱分解为<br>$A = λ_1X_1Y_1 +λ_2X_2Y_2 + … + λ_kX_kY_k$<br>或<br>$A = λ_1G_1 +λ_2G_2 + … + λ_kG_k$<br>其中，$G_i = X_iY_i$, 这里的$G_i$是幂等矩阵, 且有如下性质: $G_i$两两正交，所有$G_i$的和为$I_n$</li>
+</ol>
+<ul>
+<li>特殊情况<br>若A是正规矩阵($A^HA=AA^H$)，则上述的$G_i$为幂等厄米特阵，A酉相似于对角阵，那么，将U按列分块<br>$U=( X_1, X_2, …, X_n)$,  取$G_i = X_iX_i^H$即可！</li>
+</ul>
+<h1 id="补充：幂等阵"><a href="#补充：幂等阵" class="headerlink" title="补充：幂等阵"></a>补充：幂等阵</h1><ul>
+<li><p>描述<br>幂等阵：$A∈C_{n×n}$, 若满足$A^2=A$, 则称A为幂等阵。</p>
+</li>
+<li><p>A为幂等阵的等价命题</p>
+</li>
+</ul>
+<ol>
+<li>与A相似的任意矩阵也是幂等阵；</li>
+<li>$A^H,A^T,A^*，I-A^H，I-A^T$都是幂等阵</li>
+<li>$A^k$是幂等阵, $k \in N$</li>
+</ol>
+<ul>
+<li>幂等阵的主要性质：</li>
+</ul>
+<ol>
+<li>幂等阵的特征值只可能是0，1；</li>
+<li>幂等阵可对角化；</li>
+<li>幂等阵的迹等于幂等阵的秩，即tr(A)=rank(A)；</li>
+<li>可逆的幂等阵为I；</li>
+<li>零方阵和单位矩阵都是幂等阵；</li>
+<li>幂等阵A满足：A(I-A)=(I-A)A=0；</li>
+<li>幂等阵A有Ax=x的充要条件是x∈R(A)；</li>
+<li>A的核空间N(A)等于I-A的像空间R(I-A), 且N(I-A)=R(A)。　</li>
+</ol>
+<ul>
+<li>幂等阵的运算：<br>设 $A_1,A_2$都是幂等阵</li>
+</ul>
+<ol>
+<li>$A_1+A_2$ 为幂等阵的充分必要条件为：$A_1A_2 =A_2A_1 = 0$且有：<br>$R(A_1+A_2) =R (A_1) ⊕R (A_2)$；(⊕表示直积)<br>$N(A_1+A_2) =N (A_1)∩N(A_2)$；</li>
+<li>$A_1-A_2$ 为幂等阵的充分必要条件为：$A_1A_2 =A_2A_1=A_2$且有：$R(A_1-A_2) =R(A_1)∩N (A_2 )$；<br>$N (A_1 - A_2 ) =N (A_1 )⊕R (A_2)$；</li>
+<li>若$A_1A_2 =A_2A_1$，则$A_1A_2$ 为幂等阵，且有：<br>$R (A_1A_2 ) =R (A_1 ) ∩R (A_2 )$；<br>$N (A_1A_2 ) =N (A_1 ) +N (A_2 )$。</li>
+</ol>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/矩阵/" rel="tag"># 矩阵</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/01/31/1-线性代数引论/" rel="next" title="矩阵论的线性代数基础">
+                <i class="fa fa-chevron-left"></i> 矩阵论的线性代数基础
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/02/01/3 广义逆矩阵/" rel="prev" title="矩阵的广义逆">
+                矩阵的广义逆 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/7233064.jpg"
+               alt="Yiyang Peng" />
+          <p class="site-author-name" itemprop="name">Yiyang Peng</p>
+           
+              <p class="site-description motion-element" itemprop="description">Try try try Never mind</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">27</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">27</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/yiyang186" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/peng-yiyang-88" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  知乎
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#QR分解"><span class="nav-number">1.</span> <span class="nav-text">QR分解</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#满秩分解"><span class="nav-number">2.</span> <span class="nav-text">满秩分解</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#奇异值分解"><span class="nav-number">3.</span> <span class="nav-text">奇异值分解</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#谱分解"><span class="nav-number">4.</span> <span class="nav-text">谱分解</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#补充：幂等阵"><span class="nav-number">5.</span> <span class="nav-text">补充：幂等阵</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yiyang Peng</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

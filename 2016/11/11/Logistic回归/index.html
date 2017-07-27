@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="ESL," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="逻辑回归的建模sigmoid函数说道建模，总有一些粗暴的地方，即强行给真实模型$f$指定某种形式$\hat f$，像线性回归里就强行指定了$\hat f(x)=\beta^T x, x \in R^p, \beta \in  R^{p+1}$这种形式，然后依靠所找到的最优的$\beta$使$\hat f$尽量接近$f$。分类问题与回归的问题的不同在于y的值域不同，对于分类问题，我们想把样本x分到$">
+<meta name="keywords" content="ESL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="逻辑回归">
+<meta property="og:url" content="http://yoursite.com/2016/11/11/Logistic回归/index.html">
+<meta property="og:site_name" content="Yiyang&#39;s Blog">
+<meta property="og:description" content="逻辑回归的建模sigmoid函数说道建模，总有一些粗暴的地方，即强行给真实模型$f$指定某种形式$\hat f$，像线性回归里就强行指定了$\hat f(x)=\beta^T x, x \in R^p, \beta \in  R^{p+1}$这种形式，然后依靠所找到的最优的$\beta$使$\hat f$尽量接近$f$。分类问题与回归的问题的不同在于y的值域不同，对于分类问题，我们想把样本x分到$">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://img.blog.csdn.net/20170621150508657?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcTF3MmUzcjQ0NzA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:updated_time" content="2017-07-27T03:58:40.475Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="逻辑回归">
+<meta name="twitter:description" content="逻辑回归的建模sigmoid函数说道建模，总有一些粗暴的地方，即强行给真实模型$f$指定某种形式$\hat f$，像线性回归里就强行指定了$\hat f(x)=\beta^T x, x \in R^p, \beta \in  R^{p+1}$这种形式，然后依靠所找到的最优的$\beta$使$\hat f$尽量接近$f$。分类问题与回归的问题的不同在于y的值域不同，对于分类问题，我们想把样本x分到$">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20170621150508657?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcTF3MmUzcjQ0NzA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/11/11/Logistic回归/"/>
+
+
+
+
+
+  <title>逻辑回归 | Yiyang's Blog</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Yiyang's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/11/11/Logistic回归/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Yiyang Peng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/7233064.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Yiyang's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">逻辑回归</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-11-11T17:13:00+08:00">
+                2016-11-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/机器学习/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="逻辑回归的建模"><a href="#逻辑回归的建模" class="headerlink" title="逻辑回归的建模"></a>逻辑回归的建模</h1><h2 id="sigmoid函数"><a href="#sigmoid函数" class="headerlink" title="sigmoid函数"></a>sigmoid函数</h2><p>说道建模，总有一些粗暴的地方，即强行给真实模型$f$指定某种形式$\hat f$，像线性回归里就强行指定了$\hat f(x)=\beta^T x, x \in R^p, \beta \in  R^{p+1}$这种形式，然后依靠所找到的最优的$\beta$使$\hat f$尽量接近$f$。<br>分类问题与回归的问题的不同在于y的值域不同，对于分类问题，我们想把样本x分到$y\in \{a,b,c,d,...\}$的类别中。这样，我们希望拟合y在给定x下的条件概率$P(y=a,b,...|x)$。概率的值域为[0,1]。由于我们不能保证内积的结果在[0,1]之内，所以线性回归的那种内积的形式就不适用了，我们就不能以这种形式的模型去拟合真实模型。<br>人们找到一种叫sigmoid(s型)的函数<br><img src="http://img.blog.csdn.net/20170621150508657?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcTF3MmUzcjQ0NzA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"><br>$$y=g(x)=\frac{1}{1+e^{-x}}, x\in R, y\in(0,1)\tag 1$$<br>它可以把范围在$(-\infty, +\infty)$的值映射到$(0,1)$里去，由于它是单调递增函数，因此可以保持输入值的单调性、奇偶性、周期型。把$\hat f(x)=\beta^T x$带入其中得到<br>$$h_\beta(x)=g(\beta^Tx)=\frac{1}{1+e^{-\beta^T x}}\tag 2$$</p>
+<h2 id="二分类"><a href="#二分类" class="headerlink" title="二分类"></a>二分类</h2><p>对于二分类问题$y\in \{0,1\}$，我们<strong>假设</strong><br>$$
+\begin{equation}
+\left\{
+\begin{array}{c}
+P(y=1|x; \beta) &=& h_\beta(x)=\frac{1}{1+e^{-\beta^T x}}\\
+P(y=0|x; \beta) &=& 1 - h_\beta(x)=\frac{e^{-\beta^T x}}{1+e^{-\beta^T x}}\\
+\end{array}
+\right.
+\end{equation}
+x \in R^p, \beta \in  R^{p+1}
+\tag 3$$<br>可能因为这种模型的结果是在0, 1之间，且保持了线性回归模型的内积形式，因此它被称作logistic regression，即逻辑回归，或逻辑斯蒂回归。</p>
+<h2 id="逻辑回归的特质"><a href="#逻辑回归的特质" class="headerlink" title="逻辑回归的特质"></a>逻辑回归的特质</h2><p>将(3)中的2个等式取对数相比（log-odd）得<br>$$\log{{P(y=1|x)}\over {P(y=0|x)}}=\beta ^Tx \tag4$$<br>可以发现以下特质，<strong>考虑任意样本$x_0$</strong>：</p>
+<ol>
+<li>当$P(y=1|x_0)>P(y=0|x_0)$时，$x_0$被分类到$\beta^Tx=0$的&gt;0的一边;</li>
+<li>当$P(y=1|x_0)$ < $P(y=0|x_0)$时，$x_0$被分类到$\beta^Tx=0$的&lt;0的一边;</li>
+<li>当$P(y=1|x_0)=P(y=0|x_0)$时，$x_0$在平面$\beta^Tx=0$上.</li>
+</ol>
+<p>可见Logistic Regression仍然是一种线性方法，即用平面($\beta ^Tx=0$)来分类。在二分类问题中，样本在超平面的一边就属于一类, 这个平面就是类与类之间的边界。<br>可以认为逻辑回归实际上式以(4)建模的。它认为一个样本属于类1的概率P(y=1|x)大的话，它应当在分类平面$\beta^Tx=0$的一边，即满足$\beta^Tx>0$；当这个样本属于0类概率 P(y=0|x)大时，它应当在分类平面$\beta^Tx=0$的另一边，即满足$\beta^Tx<0$ 。并且，它严格地假设了两类条件概率的对数比是线性的，可以被输入x线性表出。我们知道由于类密度高斯假设和公共协方差假设，lda(线性判别分析)的log-odd是x的线性函数，与(4)形式一样。<strong="">而Logistic绕过了这2个假设以式(4)建模。逻辑回归不要求样本满足类密度高斯假设和公共协方差假，更具一般性。</0$></p>
+<p>其实，我们忘掉sigmoid函数，直接拿(4)来建模，粗暴地假设类对数比率(log-odd)是关于x的线性函数，又由于样本属于两类的概率之和为1<br>$$P(y=1|x)+P(y=0|x)=1\tag5$$</p>
+<p>联立(4)(5)，解未知数为P(Y=1|x)和P(Y=-1|x)的方程还是可以得到式(3)，自然含有sigmoid函数。</p>
+<h2 id="多分类"><a href="#多分类" class="headerlink" title="多分类"></a>多分类</h2><p>对于K分类问题，如$y\in \{1,2,...,K\}$，我们希望模型拟合的是y的后验分布$P(y=i|x), i=1,2,...,K$。像二分类一样，如法炮制，假设两两类的条件概率对数比(log-odd)是关于x的线性函数，这样我们能列$\binom{K}{2}=\frac{K(K-1)}{2}$个方程。可是我们只有K个未知数，只需要列K个方程就行了，不妨取1,2,…,K-1类分别与K类的对数比来列方程，并限制样本属于K个类的概率的和为1，则<br>$$
+\begin{equation}
+   \left\{
+   \begin{array}{c}
+   \log{{P(y=1|x)}\over {P(y=K|x)}} &=&\beta_1 ^Tx\\
+   \log{{P(y=2|x)}\over {P(y=K|x)}} &=&\beta_2 ^Tx\\
+   ...\\
+   \log{{P(y=K-1|x)}\over {P(y=K|x)}} &=&\beta_{K-1} ^Tx\\
+   \sum_{i=1}^KP(y=i|x) &=& 1
+   \end{array}
+  \right.
+\end{equation}
+x \in R^p, \beta_k \in  R^{p+1}, k=1,2,...,K-1
+\tag 6$$<br>解方程组得到多分类的模型<br>$$
+\begin{equation}
+  \left\{
+   \begin{array}{c}
+   P(y=k|x; \beta) &=& \frac{e^{-\beta_k^T x}}{1+\sum_{i=1}^{K-1}e^{-\beta_i^T x}}\\
+   P(y=K|x; \beta) &=& \frac{1}{1+\sum_{i=1}^{K-1}e^{-\beta_i^T x}}\\
+   \end{array}
+  \right.
+\end{equation}
+\tag 7$$<br>其中，$x \in R^p, \beta_k \in  R^{p+1}, k=1,2,...,K-1$。<br>这很像<strong>softmax回归</strong>，把(7)中的“1”替换成“$e^{-\beta_K^T x}$”就成了softmax回归。<br>$$P(y=k|x; \beta) = \frac{e^{-\beta_k^T x}}{\sum_{i=1}^Ke^{-\beta_i^T x}}, k=1,2,...,K \tag 8$$<br>softmax回归可以看做是logistic的推广。当然softmax回归并不是这么推倒出来的，它的建模过程有它自己的考虑，像logistic一样出于某种需求被逐步构建出，就像你做deep learning搭积木一样，是一种建模过程。你能根据模型的某种数学特点把他们归类在一起，比如GLM, tree。模型与模型间确定的推导关系是很难给出的, 至少我在写这个博客时还做不到。或者我该以另一种形式开头，如“人们找到一种叫做softmax的函数，它有这样那样的特点。。。”再写一篇博客。</p>
+<h1 id="逻辑回归的求解"><a href="#逻辑回归的求解" class="headerlink" title="逻辑回归的求解"></a>逻辑回归的求解</h1><p>用最大似然估计法估计$\beta$, 令<br>$$p_i=P(y_i=1|x_i)=1-sigmoid(\beta^Tx_i)$$<br>则<br>$$P(y_i=0|x_i)=1-p_i=sigmoid(\beta^Tx_i)$$<br>那么似然函数为：<br>$$l(\beta)=\prod_{i=1}^np_i^{y_i}(1-p_i)^{1-y_i}$$<br>对数似然为：<br>$$L(\beta)=\log l(\beta)=\sum_{i=1}^ny_i\log p_i+(1-y_i)\log(1-p_i)\tag8$$<br>最大化$L(\beta)$即最小化$-L(\beta)$<br>$$-L(\beta)=-\log l(\beta)=\sum_{i=1}^n-y_i\log p_i-(1-y_i)\log(1-p_i)\tag9$$<br>(9)等号右边每一项为交叉熵（cross entropy）,因此对逻辑回归使用最大似然估计等价于最小化交叉熵，因此在神经网络中以交叉熵为损失函数求解二分类问题与最大似然估计是等价的。<br>这里只介绍一般逻辑回归的求解，回到(8), 将(6)(7)带入(8)得<br>$$L(\beta)=\sum_{i=1}^ny_i\beta^Tx_i-\log(1+exp(\beta^Tx_i))$$<br>令其梯度为0有<br>$$\frac{\partial L(\beta)}{\partial \beta}=\sum_{i=1}^nx_i(y_i-\frac{exp(\beta^Tx_i)}{1+exp(\beta^Tx_i)})=\sum_{i=1}^nx_i(y_i-p_i)=0\tag{10}$$<br>(10)是非线性方程组，难以求得$\beta$的解析解，可使用Newton-Raphson算法（牛顿迭代法）求解(10)的零点，Newton-Raphson算法需要(10)的导数，也就是$L(\beta)$的Hessian矩阵（二阶导数）<br>$$\frac{\partial L^2(\beta)}{\partial \beta \partial \beta^T}=-\sum_{i=1}^nx_ix_i^Tp_i(1-p_i)$$<br>因此Newton-Raphson算法每一步的迭代公式为：<br>$$\beta^{new}=\beta^{old}-\bigg(\frac{\partial L^2(\beta)}{\partial \beta \partial \beta^T}\Bigg|_{\beta^{old}}\bigg)^{-1}\frac{\partial L(\beta)}{\partial \beta}\Bigg|_{\beta^{old}}\tag{11}$$<br>可根据(11)迭代即可求解出(10)的零点$\beta$，同时也是(8)的极值点。</p>
+<h1 id="以建模的遐想"><a href="#以建模的遐想" class="headerlink" title="以建模的遐想"></a>以$\log{{P(y=1|x)}\over {P(y=0|x)}}=\beta^Tx$建模的遐想</h1><p><strong>考虑任意样本$x_0$</strong>：</p>
+<ul>
+<li>若$x_0$属于1类的概率大于属于0类的概率，它应当在分类平面$\beta^Tx=0$的某一边，不妨设$\beta^Tx_0>0$；</li>
+<li>若$x_0$属于0类的概率大于属于1类的概率，它应当在分类平面$\beta^Tx=0$的另一边，即$\beta^Tx_0<0$。< li="">
+</0$。<></li></ul>
+<p>换成数学的语言就是：</p>
+<table>
+<thead>
+<tr>
+<th>如果</th>
+<th>那么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+</tr>
+</tbody>
+</table>
+$$\log{{P(y=1|x_0)}\over {P(y=0|x_0)}}>0$$|$$\beta^Tx_0>0$$
+$$\log{{P(y=1|x_0)}\over {P(y=0|x_0)}}<0$$|$$\beta^tx_0<0$$ <p="">只要$\log{{P(y=1|x_0)}\over {P(y=0|x_0)}}$和$\beta^Tx_0$同号就是我们想要的模型。<strong>Logistic直接以$\log{{P(y=1|x)}\over {P(y=0|x)}}=\beta^Tx$建模</strong>保证了这种同号的要求，但是这样建模多了一个副产品，就是“绝对值相等”——<br>$$|\log{{P(y=1|x_0)}\over {P(y=0|x_0)}}|=|\beta^Tx_0|\tag{12}$$<br>容易理解，$|\beta^Tx_0|$是$x_0$到分类平面$\beta^Tx=0$的距离，而$|\log{{P(y=1|x_0)}\over {P(y=0|x_0)}}|$是样本$x_0$属于于0，1类概率的对数比率（log-odd）。二者相等吗？<strong>样本到分类平面的距离与样本属于各类概率的对数比率大小相等</strong>吗？有可能碰到正好满足的样本，但是绝大多数情况下不相等。<strong>我想</strong>，这种过度建模也许就是LR的缺陷所在。<p></p>
+<p>这些想法由ESL和<a href="https://www.zhihu.com/question/35322351/answer/141562541" target="_blank" rel="external">我在知乎中关于逻辑回归的回答</a>引申而来，我也没见过相关的文献，要是有相关的文献作为以上臆想的佐证或者驳斥，烦请通知我。</p>
+<h1 id="Newton-Raphson算法-牛顿迭代法"><a href="#Newton-Raphson算法-牛顿迭代法" class="headerlink" title="Newton-Raphson算法(牛顿迭代法)"></a>Newton-Raphson算法(牛顿迭代法)</h1><iframe height="490" width="680" src="https://upload.wikimedia.org/wikipedia/commons/e/e0/NewtonIteration_Ani.gif"></iframe></0$$|$$\beta^tx_0<0$$>
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ESL/" rel="tag"># ESL</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/10/06/怎样用scipy求一些统计量的p值和分位数/" rel="next" title="怎样用scipy求一些统计量的p值和分位数">
+                <i class="fa fa-chevron-left"></i> 怎样用scipy求一些统计量的p值和分位数
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/11/11/线性回归/" rel="prev" title="线性回归">
+                线性回归 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/7233064.jpg"
+               alt="Yiyang Peng" />
+          <p class="site-author-name" itemprop="name">Yiyang Peng</p>
+           
+              <p class="site-description motion-element" itemprop="description">Try try try Never mind</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">25</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">22</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/yiyang186" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/peng-yiyang-88" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  知乎
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#逻辑回归的建模"><span class="nav-number">1.</span> <span class="nav-text">逻辑回归的建模</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#sigmoid函数"><span class="nav-number">1.1.</span> <span class="nav-text">sigmoid函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二分类"><span class="nav-number">1.2.</span> <span class="nav-text">二分类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#逻辑回归的特质"><span class="nav-number">1.3.</span> <span class="nav-text">逻辑回归的特质</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多分类"><span class="nav-number">1.4.</span> <span class="nav-text">多分类</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#逻辑回归的求解"><span class="nav-number">2.</span> <span class="nav-text">逻辑回归的求解</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#以建模的遐想"><span class="nav-number">3.</span> <span class="nav-text">以$\log{{P(y=1|x)}\over {P(y=0|x)}}=\beta^Tx$建模的遐想</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Newton-Raphson算法-牛顿迭代法"><span class="nav-number">4.</span> <span class="nav-text">Newton-Raphson算法(牛顿迭代法)</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yiyang Peng</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

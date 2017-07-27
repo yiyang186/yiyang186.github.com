@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="python,spark," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="12345# 这个数据集来自www.kaggle.com/c/stumbleupon/data, 用于预测网页是短暂存在还是长时间流行,这里我把它存放在hdfs文件系统内的/user/yy/stumbleupon/目录里rawData = sc.textFile(&amp;quot;hdfs:///user/yy/stumbleupon/train_noheader.tsv&amp;quot;)records =">
+<meta name="keywords" content="python,spark">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MLlib里几个简单的分类模型">
+<meta property="og:url" content="http://yoursite.com/2016/01/02/MLlib里几个简单的分类模型(python)/index.html">
+<meta property="og:site_name" content="Yiyang&#39;s Blog">
+<meta property="og:description" content="12345# 这个数据集来自www.kaggle.com/c/stumbleupon/data, 用于预测网页是短暂存在还是长时间流行,这里我把它存放在hdfs文件系统内的/user/yy/stumbleupon/目录里rawData = sc.textFile(&amp;quot;hdfs:///user/yy/stumbleupon/train_noheader.tsv&amp;quot;)records =">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-07-26T14:35:03.290Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MLlib里几个简单的分类模型">
+<meta name="twitter:description" content="12345# 这个数据集来自www.kaggle.com/c/stumbleupon/data, 用于预测网页是短暂存在还是长时间流行,这里我把它存放在hdfs文件系统内的/user/yy/stumbleupon/目录里rawData = sc.textFile(&amp;quot;hdfs:///user/yy/stumbleupon/train_noheader.tsv&amp;quot;)records =">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/01/02/MLlib里几个简单的分类模型(python)/"/>
+
+
+
+
+
+  <title>MLlib里几个简单的分类模型 | Yiyang's Blog</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Yiyang's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/01/02/MLlib里几个简单的分类模型(python)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Yiyang Peng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/7233064.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Yiyang's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">MLlib里几个简单的分类模型</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-01-02T17:41:00+08:00">
+                2016-01-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/大数据/" itemprop="url" rel="index">
+                    <span itemprop="name">大数据</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"># 这个数据集来自www.kaggle.com/c/stumbleupon/data, 用于预测网页是短暂存在还是长时间流行,这里我把它存放在hdfs文件系统内的/user/yy/stumbleupon/目录里</div><div class="line">rawData = sc.textFile(&quot;hdfs:///user/yy/stumbleupon/train_noheader.tsv&quot;)</div><div class="line">records = rawData.map(lambda line: line.split(&apos;\t&apos;))</div><div class="line">records.first()</div><div class="line"># 每一条样本是一个网页的信息</div></pre></td></tr></table></figure>
+<p>[u’”<a href="http://www.bloomberg.com/news/2010-12-23/ibm-predicts-holographic-calls-air-breathing-batteries-by-2015.html" target="_blank" rel="external">http://www.bloomberg.com/news/2010-12-23/ibm-predicts-holographic-calls-air-breathing-batteries-by-2015.html</a>“‘,<br>     u’”4042”‘,<br>     u’”{“”title””:””IBM Sees Holographic Calls Air Breathing Batteries ibm sees holographic calls, air-breathing batteries””,””body””:””A sign stands outside the International Business Machines Corp IBM Almaden Research Center campus in San Jose California Photographer Tony Avelar Bloomberg Buildings stand at the International Business Machines Corp IBM Almaden Research Center campus in the Santa Teresa Hills of San Jose California Photographer Tony Avelar Bloomberg By 2015 your mobile phone will project a 3 D image of anyone who calls and your laptop will be powered by kinetic energy At least that s what International Business Machines Corp sees in its crystal ball The predictions are part of an annual tradition for the Armonk New York based company which surveys its 3 000 researchers to find five ideas expected to take root in the next five years IBM the world s largest provider of computer services looks to Silicon Valley for input gleaning many ideas from its Almaden research center in San Jose California Holographic conversations projected from mobile phones lead this year s list The predictions also include air breathing batteries computer programs that can tell when and where traffic jams will take place environmental information generated by sensors in cars and phones and cities powered by the heat thrown off by computer servers These are all stretch goals and that s good said Paul Saffo managing director of foresight at the investment advisory firm Discern in San Francisco In an era when pessimism is the new black a little dose of technological optimism is not a bad thing For IBM it s not just idle speculation The company is one of the few big corporations investing in long range research projects and it counts on innovation to fuel growth Saffo said Not all of its predictions pan out though IBM was overly optimistic about the spread of speech technology for instance When the ideas do lead to products they can have broad implications for society as well as IBM s bottom line he said Research Spending They have continued to do research when all the other grand research organizations are gone said Saffo who is also a consulting associate professor at Stanford University IBM invested 5 8 billion in research and development last year 6 1 percent of revenue While that s down from about 10 percent in the early 1990s the company spends a bigger share on research than its computing rivals Hewlett Packard Co the top maker of personal computers spent 2 4 percent last year At Almaden scientists work on projects that don t always fit in with IBM s computer business The lab s research includes efforts to develop an electric car battery that runs 500 miles on one charge a filtration system for desalination and a program that shows changes in geographic data IBM rose 9 cents to 146 04 at 11 02 a m in New York Stock Exchange composite trading The stock had gained 11 percent this year before today Citizen Science The list is meant to give a window into the company s innovation engine said Josephine Cheng a vice president at IBM s Almaden lab All this demonstrates a real culture of innovation at IBM and willingness to devote itself to solving some of the world s biggest problems she said Many of the predictions are based on projects that IBM has in the works One of this year s ideas that sensors in cars wallets and personal devices will give scientists better data about the environment is an expansion of the company s citizen science initiative Earlier this year IBM teamed up with the California State Water Resources Control Board and the City of San Jose Environmental Services to help gather information about waterways Researchers from Almaden created an application that lets smartphone users snap photos of streams and creeks and report back on conditions The hope is that these casual observations will help local and state officials who don t have the resources to do the work themselves Traffic Predictors IBM also sees data helping shorten commutes in the next five years Computer programs will use algorithms and real time traffic information to predict which roads will have backups and how to avoid getting stuck Batteries may last 10 times longer in 2015 than today IBM says Rather than using the current lithium ion technology new models could rely on energy dense metals that only need to interact with the air to recharge Some electronic devices might ditch batteries altogether and use something similar to kinetic wristwatches which only need to be shaken to generate a charge The final prediction involves recycling the heat generated by computers and data centers Almost half of the power used by data centers is currently spent keeping the computers cool IBM scientists say it would be better to harness that heat to warm houses and offices In IBM s first list of predictions compiled at the end of 2006 researchers said instantaneous speech translation would become the norm That hasn t happened yet While some programs can quickly translate electronic documents and instant messages and other apps can perform limited speech translation there s nothing widely available that acts like the universal translator in Star Trek Second Life The company also predicted that online immersive environments such as Second Life would become more widespread While immersive video games are as popular as ever Second Life s growth has slowed Internet users are flocking instead to the more 2 D environments of Facebook Inc and Twitter Inc Meanwhile a 2007 prediction that mobile phones will act as a wallet ticket broker concierge bank and shopping assistant is coming true thanks to the explosion of smartphone applications Consumers can pay bills through their banking apps buy movie tickets and get instant feedback on potential purchases all with a few taps on their phones The nice thing about the list is that it provokes thought Saffo said If everything came true they wouldn t be doing their job To contact the reporter on this story Ryan Flinn in San Francisco at rflinn bloomberg net To contact the editor responsible for this story Tom Giles at tgiles5 bloomberg net by 2015, your mobile phone will project a 3-d image of anyone who calls and your laptop will be powered by kinetic energy. at least that\\u2019s what international business machines corp. sees in its crystal ball.””,””url””:””bloomberg news 2010 12 23 ibm predicts holographic calls air breathing batteries by 2015 html””}”‘,<br>     u’”business”‘,<br>     u’”0.789131”‘,<br>     u’”2.055555556”‘,<br>     u’”0.676470588”‘,<br>     u’”0.205882353”‘,<br>     u’”0.047058824”‘,<br>     u’”0.023529412”‘,<br>     u’”0.443783175”‘,<br>     u’”0”‘,<br>     u’”0”‘,<br>     u’”0.09077381”‘,<br>     u’”0”‘,<br>     u’”0.245831182”‘,<br>     u’”0.003883495”‘,<br>     u’”1”‘,<br>     u’”1”‘,<br>     u’”24”‘,<br>     u’”0”‘,<br>     u’”5424”‘,<br>     u’”170”‘,<br>     u’”8”‘,<br>     u’”0.152941176”‘,<br>     u’”0.079129575”‘,<br>     u’”0”‘]</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">from pyspark.mllib.regression import LabeledPoint # 标注点类型，（label, feature）通常feature是Vectors.dense类型</div><div class="line">from pyspark.mllib.linalg import Vectors</div><div class="line"></div><div class="line"># DenseVector类型的好处,这2行只是一个演示而已</div><div class="line">a = sc.parallelize([Vectors.dense(1,2),Vectors.dense(3,4)])</div><div class="line">a.sum() # 装着DenseVector类型向量的rdd,可以按列求值</div><div class="line"></div><div class="line"># def records_processing(record):</div><div class="line">#     trimmed = record.map(lambda e: e.replaceAll(&apos;\&quot;&apos;, &apos;&apos;))</div><div class="line">#     label = int(trimmed[record.size - 1])</div><div class="line">#     features = trimmed[4 : record.size - 1].map(lambda d: 0.0 if d == &apos;?&apos; else float(d))</div><div class="line">#     return LabeledPoint(label, Vectors.dense(features))</div><div class="line"></div><div class="line">sizeAndData = records.map(lambda record : (len(record), map(lambda e: e.replace(&apos;\&quot;&apos;, &apos;&apos;), record)))</div><div class="line">labelAndFeature = sizeAndData.map(lambda (size, data): (int(data[size-1]), map(lambda d: 0.0 if d == &apos;?&apos; else float(d), data[4: size-1])))</div><div class="line">data = labelAndFeature.map(lambda (label, feature): LabeledPoint(label, Vectors.dense(map(lambda d: 0.0 if d &lt; 0 else d, feature))))</div><div class="line">data.first()</div></pre></td></tr></table></figure>
+<p>LabeledPoint(0.0, [0.789131,2.055555556,0.676470588,0.205882353,0.047058824,0.023529412,0.443783175,0.0,0.0,0.09077381,0.0,0.245831182,0.003883495,1.0,1.0,24.0,0.0,5424.0,170.0,8.0,0.152941176,0.079129575])</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">data.cache()</div><div class="line">data.count()</div></pre></td></tr></table></figure>
+<p>7395</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">from pyspark.mllib.classification import LogisticRegressionWithSGD</div><div class="line">from pyspark.mllib.classification import SVMWithSGD</div><div class="line">from pyspark.mllib.classification import NaiveBayes</div><div class="line">from pyspark.mllib.tree import DecisionTree</div><div class="line"># from pyspark.mllib.tree.configuration import Algo </div><div class="line"># from pyspark.mllib.tree.impurity import Entropy</div><div class="line"></div><div class="line">numIterations = 10</div><div class="line">maxTreeDepth = 5</div><div class="line">dataPoint = data.first()</div><div class="line">dataPoint</div></pre></td></tr></table></figure>
+<p>LabeledPoint(0.0, [0.789131,2.055555556,0.676470588,0.205882353,0.047058824,0.023529412,0.443783175,0.0,0.0,0.09077381,0.0,0.245831182,0.003883495,1.0,1.0,24.0,0.0,5424.0,170.0,8.0,0.152941176,0.079129575])</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"># 训练逻辑回归模型</div><div class="line">lrModel = LogisticRegressionWithSGD.train(data, numIterations)</div><div class="line"></div><div class="line"># 使用逻辑归回模型</div><div class="line">prediction = lrModel.predict(dataPoint.features)</div><div class="line">print &quot;预测值：%d, 真实值：%d&quot; % (prediction, dataPoint.label)</div><div class="line"></div><div class="line"># 看看逻辑回归整体的预测结果</div><div class="line">predictionsAndRealities = data.map(lambda point: lrModel.predict(point.features) == point.label)</div><div class="line"></div><div class="line"># 计算逻辑回归的准确率</div><div class="line">lrTotalCorrect = data.map(lambda point :</div><div class="line">                         1 if lrModel.predict(point.features) == point.label else 0</div><div class="line">                         ).sum()</div><div class="line">lrAccuracy = float(lrTotalCorrect) / data.count()</div><div class="line">print &quot;逻辑回归准确率：&quot;, lrAccuracy</div><div class="line"></div><div class="line"># 计算PR(准确率-召回率)曲线下面积， 以及ROC(受试者工作特征曲线， 真阳性率-假阳性率)曲线下面积即AUC</div><div class="line">from pyspark.mllib.evaluation import BinaryClassificationMetrics</div><div class="line">scoreAndLabels = data.map(lambda point: (float(lrModel.predict(point.features)), point.label))</div><div class="line"></div><div class="line">metrics = BinaryClassificationMetrics(scoreAndLabels)</div><div class="line">print &apos;Area under PR: %2.4f%%, Area under ROC: %2.4f%%&apos; % \</div><div class="line">    (metrics.areaUnderPR * 100, metrics.areaUnderROC * 100)</div></pre></td></tr></table></figure>
+<p>预测值：1, 真实值：0</p>
+<p>   逻辑回归准确率： 0.514672075727</p>
+<p>   Area under PR: 75.6759%, Area under ROC: 50.1418%</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"># 训练SVM模型</div><div class="line">svmModel = SVMWithSGD.train(data, numIterations)</div><div class="line"></div><div class="line"># 使用SVM模型</div><div class="line">prediction = svmModel.predict(dataPoint.features)</div><div class="line">print &quot;预测值：%d, 真实值：%d&quot; % (prediction, dataPoint.label)</div><div class="line"></div><div class="line"># 看看SVM整体的预测结果</div><div class="line">predictionsAndRealities = data.map(lambda point: svmModel.predict(point.features) == point.label)</div><div class="line"></div><div class="line"># 计算SVM的准确率</div><div class="line">svmTotalCorrect = data.map(lambda point :</div><div class="line">                         1 if svmModel.predict(point.features) == point.label else 0</div><div class="line">                         ).sum()</div><div class="line">svmAccuracy = float(svmTotalCorrect) / data.count()</div><div class="line">print &quot;SVM准确率：&quot;, svmAccuracy</div><div class="line"></div><div class="line"># 计算PR(准确率-召回率)曲线下面积， 以及ROC(受试者工作特征曲线， 真阳性率-假阳性率)曲线下面积即AUC</div><div class="line">scoreAndLabels = data.map(lambda point: (float(svmModel.predict(point.features)), point.label))</div><div class="line"></div><div class="line">metrics = BinaryClassificationMetrics(scoreAndLabels)</div><div class="line">print &apos;Area under PR: %2.4f%%, Area under ROC: %2.4f%%&apos; % \</div><div class="line">    (metrics.areaUnderPR * 100, metrics.areaUnderROC * 100)</div></pre></td></tr></table></figure>
+<p>   预测值：1, 真实值：0</p>
+<p>   SVM准确率： 0.514672075727</p>
+<p>   Area under PR: 75.6759%, Area under ROC: 50.1418%</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"># 训练朴素贝叶斯模型</div><div class="line">nbModel = NaiveBayes.train(data)</div><div class="line"></div><div class="line"># 使用朴素贝叶斯模型</div><div class="line">prediction = nbModel.predict(dataPoint.features)</div><div class="line">print &quot;预测值：%d, 真实值：%d&quot; % (prediction, dataPoint.label)</div><div class="line"></div><div class="line"># 看看朴素贝叶斯整体的预测结果</div><div class="line">predictionsAndRealities = data.map(lambda point: nbModel.predict(point.features) == point.label)</div><div class="line"></div><div class="line"># 计算朴素贝叶斯的准确率</div><div class="line">nbTotalCorrect = data.map(lambda point :</div><div class="line">                         1 if nbModel.predict(point.features) == point.label else 0</div><div class="line">                         ).sum()</div><div class="line">nbAccuracy = float(nbTotalCorrect) / data.count()</div><div class="line">print &quot;朴素贝叶斯准确率：&quot;, nbAccuracy</div><div class="line"></div><div class="line"># 计算PR(准确率-召回率)曲线下面积， 以及ROC(受试者工作特征曲线， 真阳性率-假阳性率)曲线下面积即AUC</div><div class="line">from pyspark.mllib.evaluation import BinaryClassificationMetrics</div><div class="line">scoreAndLabels = data.map(lambda point: (float(nbModel.predict(point.features)), point.label))</div><div class="line"></div><div class="line">metrics = BinaryClassificationMetrics(scoreAndLabels)</div><div class="line">print &apos;Area under PR: %2.4f%%, Area under ROC: %2.4f%%&apos; % \</div><div class="line">    (metrics.areaUnderPR * 100, metrics.areaUnderROC * 100)</div></pre></td></tr></table></figure>
+<p>   预测值：1, 真实值：0</p>
+<p>   朴素贝叶斯准确率： 0.580392156863</p>
+<p>   Area under PR: 68.0851%, Area under ROC: 58.3559%</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"># 训练决策树模型</div><div class="line">dtModel = DecisionTree.trainClassifier(data, 2, &#123;&#125;)</div><div class="line"></div><div class="line"># 使用决策树模型</div><div class="line">prediction = dtModel.predict(dataPoint.features)</div><div class="line">print &quot;预测值：%d, 真实值：%d&quot; % (prediction, dataPoint.label)</div><div class="line"></div><div class="line"># 看看决策树整体的预测结果, 决策树模型只能在主节点上使用</div><div class="line">predictions = dtModel.predict(data.map(lambda point: point.features))</div><div class="line">results = predictions.zip(data.map(lambda point: point.label))</div><div class="line"></div><div class="line"># 计算决策树的准确率</div><div class="line">dtTotalCorrect = results.filter(lambda (real, pred): pred == real).count()</div><div class="line">dtAccuracy = float(dtTotalCorrect) / data.count()</div><div class="line">print &quot;决策树准确率：&quot;, dtAccuracy</div><div class="line"></div><div class="line"># 计算PR(准确率-召回率)曲线下面积， 以及ROC(受试者工作特征曲线， 真阳性率-假阳性率)曲线下面积即AUC</div><div class="line">metrics = BinaryClassificationMetrics(results)</div><div class="line">print &apos;Area under PR: %2.4f%%, Area under ROC: %2.4f%%&apos; % \</div><div class="line">    (metrics.areaUnderPR * 100, metrics.areaUnderROC * 100)</div></pre></td></tr></table></figure>
+<p>   预测值：0, 真实值：0</p>
+<p>   决策树准确率： 0.648275862069</p>
+<p>   Area under PR: 74.2894%, Area under ROC: 64.8916%</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"># 上面的结果跟随机差不多，原因是我们仅仅只是把数据送入模型</div><div class="line"># 改进模型性能以及参数调优</div><div class="line"></div><div class="line"># from pyspark.mllib.linalg.distributed import RowMatrix</div><div class="line"></div><div class="line">matrix = data.map(lambda point: point.features)</div><div class="line">print &quot;矩阵的第一行：\n&quot;, matrix.first()</div><div class="line"></div><div class="line">result = matrix.stats()</div><div class="line">print &quot;矩阵各列的平均值：\n&quot;, result.mean()</div><div class="line">print &quot;矩阵各列的最小值：\n&quot;, result.min()</div><div class="line">print &quot;矩阵各列的最大值：\n&quot;, result.max()</div><div class="line">print &quot;矩阵各列的标准差：\n&quot;, result.stdev()</div><div class="line">print &quot;矩阵各列的方差：\n&quot;, result.variance()</div></pre></td></tr></table></figure>
+<p>   矩阵的第一行：<br>    [0.789131,2.055555556,0.676470588,0.205882353,0.047058824,0.023529412,0.443783175,0.0,0.0,0.09077381,0.0,0.245831182,0.003883495,1.0,1.0,24.0,0.0,5424.0,170.0,8.0,0.152941176,0.079129575]</p>
+<p>   矩阵各列的平均值：<br>    [0.412258052995,2.76182319199,0.468230473286,0.214079926384,0.092062360719,0.0492621604391,2.25510345221,0.000914886880189,0.0,0.0564227449842,0.02123056119,0.233778176655,0.369015325398,0.615551048005,0.66031102096,30.0770791075,0.0397565922921,5716.59824206,178.754563895,4.96064908722,0.17286405047,0.101220791893]</p>
+<p>   矩阵各列的最小值：</p>
+<p>   [ 0.          0.          0.          0.          0.          0.          0.</p>
+<pre><code>0.          0.          0.          0.          0.04556422  0.          0.
+0.          0.          0.          0.          1.          0.          0.
+0.        ]
+</code></pre><p>   矩阵各列的最大值：</p>
+<p>   [  9.99426000e-01   3.63000000e+02   1.00000000e+00   1.00000000e+00<br>       9.80392157e-01   9.80392157e-01   2.10000000e+01   2.50000000e-01<br>       0.00000000e+00   4.44444444e-01   1.00000000e+00   7.16883117e-01<br>       1.13333333e+02   1.00000000e+00   1.00000000e+00   1.00000000e+02<br>       1.00000000e+00   2.07952000e+05   4.99700000e+03   2.20000000e+01<br>       1.00000000e+00   1.00000000e+00]</p>
+<p>   矩阵各列的标准差：</p>
+<p>   [  3.31251568e-01   8.61920979e+00   2.03119645e-01   1.46732834e-01<br>       9.59717238e-02   7.26238264e-02   5.70392733e+00   7.42829375e-03<br>       0.00000000e+00   4.14428371e-02   1.44152088e-01   5.24830153e-02<br>       1.87878356e+00   4.86464752e-01   4.73603607e-01   2.03917219e+01<br>       1.95386810e-01   8.87483231e+03   1.79454063e+02   3.23289275e+00<br>       1.83273269e-01   7.92255262e-02]</p>
+<p>   矩阵各列的方差：<br>    [0.109727601589,74.2907773273,0.041257590017,0.0215305244407,0.00921057176901,0.00527422015895,32.5347869854,5.51795480353e-05,0.0,0.00171750875055,0.0207798244616,0.00275446689512,3.52982764865,0.236647955305,0.224300376559,415.822321151,0.0381760056614,78762648.5733,32203.7608565,10.4515955219,0.0335890912886,0.00627668399539]</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">from pyspark.mllib.feature import StandardScaler</div><div class="line"></div><div class="line"># 第一个True表示均值正则化（每个值减去均值），第二个True表示正则化标准差（每个值除以标准差进行缩放）</div><div class="line">scaler = StandardScaler(withMean=True, withStd=True).fit(matrix)</div><div class="line">scaledData = scaler.transform(matrix)</div><div class="line">scaledData = data.map(lambda lp: lp.label).zip(scaledData).map(lambda (label, feature): LabeledPoint(label, feature))</div><div class="line"></div><div class="line">print &quot;标准化前：\n&quot;, data.first().features</div><div class="line">print &quot;标准化后：\n&quot;, scaledData.first().features</div><div class="line"></div><div class="line">import numpy as np</div><div class="line">vector = np.array(matrix.first())</div><div class="line">mean = np.array(result.mean())</div><div class="line">stdev = np.array(result.stdev())</div><div class="line">print &quot;手动标准化：\n&quot;, (vector - mean) / stdev</div></pre></td></tr></table></figure>
+<p>   标准化前：<br>    [0.789131,2.055555556,0.676470588,0.205882353,0.047058824,0.023529412,0.443783175,0.0,0.0,0.09077381,0.0,0.245831182,0.003883495,1.0,1.0,24.0,0.0,5424.0,170.0,8.0,0.152941176,0.079129575]</p>
+<p>   标准化后：<br>    [1.1376473365,-0.0819355716929,1.02513981289,-0.0558635644254,-0.468893253129,-0.354305326308,-0.317535217236,-0.123154125351,0.0,0.828822173315,-0.147268943346,0.229639823578,-0.194331667814,0.790238049918,0.717194729453,-0.297996816496,-0.20346257793,-0.0329672096969,-0.0487811297558,0.940069975117,-0.108698488525,-0.278820782314]</p>
+<p>   手动标准化：</p>
+<p>   [ 1.13772426 -0.08194111  1.02520913 -0.05586734 -0.46892496 -0.35432928<br>     -0.31755669 -0.12316245         nan  0.82887822 -0.1472789   0.22965535<br>     -0.19434481  0.79029149  0.71724323 -0.29801697 -0.20347634 -0.03296944<br>     -0.04878443  0.94013354 -0.10870584 -0.27883964]</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"># 用标准化后的数据重新训练模型，不训练决策树和朴素贝叶斯，因为他俩不受特征标准化的影响</div><div class="line"></div><div class="line"># 训练逻辑回归模型</div><div class="line">lrModelScaled = LogisticRegressionWithSGD.train(scaledData, numIterations)</div><div class="line"></div><div class="line"># 看看逻辑回归整体的预测结果</div><div class="line">lrTotalCorrectScaled = scaledData.filter(lambda point: lrModelScaled.predict(point.features) == point.label).count()</div><div class="line">print &quot;预测正确的样本个数&quot;, lrTotalCorrectScaled</div><div class="line"></div><div class="line"># 计算逻辑回归的准确率</div><div class="line">lrAccuracyScaled = float(lrTotalCorrectScaled) / data.count()</div><div class="line">print &quot;逻辑回归准确率：&quot;, lrAccuracyScaled</div><div class="line"></div><div class="line"># 计算PR(准确率-召回率)曲线下面积， 以及ROC(受试者工作特征曲线， 真阳性率-假阳性率)曲线下面积即AUC</div><div class="line">lrPredictionsVsTrue = scaledData.map(lambda point: (float(lrModelScaled.predict(point.features)), point.label))</div><div class="line">lrMetricsScaled = BinaryClassificationMetrics(lrPredictionsVsTrue)</div><div class="line">print &apos;Area under PR: %2.4f%%, Area under ROC: %2.4f%%&apos; % \</div><div class="line">    (lrMetricsScaled.areaUnderPR * 100, lrMetricsScaled.areaUnderROC * 100)</div></pre></td></tr></table></figure>
+<p>   预测正确的样本个数 4609</p>
+<p>   逻辑回归准确率： 0.623258958756</p>
+<p>   Area under PR: 73.0204%, Area under ROC: 62.2292%</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"># 考虑网页的类别特征，比如这个网页是属于sports类还是business类</div><div class="line">categories = dict(records.map(lambda record: record[3].replace(&apos;\&quot;&apos;, &apos;&apos;)).distinct().zipWithIndex().collect())</div><div class="line">print categories</div><div class="line">numCategories = len(categories)</div><div class="line">print numCategories</div><div class="line"></div><div class="line">categories = sc.broadcast(categories)</div><div class="line">numCategories = sc.broadcast(numCategories)</div></pre></td></tr></table></figure>
+<p>   {u’gaming’: 7, u’recreation’: 0, u’business’: 1, u’computer_internet’: 2, u’unknown’: 8, u’culture_politics’: 3, u’science_technology’: 9, u’law_crime’: 4, u’sports’: 10, u’religion’: 11, u’weather’: 12, u’health’: 5, u’?’: 6, u’arts_entertainment’: 13}<br>    14</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">def buildCategoriesVector(data):</div><div class="line">    vector = [0] * numCategories.value</div><div class="line">    vector[categories.value[data[3]]] = 1</div><div class="line">    return vector + data[4:-1]</div><div class="line">    </div><div class="line">sizeAndData = records.map(lambda record : (len(record), map(lambda e: e.replace(&apos;\&quot;&apos;, &apos;&apos;), record)))</div><div class="line">labelAndFeature = sizeAndData.map(lambda (size, data): (int(data[-1]), map(lambda d: 0.0 if d == &apos;?&apos; else float(d), buildCategoriesVector(data))))</div><div class="line">dataCategories = labelAndFeature.map(lambda (label, feature): LabeledPoint(label, Vectors.dense(map(lambda d: 0.0 if d &lt; 0 else d, feature))))</div><div class="line">dataPointCats = dataCategories.first()</div><div class="line">print labelAndFeature.first()</div><div class="line">print dataPointCats</div></pre></td></tr></table></figure>
+<p>   (0, [0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.789131, 2.055555556, 0.676470588, 0.205882353, 0.047058824, 0.023529412, 0.443783175, 0.0, 0.0, 0.09077381, 0.0, 0.245831182, 0.003883495, 1.0, 1.0, 24.0, 0.0, 5424.0, 170.0, 8.0, 0.152941176, 0.079129575])</p>
+<p>(0.0,[0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.789131,2.055555556,0.676470588,0.205882353,0.047058824,0.023529412,0.443783175,0.0,0.0,0.09077381,0.0,0.245831182,0.003883495,1.0,1.0,24.0,0.0,5424.0,170.0,8.0,0.152941176,0.079129575])</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"># 标准化转换</div><div class="line">labels = dataCategories.map(lambda lp: lp.label)</div><div class="line">featuresMatrix = dataCategories.map(lambda lp: lp.features)</div><div class="line">scalerCats = StandardScaler(withMean=True, withStd=True).fit(featuresMatrix)</div><div class="line">scaledDataCats = scalerCats.transform(featuresMatrix).zip(labels).map(lambda (features, label): LabeledPoint(label, features))</div><div class="line">scaledDataCats.first()</div></pre></td></tr></table></figure>
+<p>   LabeledPoint(0.0, [-0.446421204794,2.72073665645,-0.204182210579,-0.220526884579,-0.0648775723926,-0.270999069693,-0.680752790425,-0.101894690972,-0.028494000387,-0.201654052319,-0.232727977095,-0.0991499193088,-0.0232621058984,-0.381813223243,1.1376473365,-0.0819355716929,1.02513981289,-0.0558635644254,-0.468893253129,-0.354305326308,-0.317535217236,-0.123154125351,0.0,0.828822173315,-0.147268943346,0.229639823578,-0.194331667814,0.790238049918,0.717194729453,-0.297996816496,-0.20346257793,-0.0329672096969,-0.0487811297558,0.940069975117,-0.108698488525,-0.278820782314])</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">lrModelScaledCats = LogisticRegressionWithSGD.train(scaledDataCats, numIterations)</div><div class="line"></div><div class="line"># 看看逻辑回归整体的预测结果</div><div class="line">lrTotalCorrectScaledCats = scaledDataCats.filter(lambda point: lrModelScaledCats.predict(point.features) == point.label).count()</div><div class="line">print &quot;预测正确的样本个数&quot;, lrTotalCorrectScaledCats</div><div class="line"></div><div class="line"># 计算逻辑回归的准确率</div><div class="line">lrAccuracyScaledCats = float(lrTotalCorrectScaledCats) / scaledDataCats.count()</div><div class="line">print &quot;逻辑回归准确率：&quot;, lrAccuracyScaledCats</div><div class="line"></div><div class="line"># 计算PR(准确率-召回率)曲线下面积， 以及ROC(受试者工作特征曲线， 真阳性率-假阳性率)曲线下面积即AUC</div><div class="line">lrPredictionsVsTrue = scaledDataCats.map(lambda point: (float(lrModelScaledCats.predict(point.features)), point.label))</div><div class="line">lrMetricsScaledCats = BinaryClassificationMetrics(lrPredictionsVsTrue)</div><div class="line">print &apos;Area under PR: %2.4f%%, Area under ROC: %2.4f%%&apos; % \</div><div class="line">    (lrMetricsScaledCats.areaUnderPR * 100, lrMetricsScaledCats.areaUnderROC * 100)</div></pre></td></tr></table></figure>
+<p>   预测正确的样本个数 4928</p>
+<p>   逻辑回归准确率： 0.666396213658</p>
+<p>   Area under PR: 75.8535%, Area under ROC: 66.6127%</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"># 只使用1-of-k编码的类别特征</div><div class="line">def onlyCategoriesVector(data):</div><div class="line">    vector = [0] * numCategories.value</div><div class="line">    vector[categories.value[data[3]]] = 1</div><div class="line">    return vector</div><div class="line">    </div><div class="line">sizeAndData = records.map(lambda record : (len(record), map(lambda e: e.replace(&apos;\&quot;&apos;, &apos;&apos;), record)))</div><div class="line">labelAndFeature = sizeAndData.map(lambda (size, data): \</div><div class="line">                                  (int(data[-1]), map(lambda d: 0.0 if d == &apos;?&apos; else float(d), onlyCategoriesVector(data))))</div><div class="line">dataNB = labelAndFeature.map(lambda (label, feature): \</div><div class="line">                             LabeledPoint(label, Vectors.dense(map(lambda d: 0.0 if d &lt; 0 else d, feature))))</div><div class="line"></div><div class="line"># 训练朴素贝叶斯模型</div><div class="line">nbModelCats = NaiveBayes.train(dataNB)</div><div class="line"></div><div class="line"># 计算朴素贝叶斯的准确率</div><div class="line">nbTotalCorrectCats = dataNB.map(lambda point :</div><div class="line">                         1 if nbModelCats.predict(point.features) == point.label else 0</div><div class="line">                         ).sum()</div><div class="line">nbAccuracyCats = float(nbTotalCorrectCats) / dataNB.count()</div><div class="line">print &quot;朴素贝叶斯准确率：&quot;, nbAccuracyCats</div><div class="line"></div><div class="line">nbPredictionsVsTrueCats = dataNB.map(lambda point: (float(nbModelCats.predict(point.features)), point.label))</div><div class="line">nbMetricsCats = BinaryClassificationMetrics(nbPredictionsVsTrueCats)</div><div class="line">print &apos;Area under PR: %2.4f%%, Area under ROC: %2.4f%%&apos; % \</div><div class="line">    (nbMetricsCats.areaUnderPR * 100, nbMetricsCats.areaUnderROC * 100)</div></pre></td></tr></table></figure>
+<p>   朴素贝叶斯准确率： 0.609601081812</p>
+<p>   Area under PR: 74.0522%, Area under ROC: 60.5138%</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+            <a href="/tags/spark/" rel="tag"># spark</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/10/18/构建基于Spark的推荐引擎(python实现)/" rel="next" title="构建基于Spark的小推荐系统demo">
+                <i class="fa fa-chevron-left"></i> 构建基于Spark的小推荐系统demo
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/01/17/在spark上做简单的文本分类(python)/" rel="prev" title="在spark上做简单的文本分类">
+                在spark上做简单的文本分类 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/7233064.jpg"
+               alt="Yiyang Peng" />
+          <p class="site-author-name" itemprop="name">Yiyang Peng</p>
+           
+              <p class="site-description motion-element" itemprop="description">Try try try Never mind</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">27</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">27</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/yiyang186" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/peng-yiyang-88" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  知乎
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yiyang Peng</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
