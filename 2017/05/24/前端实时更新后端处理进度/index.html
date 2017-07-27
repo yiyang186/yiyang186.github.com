@@ -93,20 +93,20 @@
 
 
 
-<meta name="description" content="交互逻辑： 点击页面的“提交”button，向后台发送数据处理请求； 后台处理数据； 前端根据后台的处理进度实时更新进度条。  个人愚见：能在前端估计出进度的尽量在前端做伪实时的进度条(像发送文件那种)，这才是上策；实在没法估计后台计算时间，又实在是等的久的让人难熬的才这么干，这是下下策。  功能实现：前端HTML Html页面用boostrap的进度条,  进度条由2个div嵌套而成，修改内层d">
+<meta name="description" content="交互逻辑 点击页面的“提交”button，向后台发送数据处理请求； 后台处理数据； 前端根据后台的处理进度实时更新进度条。  个人愚见：能在前端估计出进度的尽量在前端做伪实时的进度条(像发送文件那种)，这才是上策；实在没法估计后台计算时间，又实在是等的久的让人难熬的才这么干，这是下下策。  功能实现前端HTML Html页面用boostrap的进度条,  进度条由2个div嵌套而成，修改内层div">
 <meta name="keywords" content="django,jquery">
 <meta property="og:type" content="article">
 <meta property="og:title" content="前端实时更新后端处理进度">
 <meta property="og:url" content="http://yoursite.com/2017/05/24/前端实时更新后端处理进度/index.html">
 <meta property="og:site_name" content="Yiyang&#39;s Blog">
-<meta property="og:description" content="交互逻辑： 点击页面的“提交”button，向后台发送数据处理请求； 后台处理数据； 前端根据后台的处理进度实时更新进度条。  个人愚见：能在前端估计出进度的尽量在前端做伪实时的进度条(像发送文件那种)，这才是上策；实在没法估计后台计算时间，又实在是等的久的让人难熬的才这么干，这是下下策。  功能实现：前端HTML Html页面用boostrap的进度条,  进度条由2个div嵌套而成，修改内层d">
+<meta property="og:description" content="交互逻辑 点击页面的“提交”button，向后台发送数据处理请求； 后台处理数据； 前端根据后台的处理进度实时更新进度条。  个人愚见：能在前端估计出进度的尽量在前端做伪实时的进度条(像发送文件那种)，这才是上策；实在没法估计后台计算时间，又实在是等的久的让人难熬的才这么干，这是下下策。  功能实现前端HTML Html页面用boostrap的进度条,  进度条由2个div嵌套而成，修改内层div">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://img.blog.csdn.net/20170524194815680?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcTF3MmUzcjQ0NzA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
 <meta property="og:image" content="http://img.blog.csdn.net/20170524194715913?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcTF3MmUzcjQ0NzA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
-<meta property="og:updated_time" content="2017-07-27T06:07:20.843Z">
+<meta property="og:updated_time" content="2017-07-27T07:18:42.760Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="前端实时更新后端处理进度">
-<meta name="twitter:description" content="交互逻辑： 点击页面的“提交”button，向后台发送数据处理请求； 后台处理数据； 前端根据后台的处理进度实时更新进度条。  个人愚见：能在前端估计出进度的尽量在前端做伪实时的进度条(像发送文件那种)，这才是上策；实在没法估计后台计算时间，又实在是等的久的让人难熬的才这么干，这是下下策。  功能实现：前端HTML Html页面用boostrap的进度条,  进度条由2个div嵌套而成，修改内层d">
+<meta name="twitter:description" content="交互逻辑 点击页面的“提交”button，向后台发送数据处理请求； 后台处理数据； 前端根据后台的处理进度实时更新进度条。  个人愚见：能在前端估计出进度的尽量在前端做伪实时的进度条(像发送文件那种)，这才是上策；实在没法估计后台计算时间，又实在是等的久的让人难熬的才这么干，这是下下策。  功能实现前端HTML Html页面用boostrap的进度条,  进度条由2个div嵌套而成，修改内层div">
 <meta name="twitter:image" content="http://img.blog.csdn.net/20170524194815680?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcTF3MmUzcjQ0NzA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
 
 
@@ -141,12 +141,22 @@
 
 
 
-  <title>前端实时更新后端处理进度 | Yiyang's Blog</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  <title>前端实时更新后端处理进度 | Yiyang's Blog</title>
   
 
 
 
 
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3b9de7582df94dad7be13b2e75675386";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 
 
 
@@ -376,14 +386,14 @@
       
 
       
-        <h1 id="交互逻辑："><a href="#交互逻辑：" class="headerlink" title="交互逻辑："></a>交互逻辑：</h1><ol>
+        <h1 id="交互逻辑"><a href="#交互逻辑" class="headerlink" title="交互逻辑"></a>交互逻辑</h1><ol>
 <li>点击页面的“提交”button，向后台发送数据处理请求；</li>
 <li>后台处理数据；</li>
 <li>前端根据后台的处理进度实时更新进度条。</li>
 </ol>
 <p><strong>个人愚见</strong>：能在前端估计出进度的尽量在前端做伪实时的进度条(像发送文件那种)，这才是上策；实在没法估计后台计算时间，又实在是等的久的让人难熬的才这么干，这是下下策。</p>
 <hr>
-<h1 id="功能实现："><a href="#功能实现：" class="headerlink" title="功能实现："></a>功能实现：</h1><h2 id="前端"><a href="#前端" class="headerlink" title="前端"></a>前端</h2><h3 id="HTML"><a href="#HTML" class="headerlink" title="HTML"></a>HTML</h3><ol>
+<h1 id="功能实现"><a href="#功能实现" class="headerlink" title="功能实现"></a>功能实现</h1><h2 id="前端"><a href="#前端" class="headerlink" title="前端"></a>前端</h2><h3 id="HTML"><a href="#HTML" class="headerlink" title="HTML"></a>HTML</h3><ol>
 <li>Html页面用boostrap的进度条,  进度条由2个div嵌套而成，修改内层div的width可以更新进度，外层div (id=”prog_out”) , 内层div (id=”prog_in”)；</li>
 <li>给button绑定一个onclick方法”submit_query()”。<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"prog_out"</span> <span class="attr">class</span>=<span class="string">"progress progress-striped active"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"prog_in"</span> <span class="attr">class</span>=<span class="string">"progress-bar progress-bar-success"</span> <span class="attr">role</span>=<span class="string">"progressbar"</span> <span class="attr">aria-valuenow</span>=<span class="string">"0"</span> <span class="attr">aria-valuemin</span>=<span class="string">"0"</span> <span class="attr">aria-valuemax</span>=<span class="string">"100"</span> <span class="attr">style</span>=<span class="string">"width: 0%;"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">"button"</span> <span class="attr">class</span>=<span class="string">"btn btn-default"</span> <span class="attr">onclick</span>=<span class="string">"submit_query()"</span>&gt;</span>提交<span class="tag">&lt;/<span class="name">button</span>&gt;</span></div></pre></td></tr></table></figure>
 </li>
@@ -602,7 +612,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#交互逻辑："><span class="nav-number">1.</span> <span class="nav-text">交互逻辑：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#功能实现："><span class="nav-number">2.</span> <span class="nav-text">功能实现：</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#前端"><span class="nav-number">2.1.</span> <span class="nav-text">前端</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#HTML"><span class="nav-number">2.1.1.</span> <span class="nav-text">HTML</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#javascript"><span class="nav-number">2.1.2.</span> <span class="nav-text">javascript</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#后端"><span class="nav-number">2.2.</span> <span class="nav-text">后端</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#urls-py"><span class="nav-number">2.2.1.</span> <span class="nav-text">urls.py</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#views-py"><span class="nav-number">2.2.2.</span> <span class="nav-text">views.py</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实现效果"><span class="nav-number">3.</span> <span class="nav-text">实现效果</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#交互逻辑"><span class="nav-number">1.</span> <span class="nav-text">交互逻辑</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#功能实现"><span class="nav-number">2.</span> <span class="nav-text">功能实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#前端"><span class="nav-number">2.1.</span> <span class="nav-text">前端</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#HTML"><span class="nav-number">2.1.1.</span> <span class="nav-text">HTML</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#javascript"><span class="nav-number">2.1.2.</span> <span class="nav-text">javascript</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#后端"><span class="nav-number">2.2.</span> <span class="nav-text">后端</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#urls-py"><span class="nav-number">2.2.1.</span> <span class="nav-text">urls.py</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#views-py"><span class="nav-number">2.2.2.</span> <span class="nav-text">views.py</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实现效果"><span class="nav-number">3.</span> <span class="nav-text">实现效果</span></a></li></ol></div>
             
 
           </div>

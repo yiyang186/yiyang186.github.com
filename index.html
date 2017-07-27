@@ -136,12 +136,22 @@
 
 
 
-  <title>Yiyang's Blog</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  <title>Yiyang's Blog</title>
   
 
 
 
 
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3b9de7582df94dad7be13b2e75675386";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 
 
 
@@ -377,14 +387,14 @@
       
         
           
-            <h1 id="交互逻辑："><a href="#交互逻辑：" class="headerlink" title="交互逻辑："></a>交互逻辑：</h1><ol>
+            <h1 id="交互逻辑"><a href="#交互逻辑" class="headerlink" title="交互逻辑"></a>交互逻辑</h1><ol>
 <li>点击页面的“提交”button，向后台发送数据处理请求；</li>
 <li>后台处理数据；</li>
 <li>前端根据后台的处理进度实时更新进度条。</li>
 </ol>
 <p><strong>个人愚见</strong>：能在前端估计出进度的尽量在前端做伪实时的进度条(像发送文件那种)，这才是上策；实在没法估计后台计算时间，又实在是等的久的让人难熬的才这么干，这是下下策。</p>
 <hr>
-<h1 id="功能实现："><a href="#功能实现：" class="headerlink" title="功能实现："></a>功能实现：</h1><h2 id="前端"><a href="#前端" class="headerlink" title="前端"></a>前端</h2><h3 id="HTML"><a href="#HTML" class="headerlink" title="HTML"></a>HTML</h3><ol>
+<h1 id="功能实现"><a href="#功能实现" class="headerlink" title="功能实现"></a>功能实现</h1><h2 id="前端"><a href="#前端" class="headerlink" title="前端"></a>前端</h2><h3 id="HTML"><a href="#HTML" class="headerlink" title="HTML"></a>HTML</h3><ol>
 <li>Html页面用boostrap的进度条,  进度条由2个div嵌套而成，修改内层div的width可以更新进度，外层div (id=”prog_out”) , 内层div (id=”prog_in”)；</li>
 <li>给button绑定一个onclick方法”submit_query()”。<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"prog_out"</span> <span class="attr">class</span>=<span class="string">"progress progress-striped active"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"prog_in"</span> <span class="attr">class</span>=<span class="string">"progress-bar progress-bar-success"</span> <span class="attr">role</span>=<span class="string">"progressbar"</span> <span class="attr">aria-valuenow</span>=<span class="string">"0"</span> <span class="attr">aria-valuemin</span>=<span class="string">"0"</span> <span class="attr">aria-valuemax</span>=<span class="string">"100"</span> <span class="attr">style</span>=<span class="string">"width: 0%;"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">"button"</span> <span class="attr">class</span>=<span class="string">"btn btn-default"</span> <span class="attr">onclick</span>=<span class="string">"submit_query()"</span>&gt;</span>提交<span class="tag">&lt;/<span class="name">button</span>&gt;</span></div></pre></td></tr></table></figure>
 </li>
