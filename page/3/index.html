@@ -436,33 +436,93 @@
 <li>满秩分解求A+<br>对于$A_{m \times n}^r$, r &gt; 0, A有满秩分解 $A=F_{m \times r}G_{r \times n}$(列满秩×行满秩),则<br>$A^+ = G^H(GG^H)^{-1}(F^HF)^{-1}F^H = G^H(F^HAG^H)^{-1}F^H$<br>特别地，<br>当A列满秩，r=n时，$A^+ = (A^HA)^{-1}A^H$<br>当A行满秩，r=m时，$A^+ = A^H (AA^H)^{-1}$</li>
 </ul>
 <ul>
-<li><p>奇异值分解求$A^+$<br>对于$A_{m \times n}^r, r &gt; 0$, A有奇异值分解<br>$$A=V\left(<br>\begin{matrix}<br>S_r &amp; 0 \\<br>0 &amp; 0<br>\end{matrix}<br>\right)U^H$$<br>则有<br>$$A^+=U\left(<br>\begin{matrix}<br>S_r^{-1} &amp; 0 \\<br>0 &amp; 0<br>\end{matrix}<br>\right)V^H$$<br>即UV位置对换，Sr取逆，对角元全变倒数：$Sr^{-1} = diag(σ_1^{-1}, … σ_r^{-1})$<br>或者，只需要U, $U=(U_1, U_2)$, 则$A^+ = U_1Λ_r^{-1}U_1^HA^H$, 这里$Λ_r=S_r^2=diag(λ_1, …, λ_n)$</p>
-</li>
-<li><p>奇异值分解求A+的简化步骤：</p>
-</li>
+<li>奇异值分解求$A^+$<br>对于$A_{m \times n}^r, r > 0$, A有奇异值分解</li>
+</ul>
+
+$$A=V\left(
+\begin{matrix}
+S_r & 0 \\
+0 & 0
+\end{matrix}
+\right)U^H$$
+
+<p>则有</p>
+
+$$A^+=U\left(
+\begin{matrix}
+S_r^{-1} & 0 \\
+0 & 0
+\end{matrix}
+\right)V^H$$
+
+<p>即UV位置对换，Sr取逆，对角元全变倒数：$Sr^{-1} = diag(σ_1^{-1}, … σ_r^{-1})$<br>或者，只需要U, $U=(U_1, U_2)$, 则$A^+ = U_1Λ_r^{-1}U_1^HA^H$, 这里$Λ_r=S_r^2=diag(λ_1, …, λ_n)$</p>
+<ul>
+<li>奇异值分解求A+的简化步骤：</li>
 </ul>
 <ol>
 <li>求出$A^HA$的r个非0特征值</li>
 <li>求出相应的特征向量，并schmidt正交化，组成酉高矩阵$U_1$</li>
-<li>$$A^+=U_1\left(<br>\begin{matrix}<br>λ_1^{-1} &amp;  &amp; \\<br>&amp;  \ddots  &amp;  \\<br>&amp; &amp; λ_r^{-1} \\<br>\end{matrix}<br>\right)U_1^HA^H$$</li>
+<li></li>
 </ol>
+
+$$A^+=U_1\left(
+\begin{matrix}
+λ_1^{-1} &  & \\
+ &  \ddots  &  \\
+ & & λ_r^{-1} \\
+\end{matrix}
+\right)U_1^HA^H$$
+
 <ul>
 <li>秩1公式求$A^+$：若r(A)=1, 则$$A^+={1 \over \sum |a_{ij}|^2}A^H$$</li>
 </ul>
 <ul>
-<li>谱分解求$A^+$ (这个部分有些问题。。。有空再改)<br>$A^HA$有k个相异的特征值，$A^HA$的谱分解为$$A^HA= \sum_{i=1}^k λ_iG_i$$<br>这里$G_i = X_iY_i$，$X_i$是P的各列向量，$Y_i$是$P^{-1}$的各行向量，P是$A^HA$相似对角化时的可逆阵P, 则<br>$$A^+=\sum_{i=1}^k λ_i{ \phi_i(A^HA) \over \phi_i(\lambda_i)}A^H$$<br>其中$$\phi_i(\lambda)= \prod^k_{j=1, i≠j} (\lambda - \lambda_j)$$</li>
+<li>谱分解求$A^+$ (这个部分有些问题。。。有空再改)<br>$A^HA$有k个相异的特征值，$A^HA$的谱分解为$$A^HA= \sum_{i=1}^k λ_iG_i$$<br>这里$G_i = X_iY_i$，$X_i$是P的各列向量，$Y_i$是$P^{-1}$的各行向量，P是$A^HA$相似对角化时的可逆阵P, 则$$A^+=\sum_{i=1}^k λ_i{ \phi_i(A^HA) \over \phi_i(\lambda_i)}A^H$$
+其中$$\phi_i(\lambda)= \prod^k_{j=1, i≠j} (\lambda - \lambda_j)$$</li>
 </ul>
 <h1 id="广义逆与线性方程组"><a href="#广义逆与线性方程组" class="headerlink" title="广义逆与线性方程组"></a>广义逆与线性方程组</h1><ul>
 <li><p>方程组相容：<br>即Ax=b有解（当且仅当A列满秩时解唯一, $A_{m \times n}$）<br>Ax=b相容的充要条件为$AA^-b=b$, 其通解为：$$x=A^-b+(I_n-A^-A)y$$<br>y为n阶任意列向量，因为$A^+$是$A^-$的子集，所以将$A^-$替换为$A^+$也成立(这里的$I_n$的阶数与A的列数相等)： $$x=A^+b+(I_n-A^+A)y$$<br>极小范数解为：$$x_0=A^+b$$</p>
 </li>
-<li><p>方程组不相容：<br>x的最小二乘解的通解为：<br>$$x=A^+b+(I_n-A^+A)y$$<br>当且仅当A列满秩时，不相容方程组Ax=b的最小二乘解唯一，是：<br>$$x_0=A^+b$$<br>当A非列满秩时,最小二乘解不唯一，但上式是极小范数最小二乘解, 且唯一。</p>
+<li><p>方程组不相容：<br>x的最小二乘解的通解为：</p>
+$$x=A^+b+(I_n-A^+A)y$$
+<p>当且仅当A列满秩时，不相容方程组Ax=b的最小二乘解唯一，是：</p>
+$$x_0=A^+b$$
+<p>当A非列满秩时,最小二乘解不唯一，但上式是极小范数最小二乘解, 且唯一。</p>
 </li>
 </ul>
-<h1 id="A的-1-逆-A-的求法"><a href="#A的-1-逆-A-的求法" class="headerlink" title="A的{1}逆$A^-$的求法"></a>A的{1}逆$A^-$的求法</h1><p>对于$A_{m \times n}, \exists  P_m, Q_n$可逆，使得<br>$$PAQ=\left(<br>\begin{matrix}<br>I_r &amp; 0 \\<br>0 &amp; 0<br>\end{matrix}<br>\right)U^H$$<br>则<br>$$A^-=\left \{<br>\begin{array}{c|c}<br>Q\left(\begin{matrix}I_r &amp; X_{12} \\<br>X_{21} &amp; X_{22}<br>\end{matrix} \right)P &amp;X_{12},X_{21},X_{22}为任意适当阶子块<br>\end{array} \right \}$$<br>$X_{12}^{r \times (m-r)}， X_{12}^{(n-r) \times r}，X_{22}^{(n-r) \times (m-r)}$可取0, 则<br>$$A^-=Q\left( \begin{matrix} I_r &amp; 0 \\<br> 0 &amp; 0 \end{matrix} \right)P$$</p>
+<h1 id="A的-1-逆-A-的求法"><a href="#A的-1-逆-A-的求法" class="headerlink" title="A的{1}逆$A^-$的求法"></a>A的{1}逆$A^-$的求法</h1><p>对于$A_{m \times n}, \exists  P_m, Q_n$可逆，使得</p>
+
+$$PAQ=\left(
+\begin{matrix}
+I_r & 0 \\
+0 & 0
+\end{matrix}
+\right)U^H$$
+
+<p>则 </p>
+
+$$A^-=\left \{
+\begin{array}{c|c}
+Q\left(\begin{matrix}I_r & X_{12} \\
+X_{21} & X_{22} 
+\end{matrix} \right)P &X_{12},X_{21},X_{22}为任意适当阶子块
+\end{array} \right \}$$
+
+$X_{12}^{r \times (m-r)}， X_{12}^{(n-r) \times r}，X_{22}^{(n-r) \times (m-r)}$可取0, 则<br><br>
+$$A^-=Q\left( \begin{matrix} I_r & 0 \\
+ 0 & 0 \end{matrix} \right)P$$
+
 <p>特别地，当$A_{n \times n}$ 为方阵且可逆时，有$$PAQ=I_n$$此时$$A^- = QI_nP=QP=A^{-1}$$</p>
 <ul>
-<li>初等行变换求P, Q<br>$$<br>\left(\begin{matrix}A_{m \times n} &amp; I_m \\<br>I_n &amp; 0\end{matrix}\right) \longrightarrow \left(\begin{matrix} \left(\begin{matrix}I_n &amp; 0 \\<br>0 &amp; 0\end{matrix}\right) &amp; P \\<br>Q &amp; 0\end{matrix}\right)<br>$$</li>
+<li>初等行变换求P, Q</li>
 </ul>
+
+$$
+\left(\begin{matrix}A_{m \times n} & I_m \\
+I_n & 0\end{matrix}\right) \longrightarrow \left(\begin{matrix} \left(\begin{matrix}I_n & 0 \\
+ 0 & 0\end{matrix}\right) & P \\
+ Q & 0\end{matrix}\right)
+$$
 
           
         
@@ -606,7 +666,18 @@
 <ol>
 <li>求r(A)判断A是否满秩</li>
 <li>按列分块$A=(x_1,  x_2,  x_3)$，正交化为$y_1, y_2,y_3$, 单位化为$z_1, z_2, z_3$</li>
-<li>令<br>$$Q=(z_1,z_2,z_3)$$<br>$$<br>R= \left(<br>\begin{matrix}<br>||y_1|| &amp; (x_2, z_1) &amp; (x_3, z_1) \\<br>0 &amp; ||y_2|| &amp; (x_3, z_2) \\<br>0 &amp; 0 &amp; ||y_3||<br>\end{matrix}<br>\right)<br>$$</li>
+<li>令
+$$Q=(z_1,z_2,z_3)$$
+$$
+R= \left(
+ \begin{matrix}
+   ||y_1|| & (x_2, z_1) & (x_3, z_1) \\
+   0 & ||y_2|| & (x_3, z_2) \\
+   0 & 0 & ||y_3||
+  \end{matrix}
+  \right)
+$$
+</li>
 <li>最后，A=QR</li>
 </ol>
 <ul>
@@ -627,19 +698,36 @@
 <h1 id="奇异值分解"><a href="#奇异值分解" class="headerlink" title="奇异值分解"></a>奇异值分解</h1><ul>
 <li><p>描述</p>
 <ul>
-<li><strong>奇异值</strong>：复矩阵$A_{m \times n}^r$(秩为r)，$A^HA$有n个特征值，按<strong>从大到小</strong>的顺序排列，保证$ \lambda_1 \geq  \lambda_2 \geq   … \geq \lambda_n$，有前r个为正，后n-r个为0，称 $σ_i=\sqrt{λ_i}$为A的奇异值，前r个$\sigma_1 \geq \sigma_2 \geq … \geq \sigma_r$为正奇异值。</li>
-<li><strong>奇异值分解</strong>：$A=USV^H$<br>$A_{m×n}^r  = U_{m×m} S_{m×n} V^H_{n×n}$<br>其中，U和V为酉矩阵(见上一章)，S为A的奇异值组成的对角阵，前r个为正奇异值，后n-r个全为0<br>$$A=U\left(<br>\begin{matrix}<br>S_r &amp; 0 \\<br>0 &amp; 0<br>\end{matrix}<br>\right)V^H$$</li>
+<li><strong>奇异值</strong>：复矩阵$A_{m \times n}^r$(秩为r)，$A^HA$有n个特征值，按<strong>从大到小</strong>的顺序排列，保证$ \lambda_1 \geq  \lambda_2 \geq   ... \geq \lambda_n$，有前r个为正，后n-r个为0，称 $σ_i=\sqrt{λ_i}$为A的奇异值，前r个$\sigma_1 \geq \sigma_2 \geq ... \geq \sigma_r$为正奇异值。</li>
+<li><strong>奇异值分解</strong>：$A=USV^H$$A_{m×n}^r  = U_{m×m} S_{m×n} V^H_{n×n}$
+其中，U和V为酉矩阵(见上一章)，S为A的奇异值组成的对角阵，前r个为正奇异值，后n-r个全为0
+$$A=U\left(
+\begin{matrix}
+S_r & 0 \\
+0 & 0
+\end{matrix}
+\right)V^H$$
+
+</li>
 </ul>
 </li>
 <li><p>奇异值分解步骤：</p>
 </li>
 </ul>
 <ol>
-<li>计算$A^HA$的n个特征值并按从大到小排序得到$λ_i(i=1…n)$, 取平方根得到奇异值$σ_i$</li>
-<li>计算这n个特征值$λ_i$对应的特征向量$α_i$，并schmidt正交化，得到标准正交特征向量$α_1, α_2, … α_r, α_{r+1}, … , α_n$。令$V_1=(α_1, … α_r), V_2=(α_{r+1}, … , α_n), V=(V_1, V_2)$;令$S_r=diag(σ_1, … σ_r)，(\sigma_1 \geq \sigma_2 \geq … \geq \sigma_r)$</li>
+<li>计算$A^HA$的n个特征值并按从大到小排序得到$λ_i(i=1...n)$, 取平方根得到奇异值$σ_i$</li>
+<li>计算这n个特征值$λ_i$对应的特征向量$α_i$，并schmidt正交化，得到标准正交特征向量$α_1, α_2, … α_r, α_{r+1}, … , α_n$。令$V_1=(α_1, … α_r), V_2=(α_{r+1}, … , α_n), V=(V_1, V_2)$;令$S_r=diag(σ_1, … σ_r),(\sigma_1 \geq \sigma_2 \geq ... \geq \sigma_r)$</li>
 <li>计算$U_1=(β_1, … β_r) =AV_1S_r^{-1}$</li>
-<li>求出$N(A^H)$的一组标准正交基$β_{r+1}, … β_m$(即求$A^H$齐次方程组的一组基础解系，也需要schmidt正交化)。令$U_2=(β_{r+1}, … β_m), U=(U_1, U_2)$, 则<br>$$A=U\left(<br>\begin{matrix}<br>S_r &amp; 0 \\<br>0 &amp; 0<br>\end{matrix}<br>\right)V^H$$</li>
+<li>求出$N(A^H)$的一组标准正交基$β_{r+1}, … β_m$(即求$A^H$齐次方程组的一组基础解系，也需要schmidt正交化)。令$U_2=(β_{r+1}, … β_m), U=(U_1, U_2)$, 则</li>
 </ol>
+
+$$A=U\left(
+\begin{matrix}
+S_r & 0 \\
+0 & 0
+\end{matrix}
+\right)V^H$$
+
 <ul>
 <li>scipy演示代码<br><img src="http://img.blog.csdn.net/20160929152827925" alt="这里写图片描述"></li>
 </ul>
@@ -652,7 +740,9 @@
 <ol>
 <li>以A的线性无关的特征向量为列组成矩阵P，将P按列分块$P=(X_1, X_2, …, X_n)$</li>
 <li>求$P^{-1}$, 将$P^{-1}$按行分块   $P^{-1}=(Y_1, Y_2, …, Y_n)^T$</li>
-<li>则A的谱分解为<br>$A = λ_1X_1Y_1 +λ_2X_2Y_2 + … + λ_kX_kY_k$<br>或<br>$A = λ_1G_1 +λ_2G_2 + … + λ_kG_k$<br>其中，$G_i = X_iY_i$, 这里的$G_i$是幂等矩阵, 且有如下性质: $G_i$两两正交，所有$G_i$的和为$I_n$</li>
+<li>则A的谱分解为$A = λ_1X_1Y_1 +λ_2X_2Y_2 + … + λ_kX_kY_k$  
+或$A = λ_1G_1 +λ_2G_2 + … + λ_kG_k$ 
+其中，$G_i = X_iY_i$, 这里的$G_i$是幂等矩阵, 且有如下性质: $G_i$两两正交，所有$G_i$的和为$I_n$</li>
 </ol>
 <ul>
 <li>特殊情况<br>若A是正规矩阵($A^HA=AA^H$)，则上述的$G_i$为幂等厄米特阵，A酉相似于对角阵，那么，将U按列分块<br>$U=( X_1, X_2, …, X_n)$,  取$G_i = X_iX_i^H$即可！</li>
@@ -823,12 +913,27 @@
         
           
             <h1 id="Jordan标准形"><a href="#Jordan标准形" class="headerlink" title="Jordan标准形"></a>Jordan标准形</h1><ul>
-<li><p>Jordan块<br>主对角元素为<strong>某一特征值</strong>，副对角元素为1，如：<br>1阶J块：($\lambda$)<br>2阶J块：$\left(\begin{matrix}\lambda &amp; 1 \\<br>&amp; \lambda \end{matrix}\right)$<br>3阶J块：$\left(\begin{matrix}\lambda &amp; 1 &amp;  \\<br>&amp; \lambda &amp; 1 \\<br>  &amp;  &amp; \lambda \end{matrix}\right)$<br>4阶J块：$\left(\begin{matrix}\lambda &amp; 1 &amp;  &amp;  \\<br>&amp; \lambda &amp; 1 &amp;  \\<br>&amp;  &amp; \lambda &amp; 1 \\<br>&amp;  &amp;  &amp; \lambda\end{matrix}\right)$<br>……<br>n阶J块：$\left(\begin{matrix}\lambda &amp; 1 &amp;  &amp;  &amp;\\<br>&amp; \lambda &amp; 1 &amp; &amp; \\<br>&amp;  &amp; \ddots &amp; \ddots \\<br>&amp;  &amp;  &amp; \ddots &amp; 1\\<br>&amp;  &amp;  &amp; &amp; \lambda \end{matrix}\right)$</p>
+<li><p>Jordan块<br>主对角元素为<strong>某一特征值</strong>，副对角元素为1，如：<br>1阶J块：($\lambda$)<br>2阶J块：$\left(\begin{matrix}\lambda & 1 \\
+& \lambda \end{matrix}\right)$<br>3阶J块：$\left(\begin{matrix}\lambda & 1 &  \\
+& \lambda & 1 \\
+&  & \lambda \end{matrix}\right)$<br>4阶J块：$\left(\begin{matrix}\lambda & 1 &  &  \\
+  & \lambda & 1 &  \\
+  &  & \lambda & 1 \\
+  &  &  & \lambda\end{matrix}\right)$<br>……<br>n阶J块：$\left(\begin{matrix}\lambda & 1 &  &  &\\
+  & \lambda & 1 & & \\
+  &  & \ddots & \ddots \\
+  &  &  & \ddots & 1\\
+  &  &  & & \lambda \end{matrix}\right)$</p>
 </li>
-<li><p>Jordan标准形<br>由Jordan块组成的对角阵，如<br>$$\left(\begin{matrix}<br>J_1 &amp;  &amp;  &amp;  \\<br>&amp; J_2 &amp;  &amp;  \\<br>&amp;  &amp; \ddots &amp;  \\<br>&amp;  &amp;  &amp; J_n \end{matrix}\right)$$</p>
+<li><p>Jordan标准形<br>由Jordan块组成的对角阵，如</p>
+
+$$\left(\begin{matrix}
+  J_1 &  &  &  \\
+  & J_2 &  &  \\
+  &  & \ddots &  \\
+  &  &  & J_n \end{matrix}\right)$$
 </li>
-<li><p>求矩阵A的Jordan标准形</p>
-</li>
+<li>求矩阵A的Jordan标准形</li>
 </ul>
 <ol>
 <li>先求A的特征多项式，解出特征值</li>
@@ -1594,7 +1699,7 @@ L1 (100.0) number of zero weights: 58
         
           
             <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"># 这个数据集来自www.kaggle.com/c/stumbleupon/data, 用于预测网页是短暂存在还是长时间流行,这里我把它存放在hdfs文件系统内的/user/yy/stumbleupon/目录里</div><div class="line">rawData = sc.textFile(&quot;hdfs:///user/yy/stumbleupon/train_noheader.tsv&quot;)</div><div class="line">records = rawData.map(lambda line: line.split(&apos;\t&apos;))</div><div class="line">records.first()</div><div class="line"># 每一条样本是一个网页的信息</div></pre></td></tr></table></figure>
-<p>[u’”<a href="http://www.bloomberg.com/news/2010-12-23/ibm-predicts-holographic-calls-air-breathing-batteries-by-2015.html" target="_blank" rel="external">http://www.bloomberg.com/news/2010-12-23/ibm-predicts-holographic-calls-air-breathing-batteries-by-2015.html</a>“‘,<br>     u’”4042”‘,<br>     u’”{“”title””:””IBM Sees Holographic Calls Air Breathing Batteries ibm sees holographic calls, air-breathing batteries””,””body””:””A sign stands outside the International Business Machines Corp IBM Almaden Research Center campus in San Jose California Photographer Tony Avelar Bloomberg Buildings stand at the International Business Machines Corp IBM Almaden Research Center campus in the Santa Teresa Hills of San Jose California Photographer Tony Avelar Bloomberg By 2015 your mobile phone will project a 3 D image of anyone who calls and your laptop will be powered by kinetic energy At least that s what International Business Machines Corp sees in its crystal ball The predictions are part of an annual tradition for the Armonk New York based company which surveys its 3 000 researchers to find five ideas expected to take root in the next five years IBM the world s largest provider of computer services looks to Silicon Valley for input gleaning many ideas from its Almaden research center in San Jose California Holographic conversations projected from mobile phones lead this year s list The predictions also include air breathing batteries computer programs that can tell when and where traffic jams will take place environmental information generated by sensors in cars and phones and cities powered by the heat thrown off by computer servers These are all stretch goals and that s good said Paul Saffo managing director of foresight at the investment advisory firm Discern in San Francisco In an era when pessimism is the new black a little dose of technological optimism is not a bad thing For IBM it s not just idle speculation The company is one of the few big corporations investing in long range research projects and it counts on innovation to fuel growth Saffo said Not all of its predictions pan out though IBM was overly optimistic about the spread of speech technology for instance When the ideas do lead to products they can have broad implications for society as well as IBM s bottom line he said Research Spending They have continued to do research when all the other grand research organizations are gone said Saffo who is also a consulting associate professor at Stanford University IBM invested 5 8 billion in research and development last year 6 1 percent of revenue While that s down from about 10 percent in the early 1990s the company spends a bigger share on research than its computing rivals Hewlett Packard Co the top maker of personal computers spent 2 4 percent last year At Almaden scientists work on projects that don t always fit in with IBM s computer business The lab s research includes efforts to develop an electric car battery that runs 500 miles on one charge a filtration system for desalination and a program that shows changes in geographic data IBM rose 9 cents to 146 04 at 11 02 a m in New York Stock Exchange composite trading The stock had gained 11 percent this year before today Citizen Science The list is meant to give a window into the company s innovation engine said Josephine Cheng a vice president at IBM s Almaden lab All this demonstrates a real culture of innovation at IBM and willingness to devote itself to solving some of the world s biggest problems she said Many of the predictions are based on projects that IBM has in the works One of this year s ideas that sensors in cars wallets and personal devices will give scientists better data about the environment is an expansion of the company s citizen science initiative Earlier this year IBM teamed up with the California State Water Resources Control Board and the City of San Jose Environmental Services to help gather information about waterways Researchers from Almaden created an application that lets smartphone users snap photos of streams and creeks and report back on conditions The hope is that these casual observations will help local and state officials who don t have the resources to do the work themselves Traffic Predictors IBM also sees data helping shorten commutes in the next five years Computer programs will use algorithms and real time traffic information to predict which roads will have backups and how to avoid getting stuck Batteries may last 10 times longer in 2015 than today IBM says Rather than using the current lithium ion technology new models could rely on energy dense metals that only need to interact with the air to recharge Some electronic devices might ditch batteries altogether and use something similar to kinetic wristwatches which only need to be shaken to generate a charge The final prediction involves recycling the heat generated by computers and data centers Almost half of the power used by data centers is currently spent keeping the computers cool IBM scientists say it would be better to harness that heat to warm houses and offices In IBM s first list of predictions compiled at the end of 2006 researchers said instantaneous speech translation would become the norm That hasn t happened yet While some programs can quickly translate electronic documents and instant messages and other apps can perform limited speech translation there s nothing widely available that acts like the universal translator in Star Trek Second Life The company also predicted that online immersive environments such as Second Life would become more widespread While immersive video games are as popular as ever Second Life s growth has slowed Internet users are flocking instead to the more 2 D environments of Facebook Inc and Twitter Inc Meanwhile a 2007 prediction that mobile phones will act as a wallet ticket broker concierge bank and shopping assistant is coming true thanks to the explosion of smartphone applications Consumers can pay bills through their banking apps buy movie tickets and get instant feedback on potential purchases all with a few taps on their phones The nice thing about the list is that it provokes thought Saffo said If everything came true they wouldn t be doing their job To contact the reporter on this story Ryan Flinn in San Francisco at rflinn bloomberg net To contact the editor responsible for this story Tom Giles at tgiles5 bloomberg net by 2015, your mobile phone will project a 3-d image of anyone who calls and your laptop will be powered by kinetic energy. at least that\\u2019s what international business machines corp. sees in its crystal ball.””,””url””:””bloomberg news 2010 12 23 ibm predicts holographic calls air breathing batteries by 2015 html””}”‘,<br>     u’”business”‘,<br>     u’”0.789131”‘,<br>     u’”2.055555556”‘,<br>     u’”0.676470588”‘,<br>     u’”0.205882353”‘,<br>     u’”0.047058824”‘,<br>     u’”0.023529412”‘,<br>     u’”0.443783175”‘,<br>     u’”0”‘,<br>     u’”0”‘,<br>     u’”0.09077381”‘,<br>     u’”0”‘,<br>     u’”0.245831182”‘,<br>     u’”0.003883495”‘,<br>     u’”1”‘,<br>     u’”1”‘,<br>     u’”24”‘,<br>     u’”0”‘,<br>     u’”5424”‘,<br>     u’”170”‘,<br>     u’”8”‘,<br>     u’”0.152941176”‘,<br>     u’”0.079129575”‘,<br>     u’”0”‘]</p>
+<p>[u’”<a href="http://www.bloomberg.com/news/2010-12-23/ibm-predicts-holographic-calls-air-breathing-batteries-by-2015.html" target="_blank" rel="external">http://www.bloomberg.com/news/2010-12-23/ibm-predicts-holographic-calls-air-breathing-batteries-by-2015.html</a>“‘,<br>     u’”4042”‘,<br>     u’”{“”title””:””IBM Sees Holographic Calls Air Breathing Batteries ibm sees holographic calls, air-breathing batteries””,””body””:””A sign stands outside the International Business Machines Corp IBM Almaden Research Center campus in San Jose California Photographer Tony Avelar Bloomberg Buildings stand at the International Business Machines Corp IBM Almaden Research Center campus in the Santa Teresa Hills of San Jose California Photographer Tony Avelar Bloomberg By 2015 your mobile phone will project a 3 D image of anyone who calls and your laptop will be powered by kinetic energy At least that s what International Business Machines Corp sees in its crystal ball The predictions are part of an annual tradition for the Armonk New York based company which surveys its 3 000 researchers to find five ideas expected to take root in the next five years IBM the world s largest provider of computer services looks to Silicon Valley for input gleaning many ideas from its Almaden research center in San Jose California Holographic conversations projected from mobile phones lead this year s list The predictions also include air breathing batteries computer programs that can tell when and where traffic jams will take place environmental information generated by sensors in cars and phones and cities powered by the heat thrown off by computer servers These are all stretch goals and that s good said Paul Saffo managing director of foresight at the investment advisory firm Discern in San Francisco In an era when pessimism is the new black a little dose of technological optimism is not a bad thing For IBM it s not just idle speculation The company is one of the few big corporations investing in long range research projects and it counts on innovation to fuel growth Saffo said Not all of its predictions pan out though IBM was overly optimistic about the spread of speech technology for instance When the ideas do lead to products they can have broad implications for society as well as IBM s bottom line he said Research Spending They have continued to do research when all the other grand research organizations are gone said Saffo who is also a consulting associate professor at Stanford University IBM invested 5 8 billion in research and development last year 6 1 percent of revenue While that s down from about 10 percent in the early 1990s the company spends a bigger share on research than its computing rivals Hewlett Packard Co the top maker of personal computers spent 2 4 percent last year At Almaden scientists work on projects that don t always fit in with IBM s computer business The lab s research includes efforts to develop an electric car battery that runs 500 miles on one charge a filtration system for desalination and a program that shows changes in geographic data IBM rose 9 cents to 146 04 at 11 02 a m in New York Stock Exchange composite trading The stock had gained 11 percent this year before today Citizen Science The list is meant to give a window into the company s innovation engine said Josephine Cheng a vice president at IBM s Almaden lab All this demonstrates a real culture of innovation at IBM and willingness to devote itself to solving some of the world s biggest problems she said Many of the predictions are based on projects that IBM has in the works One of this year s ideas that sensors in cars wallets and personal devices will give scientists better data about the environment is an expansion of the company s citizen science initiative Earlier this year IBM teamed up with the California State Water Resources Control Board and the City of San Jose Environmental Services to help gather information about waterways Researchers from Almaden created an application that lets smartphone users snap photos of streams and creeks and report back on conditions The hope is that these casual observations will help local and state officials who don t have the resources to do the work themselves Traffic Predictors IBM also sees data helping shorten commutes in the next five years Computer programs will use algorithms and real time traffic information to predict which roads will have backups and how to avoid getting stuck Batteries may last 10 times longer in 2015 than today IBM says Rather than using the current lithium ion technology new models could rely on energy dense metals that only need to interact with the air to recharge Some electronic devices might ditch batteries altogether and use something similar to kinetic wristwatches which only need to be shaken to generate a charge The final prediction involves recycling the heat generated by computers and data centers Almost half of the power used by data centers is currently spent keeping the computers cool IBM scientists say it would be better to harness that heat to warm houses and offices In IBM s first list of predictions compiled at the end of 2006 researchers said instantaneous speech translation would become the norm That hasn t happened yet While some programs can quickly translate electronic documents and instant messages and other apps can perform limited speech translation there s nothing widely available that acts like the universal translator in Star Trek Second Life The company also predicted that online immersive environments such as Second Life would become more widespread While immersive video games are as popular as ever Second Life s growth has slowed Internet users are flocking instead to the more 2 D environments of Facebook Inc and Twitter Inc Meanwhile a 2007 prediction that mobile phones will act as a wallet ticket broker concierge bank and shopping assistant is coming true thanks to the explosion of smartphone applications Consumers can pay bills through their banking apps buy movie tickets and get instant feedback on potential purchases all with a few taps on their phones The nice thing about the list is that it provokes thought Saffo said If everything came true they wouldn t be doing their job To contact the reporter on this story Ryan Flinn in San Francisco at rflinn bloomberg net To contact the editor responsible for this story Tom Giles at tgiles5 bloomberg net by 2015, your mobile phone will project a 3-d image of anyone who calls and your laptop will be powered by kinetic energy. at least that\u2019s what international business machines corp. sees in its crystal ball.””,””url””:””bloomberg news 2010 12 23 ibm predicts holographic calls air breathing batteries by 2015 html””}”‘,<br>     u’”business”‘,<br>     u’”0.789131”‘,<br>     u’”2.055555556”‘,<br>     u’”0.676470588”‘,<br>     u’”0.205882353”‘,<br>     u’”0.047058824”‘,<br>     u’”0.023529412”‘,<br>     u’”0.443783175”‘,<br>     u’”0”‘,<br>     u’”0”‘,<br>     u’”0.09077381”‘,<br>     u’”0”‘,<br>     u’”0.245831182”‘,<br>     u’”0.003883495”‘,<br>     u’”1”‘,<br>     u’”1”‘,<br>     u’”24”‘,<br>     u’”0”‘,<br>     u’”5424”‘,<br>     u’”170”‘,<br>     u’”8”‘,<br>     u’”0.152941176”‘,<br>     u’”0.079129575”‘,<br>     u’”0”‘]</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">from pyspark.mllib.regression import LabeledPoint # 标注点类型，（label, feature）通常feature是Vectors.dense类型</div><div class="line">from pyspark.mllib.linalg import Vectors</div><div class="line"></div><div class="line"># DenseVector类型的好处,这2行只是一个演示而已</div><div class="line">a = sc.parallelize([Vectors.dense(1,2),Vectors.dense(3,4)])</div><div class="line">a.sum() # 装着DenseVector类型向量的rdd,可以按列求值</div><div class="line"></div><div class="line"># def records_processing(record):</div><div class="line">#     trimmed = record.map(lambda e: e.replaceAll(&apos;\&quot;&apos;, &apos;&apos;))</div><div class="line">#     label = int(trimmed[record.size - 1])</div><div class="line">#     features = trimmed[4 : record.size - 1].map(lambda d: 0.0 if d == &apos;?&apos; else float(d))</div><div class="line">#     return LabeledPoint(label, Vectors.dense(features))</div><div class="line"></div><div class="line">sizeAndData = records.map(lambda record : (len(record), map(lambda e: e.replace(&apos;\&quot;&apos;, &apos;&apos;), record)))</div><div class="line">labelAndFeature = sizeAndData.map(lambda (size, data): (int(data[size-1]), map(lambda d: 0.0 if d == &apos;?&apos; else float(d), data[4: size-1])))</div><div class="line">data = labelAndFeature.map(lambda (label, feature): LabeledPoint(label, Vectors.dense(map(lambda d: 0.0 if d &lt; 0 else d, feature))))</div><div class="line">data.first()</div></pre></td></tr></table></figure>
 <p>LabeledPoint(0.0, [0.789131,2.055555556,0.676470588,0.205882353,0.047058824,0.023529412,0.443783175,0.0,0.0,0.09077381,0.0,0.245831182,0.003883495,1.0,1.0,24.0,0.0,5424.0,170.0,8.0,0.152941176,0.079129575])</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">data.cache()</div><div class="line">data.count()</div></pre></td></tr></table></figure>

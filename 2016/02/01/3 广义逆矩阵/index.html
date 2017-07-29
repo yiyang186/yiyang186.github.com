@@ -102,7 +102,7 @@
 <meta property="og:description" content="定义 广义逆$A_{m \times n}, X_{m \times n}$，若X满足moore-penrose条件   AXA=A XAX=X $(AX)^H=AX$ $(XA)^H=XA$中的一部分，称X是A的广义逆矩阵, 简称广义逆   伪逆$A^+$  如果X满足上述所有moore-penrose条件，则称X是A的伪逆，或加号逆（M-P逆），记为$A^+$, 若A可逆，则$A^{-1} =">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://img.blog.csdn.net/20160201113818041">
-<meta property="og:updated_time" content="2017-07-26T15:15:49.048Z">
+<meta property="og:updated_time" content="2017-07-29T13:18:40.849Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="矩阵的广义逆">
 <meta name="twitter:description" content="定义 广义逆$A_{m \times n}, X_{m \times n}$，若X满足moore-penrose条件   AXA=A XAX=X $(AX)^H=AX$ $(XA)^H=XA$中的一部分，称X是A的广义逆矩阵, 简称广义逆   伪逆$A^+$  如果X满足上述所有moore-penrose条件，则称X是A的伪逆，或加号逆（M-P逆），记为$A^+$, 若A可逆，则$A^{-1} =">
@@ -434,33 +434,93 @@
 <li>满秩分解求A+<br>对于$A_{m \times n}^r$, r &gt; 0, A有满秩分解 $A=F_{m \times r}G_{r \times n}$(列满秩×行满秩),则<br>$A^+ = G^H(GG^H)^{-1}(F^HF)^{-1}F^H = G^H(F^HAG^H)^{-1}F^H$<br>特别地，<br>当A列满秩，r=n时，$A^+ = (A^HA)^{-1}A^H$<br>当A行满秩，r=m时，$A^+ = A^H (AA^H)^{-1}$</li>
 </ul>
 <ul>
-<li><p>奇异值分解求$A^+$<br>对于$A_{m \times n}^r, r &gt; 0$, A有奇异值分解<br>$$A=V\left(<br>\begin{matrix}<br>S_r &amp; 0 \\<br>0 &amp; 0<br>\end{matrix}<br>\right)U^H$$<br>则有<br>$$A^+=U\left(<br>\begin{matrix}<br>S_r^{-1} &amp; 0 \\<br>0 &amp; 0<br>\end{matrix}<br>\right)V^H$$<br>即UV位置对换，Sr取逆，对角元全变倒数：$Sr^{-1} = diag(σ_1^{-1}, … σ_r^{-1})$<br>或者，只需要U, $U=(U_1, U_2)$, 则$A^+ = U_1Λ_r^{-1}U_1^HA^H$, 这里$Λ_r=S_r^2=diag(λ_1, …, λ_n)$</p>
-</li>
-<li><p>奇异值分解求A+的简化步骤：</p>
-</li>
+<li>奇异值分解求$A^+$<br>对于$A_{m \times n}^r, r > 0$, A有奇异值分解</li>
+</ul>
+
+$$A=V\left(
+\begin{matrix}
+S_r & 0 \\
+0 & 0
+\end{matrix}
+\right)U^H$$
+
+<p>则有</p>
+
+$$A^+=U\left(
+\begin{matrix}
+S_r^{-1} & 0 \\
+0 & 0
+\end{matrix}
+\right)V^H$$
+
+<p>即UV位置对换，Sr取逆，对角元全变倒数：$Sr^{-1} = diag(σ_1^{-1}, … σ_r^{-1})$<br>或者，只需要U, $U=(U_1, U_2)$, 则$A^+ = U_1Λ_r^{-1}U_1^HA^H$, 这里$Λ_r=S_r^2=diag(λ_1, …, λ_n)$</p>
+<ul>
+<li>奇异值分解求A+的简化步骤：</li>
 </ul>
 <ol>
 <li>求出$A^HA$的r个非0特征值</li>
 <li>求出相应的特征向量，并schmidt正交化，组成酉高矩阵$U_1$</li>
-<li>$$A^+=U_1\left(<br>\begin{matrix}<br>λ_1^{-1} &amp;  &amp; \\<br>&amp;  \ddots  &amp;  \\<br>&amp; &amp; λ_r^{-1} \\<br>\end{matrix}<br>\right)U_1^HA^H$$</li>
+<li></li>
 </ol>
+
+$$A^+=U_1\left(
+\begin{matrix}
+λ_1^{-1} &  & \\
+ &  \ddots  &  \\
+ & & λ_r^{-1} \\
+\end{matrix}
+\right)U_1^HA^H$$
+
 <ul>
 <li>秩1公式求$A^+$：若r(A)=1, 则$$A^+={1 \over \sum |a_{ij}|^2}A^H$$</li>
 </ul>
 <ul>
-<li>谱分解求$A^+$ (这个部分有些问题。。。有空再改)<br>$A^HA$有k个相异的特征值，$A^HA$的谱分解为$$A^HA= \sum_{i=1}^k λ_iG_i$$<br>这里$G_i = X_iY_i$，$X_i$是P的各列向量，$Y_i$是$P^{-1}$的各行向量，P是$A^HA$相似对角化时的可逆阵P, 则<br>$$A^+=\sum_{i=1}^k λ_i{ \phi_i(A^HA) \over \phi_i(\lambda_i)}A^H$$<br>其中$$\phi_i(\lambda)= \prod^k_{j=1, i≠j} (\lambda - \lambda_j)$$</li>
+<li>谱分解求$A^+$ (这个部分有些问题。。。有空再改)<br>$A^HA$有k个相异的特征值，$A^HA$的谱分解为$$A^HA= \sum_{i=1}^k λ_iG_i$$<br>这里$G_i = X_iY_i$，$X_i$是P的各列向量，$Y_i$是$P^{-1}$的各行向量，P是$A^HA$相似对角化时的可逆阵P, 则$$A^+=\sum_{i=1}^k λ_i{ \phi_i(A^HA) \over \phi_i(\lambda_i)}A^H$$
+其中$$\phi_i(\lambda)= \prod^k_{j=1, i≠j} (\lambda - \lambda_j)$$</li>
 </ul>
 <h1 id="广义逆与线性方程组"><a href="#广义逆与线性方程组" class="headerlink" title="广义逆与线性方程组"></a>广义逆与线性方程组</h1><ul>
 <li><p>方程组相容：<br>即Ax=b有解（当且仅当A列满秩时解唯一, $A_{m \times n}$）<br>Ax=b相容的充要条件为$AA^-b=b$, 其通解为：$$x=A^-b+(I_n-A^-A)y$$<br>y为n阶任意列向量，因为$A^+$是$A^-$的子集，所以将$A^-$替换为$A^+$也成立(这里的$I_n$的阶数与A的列数相等)： $$x=A^+b+(I_n-A^+A)y$$<br>极小范数解为：$$x_0=A^+b$$</p>
 </li>
-<li><p>方程组不相容：<br>x的最小二乘解的通解为：<br>$$x=A^+b+(I_n-A^+A)y$$<br>当且仅当A列满秩时，不相容方程组Ax=b的最小二乘解唯一，是：<br>$$x_0=A^+b$$<br>当A非列满秩时,最小二乘解不唯一，但上式是极小范数最小二乘解, 且唯一。</p>
+<li><p>方程组不相容：<br>x的最小二乘解的通解为：</p>
+$$x=A^+b+(I_n-A^+A)y$$
+<p>当且仅当A列满秩时，不相容方程组Ax=b的最小二乘解唯一，是：</p>
+$$x_0=A^+b$$
+<p>当A非列满秩时,最小二乘解不唯一，但上式是极小范数最小二乘解, 且唯一。</p>
 </li>
 </ul>
-<h1 id="A的-1-逆-A-的求法"><a href="#A的-1-逆-A-的求法" class="headerlink" title="A的{1}逆$A^-$的求法"></a>A的{1}逆$A^-$的求法</h1><p>对于$A_{m \times n}, \exists  P_m, Q_n$可逆，使得<br>$$PAQ=\left(<br>\begin{matrix}<br>I_r &amp; 0 \\<br>0 &amp; 0<br>\end{matrix}<br>\right)U^H$$<br>则<br>$$A^-=\left \{<br>\begin{array}{c|c}<br>Q\left(\begin{matrix}I_r &amp; X_{12} \\<br>X_{21} &amp; X_{22}<br>\end{matrix} \right)P &amp;X_{12},X_{21},X_{22}为任意适当阶子块<br>\end{array} \right \}$$<br>$X_{12}^{r \times (m-r)}， X_{12}^{(n-r) \times r}，X_{22}^{(n-r) \times (m-r)}$可取0, 则<br>$$A^-=Q\left( \begin{matrix} I_r &amp; 0 \\<br> 0 &amp; 0 \end{matrix} \right)P$$</p>
+<h1 id="A的-1-逆-A-的求法"><a href="#A的-1-逆-A-的求法" class="headerlink" title="A的{1}逆$A^-$的求法"></a>A的{1}逆$A^-$的求法</h1><p>对于$A_{m \times n}, \exists  P_m, Q_n$可逆，使得</p>
+
+$$PAQ=\left(
+\begin{matrix}
+I_r & 0 \\
+0 & 0
+\end{matrix}
+\right)U^H$$
+
+<p>则 </p>
+
+$$A^-=\left \{
+\begin{array}{c|c}
+Q\left(\begin{matrix}I_r & X_{12} \\
+X_{21} & X_{22} 
+\end{matrix} \right)P &X_{12},X_{21},X_{22}为任意适当阶子块
+\end{array} \right \}$$
+
+$X_{12}^{r \times (m-r)}， X_{12}^{(n-r) \times r}，X_{22}^{(n-r) \times (m-r)}$可取0, 则<br><br>
+$$A^-=Q\left( \begin{matrix} I_r & 0 \\
+ 0 & 0 \end{matrix} \right)P$$
+
 <p>特别地，当$A_{n \times n}$ 为方阵且可逆时，有$$PAQ=I_n$$此时$$A^- = QI_nP=QP=A^{-1}$$</p>
 <ul>
-<li>初等行变换求P, Q<br>$$<br>\left(\begin{matrix}A_{m \times n} &amp; I_m \\<br>I_n &amp; 0\end{matrix}\right) \longrightarrow \left(\begin{matrix} \left(\begin{matrix}I_n &amp; 0 \\<br>0 &amp; 0\end{matrix}\right) &amp; P \\<br>Q &amp; 0\end{matrix}\right)<br>$$</li>
+<li>初等行变换求P, Q</li>
 </ul>
+
+$$
+\left(\begin{matrix}A_{m \times n} & I_m \\
+I_n & 0\end{matrix}\right) \longrightarrow \left(\begin{matrix} \left(\begin{matrix}I_n & 0 \\
+ 0 & 0\end{matrix}\right) & P \\
+ Q & 0\end{matrix}\right)
+$$
 
       
     </div>

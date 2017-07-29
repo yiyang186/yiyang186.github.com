@@ -93,19 +93,19 @@
 
 
 
-<meta name="description" content="线性模型使用范围相比于非线性模型，线性模型更适用于：  小数据集 低信噪比 稀疏数据  线性回归模型约定数据集$X=(X_1,X_2,…,X_p)$有p个特征，$X_j \in R^N$共N个样本。$$f(X)=\beta_0+\sum_{i=1}^p X_j\beta_j$$ 给X增加一列1，$X=(1, X_1,X_2,…,X_p)$， $\beta=(\beta_0, \beta_1, …,">
+<meta name="description" content="线性模型使用范围相比于非线性模型，线性模型更适用于：  小数据集 低信噪比 稀疏数据  线性回归模型约定数据集$X=(X_1,X_2,...,X_p)$有p个特征，$X_j \in R^N$共N个样本。$$f(X)=\beta_0+\sum_{i=1}^p X_j\beta_j$$ 给X增加一列1，$X=(1, X_1,X_2,...,X_p)$， $\beta=(\beta_0, \beta_1">
 <meta name="keywords" content="ESL,统计,线性回归">
 <meta property="og:type" content="article">
 <meta property="og:title" content="线性回归">
 <meta property="og:url" content="http://yoursite.com/2016/11/11/线性回归/index.html">
 <meta property="og:site_name" content="Yiyang&#39;s Blog">
-<meta property="og:description" content="线性模型使用范围相比于非线性模型，线性模型更适用于：  小数据集 低信噪比 稀疏数据  线性回归模型约定数据集$X=(X_1,X_2,…,X_p)$有p个特征，$X_j \in R^N$共N个样本。$$f(X)=\beta_0+\sum_{i=1}^p X_j\beta_j$$ 给X增加一列1，$X=(1, X_1,X_2,…,X_p)$， $\beta=(\beta_0, \beta_1, …,">
+<meta property="og:description" content="线性模型使用范围相比于非线性模型，线性模型更适用于：  小数据集 低信噪比 稀疏数据  线性回归模型约定数据集$X=(X_1,X_2,...,X_p)$有p个特征，$X_j \in R^N$共N个样本。$$f(X)=\beta_0+\sum_{i=1}^p X_j\beta_j$$ 给X增加一列1，$X=(1, X_1,X_2,...,X_p)$， $\beta=(\beta_0, \beta_1">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://img.blog.csdn.net/20161111093602494">
-<meta property="og:updated_time" content="2017-07-27T06:30:07.881Z">
+<meta property="og:updated_time" content="2017-07-29T07:38:32.500Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="线性回归">
-<meta name="twitter:description" content="线性模型使用范围相比于非线性模型，线性模型更适用于：  小数据集 低信噪比 稀疏数据  线性回归模型约定数据集$X=(X_1,X_2,…,X_p)$有p个特征，$X_j \in R^N$共N个样本。$$f(X)=\beta_0+\sum_{i=1}^p X_j\beta_j$$ 给X增加一列1，$X=(1, X_1,X_2,…,X_p)$， $\beta=(\beta_0, \beta_1, …,">
+<meta name="twitter:description" content="线性模型使用范围相比于非线性模型，线性模型更适用于：  小数据集 低信噪比 稀疏数据  线性回归模型约定数据集$X=(X_1,X_2,...,X_p)$有p个特征，$X_j \in R^N$共N个样本。$$f(X)=\beta_0+\sum_{i=1}^p X_j\beta_j$$ 给X增加一列1，$X=(1, X_1,X_2,...,X_p)$， $\beta=(\beta_0, \beta_1">
 <meta name="twitter:image" content="http://img.blog.csdn.net/20161111093602494">
 
 
@@ -391,11 +391,11 @@
 <li>低信噪比</li>
 <li>稀疏数据</li>
 </ol>
-<h1 id="线性回归模型"><a href="#线性回归模型" class="headerlink" title="线性回归模型"></a>线性回归模型</h1><p>约定数据集$X=(X_1,X_2,…,X_p)$有p个特征，$X_j \in R^N$共N个样本。<br>$$f(X)=\beta_0+\sum_{i=1}^p X_j\beta_j$$</p>
-<p>给X增加一列1，$X=(1, X_1,X_2,…,X_p)$， $\beta=(\beta_0, \beta_1, …, \beta_p)^T$，上式可写成矩阵形式：<br>$$f(X)=X\beta$$</p>
+<h1 id="线性回归模型"><a href="#线性回归模型" class="headerlink" title="线性回归模型"></a>线性回归模型</h1><p>约定数据集$X=(X_1,X_2,...,X_p)$有p个特征，$X_j \in R^N$共N个样本。<br>$$f(X)=\beta_0+\sum_{i=1}^p X_j\beta_j$$</p>
+<p>给X增加一列1，$X=(1, X_1,X_2,...,X_p)$， $\beta=(\beta_0, \beta_1, ..., \beta_p)^T$，上式可写成矩阵形式：<br>$$f(X)=X\beta$$</p>
 <p>这里的$f(X)$为真实模型，$\beta$为真实模型参数，相对应的有估计模型和估计参数, 估计模型的结果为估计的响应变量y<br>$$\hat{y}=\hat{f}(X)=X\hat{\beta}$$</p>
 <p>在统计学习里，我们一般认为真实的,即观测到的响应变量为估计与误差的叠加<br>$$y=\hat f(X)+\varepsilon=X \hat \beta+\varepsilon$$</p>
-<p>这里$\varepsilon=(\varepsilon_0, \varepsilon_1,…,\varepsilon_N)^T$, 是每个样本预测值和真实值的误差组成的向量，假设它服从高斯分布<br>$$\varepsilon \sim N(0, \sigma^2I_N )$$</p>
+<p>这里$\varepsilon=(\varepsilon_0, \varepsilon_1,...,\varepsilon_N)^T$, 是每个样本预测值和真实值的误差组成的向量，假设它服从高斯分布<br>$$\varepsilon \sim N(0, \sigma^2I_N )$$</p>
 <p>那么y也服从高斯分布<br>$$y \sim N(X\beta, \sigma^2I_N )$$</p>
 <p>根据X的不同来源，线性模型的表达能力可以得到极大的扩展：</p>
 <ul>
@@ -411,30 +411,64 @@
 <p>其实，要使所求解为极小值点也必须满足<br>$$\frac{\partial ^2RSS(\beta)}{\partial \beta \partial \beta^T}=2X^TX&gt;0$$</p>
 <p>因此X列满秩是必须满足的条件。下面只讨论X列满秩的情况。<br>那么<br>$$\hat{y} =X\hat{\beta}$$</p>
 <p>可见，$\hat{y}$是X列向量的线性组合，$\hat{y} \in span<x_0, x_1,...,x_p="">$，所以<br>$$dim(\hat y)=p+1$$</x_0,></p>
-<p>真实的$y=f(X)+\varepsilon$, 由于误差的存在，y不在X的列空间里边。所以，对于最小二乘法来说，最小化残差平方和$min||y-\hat{y}||^2$即找到一个$\hat y$使得$y-\hat y$正交于X的列空间。此时，$||y-\hat{y}||$取得最小值，放张图感受一下。<br><img src="http://img.blog.csdn.net/20161111093602494" alt="这里写图片描述"><br>根据维数公式，有<br>$$\begin{eqnarray}dim(y)<br>    &amp;=&amp;dim(\hat y) + dim(y-\hat y)-dim(\hat y\bigcap (y-\hat y))\\<br>    &amp;=&amp;dim(\hat y) + dim(y-\hat y)\\<br>    \end{eqnarray}$$</p>
+<p>真实的$y=f(X)+\varepsilon$, 由于误差的存在，y不在X的列空间里边。所以，对于最小二乘法来说，最小化残差平方和$min||y-\hat{y}||^2$即找到一个$\hat y$使得$y-\hat y$正交于X的列空间。此时，$||y-\hat{y}||$取得最小值，放张图感受一下。<br><img src="http://img.blog.csdn.net/20161111093602494" alt="这里写图片描述"><br>根据维数公式，有<br>$$\begin{aligned}dim(y)<br>    &amp;=dim(\hat y) + dim(y-\hat y)-dim(\hat y\bigcap (y-\hat y))\<br>    &amp;=dim(\hat y) + dim(y-\hat y)\<br>    \end{aligned}$$</p>
 <p>所以，$dim(y-\hat y) = dim(y)-dim(\hat y) = N-(p+1)$(求这个是为了后面求卡方分布的自由度)<br>那么，什么是回归？就是求y在X列空间的投影，所以我们说$\hat{y}$是y在X上的回归。而最小二乘法所做的就是找到这种正交映射。令$H=X(X^TX)^{-1}X^T$<br>$$\hat{y} =X\hat{\beta}=X(X^TX)^{-1}X^Ty=Hy$$</p>
 <p>H就是这个投影矩阵。</p>
-<h2 id="hat-beta-的期望与方差"><a href="#hat-beta-的期望与方差" class="headerlink" title="$\hat \beta$的期望与方差"></a>$\hat \beta$的期望与方差</h2><p>我们估计的$\hat{\beta}$与真实的$\beta$差别有多大呢？<br>$$\begin{eqnarray}E_{Y|X}(\hat{\beta})<br>    &amp;=&amp;E_{Y|X}((X^TX)^{-1}X^Ty)\\<br>    &amp;=&amp;(X^TX)^{-1}X^TE_{Y|X}(y)\\<br>    &amp;=&amp;(X^TX)^{-1}X^TX\beta\\<br>    &amp;=&amp;\beta<br>    \end{eqnarray}$$</p>
-<p>可见，用最小二乘法所估计出来的模型参数是无偏估计。<br>$$\begin{eqnarray}Var_{Y|X}(\hat \beta)<br>        &amp;=&amp;E_{Y|X}[(\hat{\beta}-E_{Y|X}(\hat{\beta}))(\hat{\beta}-E_{Y|X}(\hat{\beta}))^T]\\<br>        &amp;=&amp;E_{Y|X}[((X^TX)^{-1}X^T\varepsilon)((X^TX)^{-1}X^T\varepsilon)^T]\\<br>        &amp;=&amp;E_{Y|X}[(X^TX)^{-1}X^T\varepsilon \varepsilon^TX(X^TX)^{-1}]\\<br>        &amp;=&amp;(X^TX)^{-1}X^TE_{Y|X}(\varepsilon \varepsilon^T)X(X^TX)^{-1}\\<br>        &amp;=&amp;(X^TX)^{-1}X^TX(X^TX)^{-1}E(\varepsilon \varepsilon^T)\\<br>        &amp;=&amp;(X^TX)^{-1}E(\varepsilon \varepsilon^T)\\<br>        &amp;=&amp;(X^TX)^{-1}[E(\varepsilon \varepsilon^T)-0]\\<br>        &amp;=&amp;(X^TX)^{-1}[E(\varepsilon \varepsilon^T)-E^2(\varepsilon)]\\<br>        &amp;=&amp;(X^TX)^{-1}Var(\varepsilon)\\<br>        &amp;=&amp;(X^TX)^{-1}\sigma^2I_N\\<br>    \end{eqnarray}$$</p>
-<p>其中<br>$$\begin{eqnarray}\hat{\beta}-E_{Y|X}(\hat{\beta})<br>    &amp;=&amp;(X^TX)^{-1}X^Ty-\beta\\<br>    &amp;=&amp;(X^TX)^{-1}X^Ty-(X^TX)^{-1}X^TX\beta\\<br>    &amp;=&amp;(X^TX)^{-1}X^T(y-X\beta)\\<br>    &amp;=&amp;(X^TX)^{-1}X^T\varepsilon\\<br>    \end{eqnarray}$$</p>
+<h2 id="hat-beta-的期望与方差"><a href="#hat-beta-的期望与方差" class="headerlink" title="$\hat \beta$的期望与方差"></a>$\hat \beta$的期望与方差</h2><p>我们估计的$\hat{\beta}$与真实的$\beta$差别有多大呢？<br>
+$$\begin{aligned}E_{Y|X}(\hat{\beta})
+	&=E_{Y|X}((X^TX)^{-1}X^Ty)\\
+	&=(X^TX)^{-1}X^TE_{Y|X}(y)\\
+	&=(X^TX)^{-1}X^TX\beta\\
+	&=\beta
+	\end{aligned}$$
+</p>
+<p>可见，用最小二乘法所估计出来的模型参数是无偏估计。<br>
+$$\begin{aligned}Var_{Y|X}(\hat \beta)
+		&=E_{Y|X}[(\hat{\beta}-E_{Y|X}(\hat{\beta}))(\hat{\beta}-E_{Y|X}(\hat{\beta}))^T]\\
+		&=E_{Y|X}[((X^TX)^{-1}X^T\varepsilon)((X^TX)^{-1}X^T\varepsilon)^T]\\
+		&=E_{Y|X}[(X^TX)^{-1}X^T\varepsilon \varepsilon^TX(X^TX)^{-1}]\\
+		&=(X^TX)^{-1}X^TE_{Y|X}(\varepsilon \varepsilon^T)X(X^TX)^{-1}\\
+		&=(X^TX)^{-1}X^TX(X^TX)^{-1}E(\varepsilon \varepsilon^T)\\
+		&=(X^TX)^{-1}E(\varepsilon \varepsilon^T)\\
+		&=(X^TX)^{-1}[E(\varepsilon \varepsilon^T)-0]\\
+		&=(X^TX)^{-1}[E(\varepsilon \varepsilon^T)-E^2(\varepsilon)]\\
+		&=(X^TX)^{-1}Var(\varepsilon)\\
+		&=(X^TX)^{-1}\sigma^2I_N\\
+	\end{aligned}$$
+</p>
+<p>其中<br>
+$$\begin{aligned}\hat{\beta}-E_{Y|X}(\hat{\beta})
+	&=(X^TX)^{-1}X^Ty-\beta\\
+	&=(X^TX)^{-1}X^Ty-(X^TX)^{-1}X^TX\beta\\
+	&=(X^TX)^{-1}X^T(y-X\beta)\\
+	&=(X^TX)^{-1}X^T\varepsilon\\
+	\end{aligned}$$
+</p>
 <p>另外，如果我们能估计出$\sigma$，那么也就能估计出$Var(\hat \beta)$, 也就能求出$\hat \beta$的置信区间了。<br>我们知道，误差服从高斯分布<br>$$y-\hat y \sim N(0, \sigma^2I_N)$$</p>
-<p>$$\frac{y-\hat y}{\sigma} \sim N(0, I_N)$$</p>
-<p>$$\frac{||y-\hat y||^2}{\sigma^2} \sim \chi^2_{dim(y-\hat y)}=\chi^2_{N-p-1}$$</p>
-<p>$$||y-\hat y||^2 \sim \sigma^2 \chi^2_{N-p-1}$$<br>残差平方和服从自由度为N-p-1的卡方分布(一个高斯分布的平方自然是$\chi ^ 2$分布了)，所以有<br>$$E||y-\hat y||^2 = (N-p-1)\sigma^2 $$</p>
+$$\frac{y-\hat y}{\sigma} \sim N(0, I_N)$$
+$$\frac{||y-\hat y||^2}{\sigma^2} \sim \chi^2_{dim(y-\hat y)}=\chi^2_{N-p-1}$$
+$$||y-\hat y||^2 \sim \sigma^2 \chi^2_{N-p-1}$$
+<p>残差平方和服从自由度为N-p-1的卡方分布(一个高斯分布的平方自然是$\chi ^ 2$分布了)，所以有<br>$$E||y-\hat y||^2 = (N-p-1)\sigma^2 $$</p>
 <p> 则</p>
 <p>$$\sigma^2 = \frac{1}{N-p-1}E||y-\hat y||^2$$</p>
-<p>$$\hat \sigma^2 = \frac{1}{N-p-1}\sum_{i=1}^N(y_i-\hat y_i)^2$$</p>
+$$\hat \sigma^2 = \frac{1}{N-p-1}\sum_{i=1}^N(y_i-\hat y_i)^2$$
 <p>可证明，上面的$\hat \sigma$是$\sigma$的无偏估计。因此<br>$$E(\hat \beta)=\beta$$</p>
-<p>$$Var(\hat \beta)=(X^TX)^{-1}\hat \sigma^2I_N$$</p>
-<h2 id="hat-beta-j-的假设检验"><a href="#hat-beta-j-的假设检验" class="headerlink" title="$\hat \beta_j$的假设检验"></a>$\hat \beta_j$的假设检验</h2><h3 id="单个-hat-beta-j-的假设检验"><a href="#单个-hat-beta-j-的假设检验" class="headerlink" title="单个$\hat \beta_j$的假设检验"></a>单个$\hat \beta_j$的假设检验</h3><p>由$\hat{\beta} = (X^TX)^{-1}X^Ty$，以及y服从高斯分布可知，$\hat{\beta}$也服从高斯分布<br>$$\hat{\beta} \sim N(\beta, (X^TX)^{-1}\hat \sigma^2I_N)$$</p>
+$$Var(\hat \beta)=(X^TX)^{-1}\hat \sigma^2I_N$$
+<h2 id="的假设检验"><a href="#的假设检验" class="headerlink" title="的假设检验"></a>$\hat \beta_j$的假设检验</h2><h3 id="单个的假设检验"><a href="#单个的假设检验" class="headerlink" title="单个的假设检验"></a>单个$\hat \beta_j$的假设检验</h3><p>由$\hat{\beta} = (X^TX)^{-1}X^Ty$，以及y服从高斯分布可知，$\hat{\beta}$也服从高斯分布<br>$$\hat{\beta} \sim N(\beta, (X^TX)^{-1}\hat \sigma^2I_N)$$</p>
 <p>写成分量形式，对于 j=1,2,…,N,<br>$$\hat{\beta_j} \sim N(\beta_j, v_{jj} \hat \sigma^2)$$</p>
-<p>其中，$v_{jj}$为$(X^TX)^{-1}$的第j个对角元，$v_{jj} \hat \sigma^2$是$\hat{\beta_j}$的方差，其标准差应为$\sqrt{v_{jj}} \hat \sigma$。不过，我们不知道是否有$v_{jj} &gt; 0$</p>
-<p>设$u \in R^{p+1}$列向量，构造$w=(X^TX)^{-1}u$，也是p+1维列向量，自然有$u=X^TXw$，因此<br>$$\begin{eqnarray}u^T(X^TX)^{-1}u<br>    &amp;=&amp;(X^TXw)^T(X^TX)^{-1}X^TXw \\<br>    &amp;=&amp;w^TX^TX(X^TX)^{-1}X^TXw \\<br>    &amp;=&amp;w^TX^TXw \\<br>    &amp;=&amp;(Xw)^T(Xw) \geq0<br>    \end{eqnarray}$$</p>
-<p>显然，只有当u=0时，才有w=0,进而才恒有$u^T(X^TX)^{-1}u=0$, 因此$(X^TX)^{-1}$正定，故$v_{jj}&gt;0$，此时我们可以写出参数$\hat \beta_j$的z分数了。<br>$$z=\frac{\hat \beta_j}{std(\hat \beta_j)}=\frac{\hat \beta_j}{ \sqrt{v_{jj}}\hat \sigma} \sim t_{N-p-1}$$</p>
-<p>在原假设$\hat \beta_j=0$下，z服从自由度为N-p-1的t分布(一个高斯分布除以一个$\chi ^ 2$分布的平方根，自然是t分布了)，绝对值大的z分数，其对应的p值(可以查t分布表)也就越小，越可以拒绝原假设，即$\hat \beta_j&gt;0$，相应的特征$X_j$应该被保留。<br>当N足够大时，t分布近似于高斯分布，t分布的尾分数与高斯分布的尾分数几乎相等，因此也可认为z服从高斯分布。这是一般的假设检验过程，这里不详述了。</p>
-<h3 id="多个-hat-beta-j-的假设检验"><a href="#多个-hat-beta-j-的假设检验" class="headerlink" title="多个$\hat \beta_j$的假设检验"></a>多个$\hat \beta_j$的假设检验</h3><p>F统计量可检验一组系数是否可置0,<br>$$F=\frac{(RSS_0-RSS_1)/(p_1-p_0)}{RSS_1/(N-p_1-1)}$$</p>
+<p>其中，$v_{jj}$为$(X^TX)^{-1}$的第j个对角元，$v_{jj} \hat \sigma^2$是$\hat{\beta_j}$的方差，其标准差应为$\sqrt{v_{jj}} \hat \sigma$。不过，我们不知道是否有$v_{jj} > 0$</p>
+<p>设$u \in R^{p+1}$列向量，构造$w=(X^TX)^{-1}u$，也是p+1维列向量，自然有$u=X^TXw$，因此<br>
+$$\begin{aligned}u^T(X^TX)^{-1}u
+	&=(X^TXw)^T(X^TX)^{-1}X^TXw \\
+	&=w^TX^TX(X^TX)^{-1}X^TXw \\
+	&=w^TX^TXw \\
+	&=(Xw)^T(Xw) \geq0
+	\end{aligned}$$
+<br>显然，只有当u=0时，才有w=0,进而才恒有$u^T(X^TX)^{-1}u=0$, 因此$(X^TX)^{-1}$正定，故$v_{jj}>0$，此时我们可以写出参数$\hat \beta_j$的z分数了。<br>$$z=\frac{\hat \beta_j}{std(\hat \beta_j)}=\frac{\hat \beta_j}{ \sqrt{v_{jj}}\hat \sigma} \sim t_{N-p-1}$$</p>
+<p>在原假设$\hat \beta_j=0$下，z服从自由度为N-p-1的t分布(一个高斯分布除以一个$\chi ^ 2$分布的平方根，自然是t分布了)，绝对值大的z分数，其对应的p值(可以查t分布表)也就越小，越可以拒绝原假设，即$\hat \beta_j>0$，相应的特征$X_j$应该被保留。<br>当N足够大时，t分布近似于高斯分布，t分布的尾分数与高斯分布的尾分数几乎相等，因此也可认为z服从高斯分布。这是一般的假设检验过程，这里不详述了。</p>
+<h3 id="多个的假设检验"><a href="#多个的假设检验" class="headerlink" title="多个的假设检验"></a>多个$\hat \beta_j$的假设检验</h3><p>F统计量可检验一组系数是否可置0,<br>$$F=\frac{(RSS_0-RSS_1)/(p_1-p_0)}{RSS_1/(N-p_1-1)}$$</p>
 <p>其中$RSS_1$是用较大模型(参数多)算出来的残差平方和，$p_1$是该模型的参数数量(特征维数)，$RSS_0$是较小模型的残差平方和，$p_0$是该模型的参数数量(特征维数)。在高斯假设下，设较小模型更正确为零假设下，F统计量服从$F_{p_1-p_0, N-p_1-1}$分布，可查表得到相应p值以判断是否拒绝原假设，即较小模型是否更好。</p>
-<h2 id="hat-beta-j-的置信区间"><a href="#hat-beta-j-的置信区间" class="headerlink" title="$\hat \beta_j$的置信区间"></a>$\hat \beta_j$的置信区间</h2><p>上面提到参数$\hat \beta_j$的z分数<br>$$z=\frac{\hat \beta_j}{ \sqrt{v_{jj}\hat \sigma^2}} \sim t_{N-p-1}$$</p>
+<h2 id="的置信区间"><a href="#的置信区间" class="headerlink" title="的置信区间"></a>$\hat \beta_j$的置信区间</h2><p>上面提到参数$\hat \beta_j$的z分数<br>$$z=\frac{\hat \beta_j}{ \sqrt{v_{jj}\hat \sigma^2}} \sim t_{N-p-1}$$</p>
 <p>z服从自由度为N-p-1的t分布，那么z的$1-\alpha$置信区间为<br>$$(-z^{1-{\alpha \over 2}}, z^{1-{\alpha \over 2}})$$</p>
 <p>因此真实模型参数$\beta_j$的$1-\alpha$置信区间为<br>$$(\hat \beta_j-z^{1-{\alpha \over 2}}v_{jj}^{1 \over 2}\hat \sigma, \hat \beta_j+z^{1-{\alpha \over 2}}v_{jj}^{1 \over 2}\hat \sigma)$$</p>
 <p>其中$z^{1-{\alpha \over 2}}$可通过查表得到。比如我想要个95%置信区间<br>$$\alpha=1-0.95=0.05$$</p>
@@ -651,7 +685,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#线性模型使用范围"><span class="nav-number">1.</span> <span class="nav-text">线性模型使用范围</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#线性回归模型"><span class="nav-number">2.</span> <span class="nav-text">线性回归模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#最小二乘法"><span class="nav-number">3.</span> <span class="nav-text">最小二乘法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#求解方法与理解"><span class="nav-number">3.1.</span> <span class="nav-text">求解方法与理解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hat-beta-的期望与方差"><span class="nav-number">3.2.</span> <span class="nav-text">$\hat \beta$的期望与方差</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hat-beta-j-的假设检验"><span class="nav-number">3.3.</span> <span class="nav-text">$\hat \beta_j$的假设检验</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#单个-hat-beta-j-的假设检验"><span class="nav-number">3.3.1.</span> <span class="nav-text">单个$\hat \beta_j$的假设检验</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多个-hat-beta-j-的假设检验"><span class="nav-number">3.3.2.</span> <span class="nav-text">多个$\hat \beta_j$的假设检验</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hat-beta-j-的置信区间"><span class="nav-number">3.4.</span> <span class="nav-text">$\hat \beta_j$的置信区间</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#线性模型使用范围"><span class="nav-number">1.</span> <span class="nav-text">线性模型使用范围</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#线性回归模型"><span class="nav-number">2.</span> <span class="nav-text">线性回归模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#最小二乘法"><span class="nav-number">3.</span> <span class="nav-text">最小二乘法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#求解方法与理解"><span class="nav-number">3.1.</span> <span class="nav-text">求解方法与理解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hat-beta-的期望与方差"><span class="nav-number">3.2.</span> <span class="nav-text">$\hat \beta$的期望与方差</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#的假设检验"><span class="nav-number">3.3.</span> <span class="nav-text">$\hat \beta_j$的假设检验</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#单个的假设检验"><span class="nav-number">3.3.1.</span> <span class="nav-text">单个$\hat \beta_j$的假设检验</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多个的假设检验"><span class="nav-number">3.3.2.</span> <span class="nav-text">多个$\hat \beta_j$的假设检验</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#的置信区间"><span class="nav-number">3.4.</span> <span class="nav-text">$\hat \beta_j$的置信区间</span></a></li></ol></li></ol></div>
             
 
           </div>

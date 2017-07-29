@@ -93,19 +93,19 @@
 
 
 
-<meta name="description" content="Jordan标准形 Jordan块主对角元素为某一特征值，副对角元素为1，如：1阶J块：($\lambda$)2阶J块：$\left(\begin{matrix}\lambda &amp;amp; 1 \\&amp;amp; \lambda \end{matrix}\right)$3阶J块：$\left(\begin{matrix}\lambda &amp;amp; 1 &amp;amp;  \\&amp;amp; \lambda &amp;a">
+<meta name="description" content="Jordan标准形 Jordan块主对角元素为某一特征值，副对角元素为1，如：1阶J块：($\lambda$)2阶J块：$\left(\begin{matrix}\lambda &amp; 1 \\ &amp; \lambda \end{matrix}\right)$3阶J块：$\left(\begin{matrix}\lambda &amp; 1 &amp;  \\ &amp; \lambda &amp; 1 \\ &amp;  &amp; \lambda">
 <meta name="keywords" content="矩阵,线性代数">
 <meta property="og:type" content="article">
 <meta property="og:title" content="矩阵论的线性代数基础">
 <meta property="og:url" content="http://yoursite.com/2016/01/31/1-线性代数引论/index.html">
 <meta property="og:site_name" content="Yiyang&#39;s Blog">
-<meta property="og:description" content="Jordan标准形 Jordan块主对角元素为某一特征值，副对角元素为1，如：1阶J块：($\lambda$)2阶J块：$\left(\begin{matrix}\lambda &amp;amp; 1 \\&amp;amp; \lambda \end{matrix}\right)$3阶J块：$\left(\begin{matrix}\lambda &amp;amp; 1 &amp;amp;  \\&amp;amp; \lambda &amp;a">
+<meta property="og:description" content="Jordan标准形 Jordan块主对角元素为某一特征值，副对角元素为1，如：1阶J块：($\lambda$)2阶J块：$\left(\begin{matrix}\lambda &amp; 1 \\ &amp; \lambda \end{matrix}\right)$3阶J块：$\left(\begin{matrix}\lambda &amp; 1 &amp;  \\ &amp; \lambda &amp; 1 \\ &amp;  &amp; \lambda">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://img.blog.csdn.net/20160131000927987">
-<meta property="og:updated_time" content="2017-07-26T15:19:54.443Z">
+<meta property="og:updated_time" content="2017-07-29T13:26:21.703Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="矩阵论的线性代数基础">
-<meta name="twitter:description" content="Jordan标准形 Jordan块主对角元素为某一特征值，副对角元素为1，如：1阶J块：($\lambda$)2阶J块：$\left(\begin{matrix}\lambda &amp;amp; 1 \\&amp;amp; \lambda \end{matrix}\right)$3阶J块：$\left(\begin{matrix}\lambda &amp;amp; 1 &amp;amp;  \\&amp;amp; \lambda &amp;a">
+<meta name="twitter:description" content="Jordan标准形 Jordan块主对角元素为某一特征值，副对角元素为1，如：1阶J块：($\lambda$)2阶J块：$\left(\begin{matrix}\lambda &amp; 1 \\ &amp; \lambda \end{matrix}\right)$3阶J块：$\left(\begin{matrix}\lambda &amp; 1 &amp;  \\ &amp; \lambda &amp; 1 \\ &amp;  &amp; \lambda">
 <meta name="twitter:image" content="http://img.blog.csdn.net/20160131000927987">
 
 
@@ -386,12 +386,27 @@
 
       
         <h1 id="Jordan标准形"><a href="#Jordan标准形" class="headerlink" title="Jordan标准形"></a>Jordan标准形</h1><ul>
-<li><p>Jordan块<br>主对角元素为<strong>某一特征值</strong>，副对角元素为1，如：<br>1阶J块：($\lambda$)<br>2阶J块：$\left(\begin{matrix}\lambda &amp; 1 \\<br>&amp; \lambda \end{matrix}\right)$<br>3阶J块：$\left(\begin{matrix}\lambda &amp; 1 &amp;  \\<br>&amp; \lambda &amp; 1 \\<br>  &amp;  &amp; \lambda \end{matrix}\right)$<br>4阶J块：$\left(\begin{matrix}\lambda &amp; 1 &amp;  &amp;  \\<br>&amp; \lambda &amp; 1 &amp;  \\<br>&amp;  &amp; \lambda &amp; 1 \\<br>&amp;  &amp;  &amp; \lambda\end{matrix}\right)$<br>……<br>n阶J块：$\left(\begin{matrix}\lambda &amp; 1 &amp;  &amp;  &amp;\\<br>&amp; \lambda &amp; 1 &amp; &amp; \\<br>&amp;  &amp; \ddots &amp; \ddots \\<br>&amp;  &amp;  &amp; \ddots &amp; 1\\<br>&amp;  &amp;  &amp; &amp; \lambda \end{matrix}\right)$</p>
+<li><p>Jordan块<br>主对角元素为<strong>某一特征值</strong>，副对角元素为1，如：<br>1阶J块：($\lambda$)<br>2阶J块：$\left(\begin{matrix}\lambda & 1 \\
+& \lambda \end{matrix}\right)$<br>3阶J块：$\left(\begin{matrix}\lambda & 1 &  \\
+& \lambda & 1 \\
+&  & \lambda \end{matrix}\right)$<br>4阶J块：$\left(\begin{matrix}\lambda & 1 &  &  \\
+  & \lambda & 1 &  \\
+  &  & \lambda & 1 \\
+  &  &  & \lambda\end{matrix}\right)$<br>……<br>n阶J块：$\left(\begin{matrix}\lambda & 1 &  &  &\\
+  & \lambda & 1 & & \\
+  &  & \ddots & \ddots \\
+  &  &  & \ddots & 1\\
+  &  &  & & \lambda \end{matrix}\right)$</p>
 </li>
-<li><p>Jordan标准形<br>由Jordan块组成的对角阵，如<br>$$\left(\begin{matrix}<br>J_1 &amp;  &amp;  &amp;  \\<br>&amp; J_2 &amp;  &amp;  \\<br>&amp;  &amp; \ddots &amp;  \\<br>&amp;  &amp;  &amp; J_n \end{matrix}\right)$$</p>
+<li><p>Jordan标准形<br>由Jordan块组成的对角阵，如</p>
+
+$$\left(\begin{matrix}
+  J_1 &  &  &  \\
+  & J_2 &  &  \\
+  &  & \ddots &  \\
+  &  &  & J_n \end{matrix}\right)$$
 </li>
-<li><p>求矩阵A的Jordan标准形</p>
-</li>
+<li>求矩阵A的Jordan标准形</li>
 </ul>
 <ol>
 <li>先求A的特征多项式，解出特征值</li>

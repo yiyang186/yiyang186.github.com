@@ -546,10 +546,10 @@
           
             <p>介绍EM算法的材料里，我目前看过且觉得比较好的就是NG老师的CS229讲义和李航老师的统计学习方法。<br>我也提不出什么新东西，就结合混合高斯分布，在这两位牛人的基础上，谈一点自己觉得看待EM算法很重要的2个必须弄清楚的问题：为什么要有EM算法，为什么叫E步和M步，还解释了一些介绍EM算法时免不了要提到的公式。如果不把这些问题和公式解释清楚真的能理解em吗？我想可能不能</p>
 <h1 id="为什么要有EM算法"><a href="#为什么要有EM算法" class="headerlink" title="为什么要有EM算法"></a>为什么要有EM算法</h1><p>我把EM算法当做最大似然估计的拓展，解决难以给出解析解的最大似然估计（MLE）问题。<br>考虑高斯分布，它的最大似然估计是这样的：</p>
-<p>$$\begin{aligned} \theta^*=\arg\max_\theta \sum_X \log L(\theta|X) \end{aligned}{\tag 1}$$</p>
+$$\begin{aligned} \theta^*=\arg\max_\theta \sum_X \log L(\theta|X) \end{aligned}{\tag 1}$$
 <p>其中，$\theta =(\mu, \sigma), \theta^* =(\mu^*, \sigma^*), \log L(\theta|X) = \log P(X; \theta)$是对数似然函数，分号左边是随机变量，右边是模型参数。$P(X;\theta)$表示X的概率值函数，它是一个以$\theta$为参数的函数（很多人看不懂EM算法就是因为符号问题）。这里对$\theta$求导很容易解出$\theta^*$。</p>
 <p>但如果这是个含有隐量Y的模型比如混合高斯模型，<br>$$P(X;\theta)=\sum_{k=1}^K\pi_kN(x; \mu_k, \sigma_k)=\sum_YP(Y;\pi)P(X|Y;\mu,\sigma){\tag 2}$$</p>
-<p>上面假设共有K个高斯模型混合.每个高斯模型的参数为$\theta_k=(\mu_k, \sigma_k)$,每个高斯模型占总模型的比重为$\pi_k$。隐变量$Y \in \{y_1,y_2,…,y_K\}$表示样本$x_i$来自于哪一个高斯分布。分布列为：</p>
+<p>上面假设共有K个高斯模型混合.每个高斯模型的参数为$\theta_k=(\mu_k, \sigma_k)$,每个高斯模型占总模型的比重为$\pi_k$。隐变量$Y \in {y_1,y_2,…,y_K}$表示样本$x_i$来自于哪一个高斯分布。分布列为：</p>
 <table>
 <thead>
 <tr>
@@ -571,15 +571,53 @@
 </tbody>
 </table>
 <p>可以认为，混合高斯分布的观测值是这样产生的：先以概率$\pi_k$抽取一个高斯分布$y_k$，再以该高斯分布$N(x;\mu_k, \sigma_k)$去生成观测x。其实这里的$\pi_k$ 就是Y的先验分布$P(Y;\pi)$ (这里特地加上； $\pi$ 表示P(Y)的参数是 $\pi$ ,你需要求出 $\pi$ 才能表示这个先验分布),而 $N(x; \mu_k, \sigma_k)$ 就是给定Y下的条件概率 $P(X|Y;\mu,\sigma)$<br>这时，令$\theta =(\mu, \sigma, \pi), \theta^* =(\mu^*, \sigma^*, \pi^*)$, 最大似然估计成了</p>
-<p>$$\begin{aligned}<br>\theta^* &amp;= \arg\max_\theta \sum_X \log P(X;\theta) \\<br>&amp;=\arg\max_\theta \sum_X \log  \sum_YP(Y;\pi)P(X|Y;\mu,\sigma) \\<br>&amp;=\arg\max_\theta \sum_X \log  \sum_YP(X,Y;\theta)<br>\end{aligned}\tag 3$$</p>
+
+$$\begin{aligned} 
+\theta^* &= \arg\max_\theta \sum_X \log P(X;\theta) \\
+&=\arg\max_\theta \sum_X \log  \sum_YP(Y;\pi)P(X|Y;\mu,\sigma) \\
+&=\arg\max_\theta \sum_X \log  \sum_YP(X,Y;\theta)
+\end{aligned}\tag 3$$
+
 <p>据群众反映，求和、取对数、再求和，这种形式求偏导较为费劲（到底有多费劲。。。其实放在混合高斯这里也不是那么费劲，有的情形远比混合高斯复杂）要是能把\log 拿到求和的最里层就好了，直接对最里层的式子求偏导岂不快哉？于是就有了EM算法</p>
 <h1 id="为什么要分E步和M步"><a href="#为什么要分E步和M步" class="headerlink" title="为什么要分E步和M步"></a>为什么要分E步和M步</h1><p>为了解决这个问题，有人想到了Jensen（琴生）不等式. $\log$ 是个凹函数，以隐变量Y的任一函数$f(Y)$举个例子：<br>$$\log E[f(Y)]=\log \sum_Y P(Y)f(Y) \geq \sum_Y P(Y)\log f(Y)=E[\log f(Y)]\tag 4$$<br>根据琴生不等式的性质，当随机变量函数 f(Y) 为常数时，不等式取等号。上式中的期望换成条件期望，分布 P(Y) 换成条件分布也是一样的。</p>
-<p>注意(3)中的联合分布$P(X,Y;\theta)$在执行$\sum_Y$时可以把X看做是定值，此时我们可以把这个联合分布当做Y的随机变量函数（它除以P(Y)当然还是Y的随机变量函数）来考虑，并且引入一个关于Y的分布Q(Y)，具体是啥分布还不清楚,可能是给定某某的条件分布，只知道它是一个关于$\theta$的函数：<br>$$\begin{aligned}<br>max &amp;=\max_\theta \sum_X \log  \sum_YP(X,Y;\theta) \\<br>&amp;=\max_\theta \sum_X \log  \sum_Y Q(Y;\theta) \cdot \frac{P(X,Y;\theta)}{Q(Y;\theta)} \\<br>&amp;=\max_\theta \sum_X \log  E_Q[\frac{P(X,Y;\theta)}{P(Y;\theta)}] \\<br>&amp;\geq \max_\theta \sum_X E_Q[\log  \frac{P(X,Y;\theta)}{Q(Y;\theta)}] \\<br>&amp;= \max_\theta \sum_X \sum_Y Q(Y;\theta) \log  \frac{P(X,Y;\theta)}{Q(Y;\theta)}<br>\end{aligned}\tag 5$$</p>
-<p>只有当<br>$$\frac{P(X,Y;\theta)}{Q(Y;\theta)}=c\tag 6$$<br>式(5)才能取等号，注意到Q是Y的某一分布，有$\sum_Y Q(Y;\theta)=1$这个性质，因此<br>$$\begin{aligned}<br>Q(Y;\theta) &amp;= \frac{P(X,Y;\theta)}{c} = \frac{P(X,Y;\theta)}{c \cdot \sum_Y Q(Y;\theta)} \\<br>&amp;= \frac{P(X,Y;\theta)}{\sum_Y c \cdot Q(Y;\theta)} = \frac{P(X,Y;\theta)}{\sum_Y P(X,Y;\theta)} \\<br>&amp;= \frac{P(X,Y;\theta)}{P(X;\theta)} = P(Y|X;\theta)<br>\end{aligned}\tag 7$$<br>所以只需要把Q取为给定X下，Y的后验分布，就能使式(5)取等号，下一步只需要最大化就行了.这时(5)为<br>$$\theta^* = \arg\max_\theta \sum_X \sum_Y P(Y|X;\theta) \log  \frac{P(X,Y;\theta)}{P(Y|X;\theta)}\tag 8$$</p>
+<p>注意(3)中的联合分布$P(X,Y;\theta)$在执行$\sum_Y$时可以把X看做是定值，此时我们可以把这个联合分布当做Y的随机变量函数（它除以P(Y)当然还是Y的随机变量函数）来考虑，并且引入一个关于Y的分布Q(Y)，具体是啥分布还不清楚,可能是给定某某的条件分布，只知道它是一个关于$\theta$的函数：</p>
+
+$$\begin{aligned}
+max &=\max_\theta \sum_X \log  \sum_YP(X,Y;\theta) \\
+&=\max_\theta \sum_X \log  \sum_Y Q(Y;\theta) \cdot \frac{P(X,Y;\theta)}{Q(Y;\theta)} \\
+&=\max_\theta \sum_X \log  E_Q[\frac{P(X,Y;\theta)}{P(Y;\theta)}] \\
+&\geq \max_\theta \sum_X E_Q[\log  \frac{P(X,Y;\theta)}{Q(Y;\theta)}] \\
+&= \max_\theta \sum_X \sum_Y Q(Y;\theta) \log  \frac{P(X,Y;\theta)}{Q(Y;\theta)}
+\end{aligned}\tag 5$$
+
+<p>只有当<br>$$\frac{P(X,Y;\theta)}{Q(Y;\theta)}=c\tag 6$$<br>式(5)才能取等号，注意到Q是Y的某一分布，有$\sum_Y Q(Y;\theta)=1$这个性质，因此<br>
+$$\begin{aligned}
+Q(Y;\theta) &= \frac{P(X,Y;\theta)}{c} = \frac{P(X,Y;\theta)}{c \cdot \sum_Y Q(Y;\theta)} \\
+&= \frac{P(X,Y;\theta)}{\sum_Y c \cdot Q(Y;\theta)} = \frac{P(X,Y;\theta)}{\sum_Y P(X,Y;\theta)} \\
+&= \frac{P(X,Y;\theta)}{P(X;\theta)} = P(Y|X;\theta)
+\end{aligned}\tag 7$$
+<br>所以只需要把Q取为给定X下，Y的后验分布，就能使式(5)取等号，下一步只需要最大化就行了.这时(5)为<br>$$\theta^* = \arg\max_\theta \sum_X \sum_Y P(Y|X;\theta) \log  \frac{P(X,Y;\theta)}{P(Y|X;\theta)}\tag 8$$</p>
 <p>其中：<br>$$P(X,Y;\theta) = P(Y;\pi)P(X|Y;\mu,\sigma)= \pi_kN(x_i; \mu_k, \sigma_k)\tag 9$$<br>$$P(Y|X;\theta) = \frac{P(X,Y;\theta)}{\sum_Y P(X,Y;\theta)}= \frac{\pi_kN(x_i; \mu_k, \sigma_k)}{\sum_{k=1}^K \pi_kN(x_i; \mu_k, \sigma_k)}\tag{10}$$<br>好吧，直接对$(\mu, \sigma, \pi)$求导还是很麻烦，不过已经可以用迭代来最大化啦。</p>
 <p>1）先根据式(10)，由$(\mu^{(j)}, \sigma^{(j)}, \pi^{(j)})$求后验概率<br>$$Q^{(j)}=P(Y|X;\theta^{(j)})$$</p>
-<p>2）再把$Q^{(j)}$带入(8)中，<br>$$\begin{aligned}<br>\theta^{(j+1)} &amp;= \arg\max_\theta \sum_X \sum_Y Q^{(j)} \log  \frac{P(X,Y;\theta)}{Q^{(j)}} \\<br>&amp;= \arg\max_\theta \sum_X \sum_Y (Q^{(j)} \log  P(X,Y;\theta)-Q^{(j)} \log  Q^{(j)}) \\<br>&amp;= \arg\max_\theta \sum_X \sum_Y Q^{(j)} \log  P(X,Y;\theta)<br>\end{aligned}\tag{11}$$<br>就只需要最大化联合分布$P(X,Y;\theta)$了，最大化求出$(\mu^{(j+1)}, \sigma^{(j+1)}, \pi^{(j+1)})$后重复这2步。</p>
-<p>M步很显然，就是最大化那一步，E步又从何谈起呢？式(11)可以写成<br>$$\begin{aligned}<br>\theta^{(j+1)} &amp;= \arg\max_\theta \sum_X \sum_Y Q^{(j)} \log  P(X,Y;\theta) \\<br>&amp;= \arg\max_\theta \sum_X E_{Q^{(j)}} [\log  P(X,Y;\theta)] \\<br>&amp;= \arg\max_\theta \sum_X E_{Y|X;\theta^{(j)}} [\log  P(X,Y;\theta)] \\<br>&amp;= \arg\max_\theta \sum_X E_Y [\log  P(X,Y;\theta)|X;\theta^{(j)}]<br>\end{aligned}\tag{12}$$<br>其实，E步就是求给定X下的条件期望，也就是后验期望，使得式(5)的琴生不等式能够取等号，是对琴声不等式中,小的那一端进行放大，使其等于大的那一端，这是一次放大；M步最大化联合分布，通过0梯度，拉格朗日法等方法求极值点，又是一次放大。只要似然函数是有界的，只要M步中的0梯度点是极大值点，一直放大下去就能找到最终所求。</p>
+<p>2）再把$Q^{(j)}$带入(8)中，</p>
+
+$$\begin{aligned}
+\theta^{(j+1)} &= \arg\max_\theta \sum_X \sum_Y Q^{(j)} \log  \frac{P(X,Y;\theta)}{Q^{(j)}} \\
+&= \arg\max_\theta \sum_X \sum_Y (Q^{(j)} \log  P(X,Y;\theta)-Q^{(j)} \log  Q^{(j)}) \\
+&= \arg\max_\theta \sum_X \sum_Y Q^{(j)} \log  P(X,Y;\theta)
+\end{aligned}\tag{11}$$
+
+<p>就只需要最大化联合分布$P(X,Y;\theta)$了，最大化求出$(\mu^{(j+1)}, \sigma^{(j+1)}, \pi^{(j+1)})$后重复这2步。</p>
+<p>M步很显然，就是最大化那一步，E步又从何谈起呢？式(11)可以写成</p>
+
+$$\begin{aligned}
+\theta^{(j+1)} &= \arg\max_\theta \sum_X \sum_Y Q^{(j)} \log  P(X,Y;\theta) \\
+&= \arg\max_\theta \sum_X E_{Q^{(j)}} [\log  P(X,Y;\theta)] \\
+&= \arg\max_\theta \sum_X E_{Y|X;\theta^{(j)}} [\log  P(X,Y;\theta)] \\
+&= \arg\max_\theta \sum_X E_Y [\log  P(X,Y;\theta)|X;\theta^{(j)}]
+\end{aligned}\tag{12}$$
+
+<p>其实，E步就是求给定X下的条件期望，也就是后验期望，使得式(5)的琴生不等式能够取等号，是对琴声不等式中,小的那一端进行放大，使其等于大的那一端，这是一次放大；M步最大化联合分布，通过0梯度，拉格朗日法等方法求极值点，又是一次放大。只要似然函数是有界的，只要M步中的0梯度点是极大值点，一直放大下去就能找到最终所求。</p>
 <p><a href="https://www.yhihu.com/question/27976634/answer/163164402" target="_blank" rel="external">我的知乎回答</a></p>
 
           
@@ -759,11 +797,31 @@ x \in R^p, \beta_k \in  R^{p+1}, k=1,2,...,K-1
 \end{equation}
 \tag 7$$<br>其中，$x \in R^p, \beta_k \in  R^{p+1}, k=1,2,...,K-1$。<br>这很像<strong>softmax回归</strong>，把(7)中的“1”替换成“$e^{-\beta_K^T x}$”就成了softmax回归。<br>$$P(y=k|x; \beta) = \frac{e^{-\beta_k^T x}}{\sum_{i=1}^Ke^{-\beta_i^T x}}, k=1,2,...,K \tag 8$$<br>softmax回归可以看做是logistic的推广。当然softmax回归并不是这么推倒出来的，它的建模过程有它自己的考虑，像logistic一样出于某种需求被逐步构建出，就像你做deep learning搭积木一样，是一种建模过程。你能根据模型的某种数学特点把他们归类在一起，比如GLM, tree。模型与模型间确定的推导关系是很难给出的, 至少我在写这个博客时还做不到。或者我该以另一种形式开头，如“人们找到一种叫做softmax的函数，它有这样那样的特点。。。”再写一篇博客。</p>
 <h1 id="逻辑回归的求解"><a href="#逻辑回归的求解" class="headerlink" title="逻辑回归的求解"></a>逻辑回归的求解</h1><p>用最大似然估计法估计$\beta$, 令<br>$$p_i=P(y_i=1|x_i)=1-sigmoid(\beta^Tx_i)$$<br>则<br>$$P(y_i=0|x_i)=1-p_i=sigmoid(\beta^Tx_i)$$<br>那么似然函数为：<br>$$l(\beta)=\prod_{i=1}^np_i^{y_i}(1-p_i)^{1-y_i}$$<br>对数似然为：<br>$$L(\beta)=\log l(\beta)=\sum_{i=1}^ny_i\log p_i+(1-y_i)\log(1-p_i)\tag8$$<br>最大化$L(\beta)$即最小化$-L(\beta)$<br>$$-L(\beta)=-\log l(\beta)=\sum_{i=1}^n-y_i\log p_i-(1-y_i)\log(1-p_i)\tag9$$<br>(9)等号右边每一项为交叉熵（cross entropy）,因此对逻辑回归使用最大似然估计等价于最小化交叉熵，因此在神经网络中以交叉熵为损失函数求解二分类问题与最大似然估计是等价的。<br>这里只介绍一般逻辑回归的求解，回到(8), 将(6)(7)带入(8)得<br>$$L(\beta)=\sum_{i=1}^ny_i\beta^Tx_i-\log(1+exp(\beta^Tx_i))$$<br>令其梯度为0有<br>$$\frac{\partial L(\beta)}{\partial \beta}=\sum_{i=1}^nx_i(y_i-\frac{exp(\beta^Tx_i)}{1+exp(\beta^Tx_i)})=\sum_{i=1}^nx_i(y_i-p_i)=0\tag{10}$$<br>(10)是非线性方程组，难以求得$\beta$的解析解，可使用Newton-Raphson算法（牛顿迭代法）求解(10)的零点，Newton-Raphson算法需要(10)的导数，也就是$L(\beta)$的Hessian矩阵（二阶导数）<br>$$\frac{\partial L^2(\beta)}{\partial \beta \partial \beta^T}=-\sum_{i=1}^nx_ix_i^Tp_i(1-p_i)$$<br>因此Newton-Raphson算法每一步的迭代公式为：<br>$$\beta^{new}=\beta^{old}-\bigg(\frac{\partial L^2(\beta)}{\partial \beta \partial \beta^T}\Bigg|_{\beta^{old}}\bigg)^{-1}\frac{\partial L(\beta)}{\partial \beta}\Bigg|_{\beta^{old}}\tag{11}$$<br>可根据(11)迭代即可求解出(10)的零点$\beta$，同时也是(8)的极值点。</p>
+<h1 id="最小化交叉熵损失与最大化似然函数"><a href="#最小化交叉熵损失与最大化似然函数" class="headerlink" title="最小化交叉熵损失与最大化似然函数"></a>最小化交叉熵损失与最大化似然函数</h1><p>最大化似然估计是显而易见的：<br>$$\max_{p_i} \sum_{i=1}^n y_i\log p_i+(1-y_i)\log(1-p_i)$$</p>
+<p>那么，<strong>如何理解最小化交叉熵(互熵)损失</strong>?<br><br>假设给定x,y真实的分布服从0-1分布，假设y取1的真实条件分布为p(y|x)有，$y|x \sim p(y|x)$。我们所估计的条件分布为$\hat p(y|x)$。如果这两个分布很接近的话，他们的KL散度应该尽量小，那么可以最小化KL散度为目标，找到最接近$p(y|x)$的$\hat p(y|x)$：</p>
+
+$$\begin{aligned}\min_{\hat p} D_{KL}(p \|\hat p)
+  &= \min_{\hat p} E_p \log \frac{p(y|x)}{\hat p(y|x)} \\
+  &= \min_{\hat p} \{E_p \log p(y|x) - E_p\log \hat p(y|x)\} \\
+  &= \min_{\hat p} \{E_p \log p(y|x)\} + \min_{\hat p} \{- E_p\log \hat p(y|x)\} \\
+  &= \min_{\hat p} \{-E_p\log \hat p(y|x)\} \\
+\end{aligned} \tag{12}$$
+
+<p>由于$E_p \log p(y|x)$与$\hat p$无关，所以式(12)的最后一个等号成立。其实根据交叉熵的定义，这是显而易见的:<br>$$H(p,\hat p)=H(p)+D_{KL}(p \| \hat p) \tag{13}$$</p>
+<p>其中, $H(p,\hat p)$是分布p与分布$\hat p$的交叉熵，H(p)是分布p的信息熵。由于数据集已知，H(p)已知，所以最小化KL散度$D_{KL}(p \| \hat p)$等价于最小化交叉熵$H(p,\hat p)$.<br><br>把交叉熵展开，可得到最小化交叉熵与最大化似然函数等价：<br>
+$$\begin{aligned}\min_{\hat p} \{-E_p\log \hat p(y|x)\}
+  &= \min_{\hat p} \{-E_{y|x}\log \hat p(y|x)\} \\
+  &= \min_{p_i} \frac{1}{n} \sum_{i=1}^n \{ \begin{matrix} -\log p_i & y_i=1|x_i \\ -\log (1-p_i) & y_i=0|x_i \end{matrix} \\
+  &= \min_{p_i} \frac{1}{n} \sum_{i=1}^n -y_i\log p_i -(1-y_i)\log (1-p_i) \\
+  &= \min_{p_i} \sum_{i=1}^n -y_i\log p_i -(1-y_i)\log (1-p_i) \\
+  &= \max_{p_i} \sum_{i=1}^n y_i\log p_i +(1-y_i)\log (1-p_i) \\
+\end{aligned} \tag{14}$$
+</p>
 <h1 id="以建模的遐想"><a href="#以建模的遐想" class="headerlink" title="以建模的遐想"></a>以$\log{{P(y=1|x)}\over {P(y=0|x)}}=\beta^Tx$建模的遐想</h1><p><strong>考虑任意样本$x_0$</strong>：</p>
 <ul>
 <li>若$x_0$属于1类的概率大于属于0类的概率，它应当在分类平面$\beta^Tx=0$的某一边，不妨设$\beta^Tx_0>0$；</li>
-<li>若$x_0$属于0类的概率大于属于1类的概率，它应当在分类平面$\beta^Tx=0$的另一边，即$\beta^Tx_0<0$。< li="">
-</0$。<></li></ul>
+<li>若$x_0$属于0类的概率大于属于1类的概率，它应当在分类平面$\beta^Tx=0$的另一边，即$\beta^Tx_0 < 0$。</li>
+</ul>
 <p>换成数学的语言就是：</p>
 <table>
 <thead>
@@ -778,12 +836,12 @@ x \in R^p, \beta_k \in  R^{p+1}, k=1,2,...,K-1
 <td>$$\beta^Tx_0>0$$</td>
 </tr>
 <tr>
-<td>$$\log{{P(y=1|x_0)}\over {P(y=0|x_0)}}\<0$$< td="">
-<td>$$\beta^Tx_0\<0$$< td="">
-</0$$<></td></0$$<></td></tr>
+<td>$$\log{{P(y=1|x_0)}\over {P(y=0|x_0)}} < 0$$</td>
+<td>$$\beta^Tx_0 < 0$$</td>
+</tr>
 </tbody>
 </table>
-<p>只要$\log{{P(y=1|x_0)}\over {P(y=0|x_0)}}$和$\beta^Tx_0$同号就是我们想要的模型。<strong>Logistic直接以$\log{{P(y=1|x)}\over {P(y=0|x)}}=\beta^Tx$建模</strong>保证了这种同号的要求，但是这样建模多了一个副产品，就是“绝对值相等”——<br>$$|\log{{P(y=1|x_0)}\over {P(y=0|x_0)}}|=|\beta^Tx_0|\tag{12}$$<br>容易理解，$|\beta^Tx_0|$是$x_0$到分类平面$\beta^Tx=0$的距离，而$|\log{{P(y=1|x_0)}\over {P(y=0|x_0)}}|$是样本$x_0$属于于0，1类概率的对数比率（log-odd）。二者相等吗？<strong>样本到分类平面的距离与样本属于各类概率的对数比率大小相等</strong>吗？有可能碰到正好满足的样本，但是绝大多数情况下不相等。<strong>我想</strong>，这种过度建模也许就是LR的缺陷所在。</p>
+<p>只要$\log{{P(y=1|x_0)}\over {P(y=0|x_0)}}$和$\beta^Tx_0$同号就是我们想要的模型。<strong>Logistic直接以$\log{{P(y=1|x)}\over {P(y=0|x)}}=\beta^Tx$建模</strong>保证了这种同号的要求，但是这样建模多了一个副产品，就是“绝对值相等”——<br>$$|\log{{P(y=1|x_0)}\over {P(y=0|x_0)}}|=|\beta^Tx_0|\tag{15}$$<br>容易理解，$|\beta^Tx_0|$是$x_0$到分类平面$\beta^Tx=0$的距离，而$|\log{{P(y=1|x_0)}\over {P(y=0|x_0)}}|$是样本$x_0$属于于0，1类概率的对数比率（log-odd）。二者相等吗？<strong>样本到分类平面的距离与样本属于各类概率的对数比率大小相等</strong>吗？有可能碰到正好满足的样本，但是绝大多数情况下不相等。这是逻辑回归建模稍稍强加于实际模型的假设。</p>
 <p>这些想法由ESL和<a href="https://www.zhihu.com/question/35322351/answer/141562541" target="_blank" rel="external">我在知乎中关于逻辑回归的回答</a>引申而来，我也没见过相关的文献，要是有相关的文献作为以上臆想的佐证或者驳斥，烦请通知我。</p>
 <h1 id="Newton-Raphson算法-牛顿迭代法"><a href="#Newton-Raphson算法-牛顿迭代法" class="headerlink" title="Newton-Raphson算法(牛顿迭代法)"></a>Newton-Raphson算法(牛顿迭代法)</h1><iframe height="490" width="680" src="https://upload.wikimedia.org/wikipedia/commons/e/e0/NewtonIteration_Ani.gif"></iframe>
           
@@ -1324,7 +1382,7 @@ P(m=AB│n=B) &=& \frac{P(m=AB,n=B)}{P(n=B)} \\
 </tr>
 </tbody>
 </table>
-<p>或者:<br>$2^n$中的n表示要比赛n轮，若1人被随机分到这一大半边，另一人被分到另一大半边的概率为${2^{n-1} \over 2^n-1}$，其中一人杀到第n轮的概率为${1\over 2^{n-1}}$ ，两人都杀到第n轮的概率为${1\over 2^{n-1}}\cdot {1\over 2^{n-1}}={1\over 2^{2(n-1)}}$，所以两人在第$n$轮相遇的概率为<br>$$\frac{2^{n-1}}{2^n-1}\cdot \frac{1}{2^{2(n-1)}}$$<br>两人在第$i$轮相遇的概率为<br>$$\frac{2^{i-1}}{2^n-1}\cdot \frac{1}{2^{2(i-1)}}$$<br>相遇的总概率为第$1,2,3,…,n$轮相遇的概率之和<br> $$\begin{aligned}<br> \sum_{i=1}^n\frac{2^{i-1}}{2^n-1}\cdot \frac{1}{2^{2(i-1)}}<br>=\frac{1}{2^n-1}\sum_{i=1}^n\frac{1}{2^{i-1}}<br>=\frac{2}{2^n-1}\sum_{i=1}^n\frac{1}{2^i}<br>=\frac{2}{2^n-1}(1-\frac{1}{2^n})=\frac{1}{2^{n-1}}<br>\end{aligned}$$</p>
+<p>或者:<br>$2^n$中的n表示要比赛n轮，若1人被随机分到这一大半边，另一人被分到另一大半边的概率为${2^{n-1} \over 2^n-1}$，其中一人杀到第n轮的概率为${1\over 2^{n-1}}$ ，两人都杀到第n轮的概率为${1\over 2^{n-1}}\cdot {1\over 2^{n-1}}={1\over 2^{2(n-1)}}$，所以两人在第$n$轮相遇的概率为<br>$$\frac{2^{n-1}}{2^n-1}\cdot \frac{1}{2^{2(n-1)}}$$<br>两人在第$i$轮相遇的概率为<br>$$\frac{2^{i-1}}{2^n-1}\cdot \frac{1}{2^{2(i-1)}}$$<br>相遇的总概率为第$1,2,3,…,n$轮相遇的概率之和<br> $$\begin{aligned}<br> \sum<em>{i=1}^n\frac{2^{i-1}}{2^n-1}\cdot \frac{1}{2^{2(i-1)}}<br>=\frac{1}{2^n-1}\sum</em>{i=1}^n\frac{1}{2^{i-1}}<br>=\frac{2}{2^n-1}\sum_{i=1}^n\frac{1}{2^i}<br>=\frac{2}{2^n-1}(1-\frac{1}{2^n})=\frac{1}{2^{n-1}}<br>\end{aligned}$$</p>
 <h1 id="抛均匀的硬币"><a href="#抛均匀的硬币" class="headerlink" title="抛均匀的硬币"></a>抛均匀的硬币</h1><p>抛100次硬币，正好50次正面朝上的概率？<br>很简单，二项分布<br>$$p=\binom{100}{50}({1\over2})^{100}=\frac{100!}{50!50!}({1\over2})^{100}$$<br>难点是没有计算器怎么办？<br>根据斯特林公式（Stirling’s approximation）<br>$$n! \approx \sqrt{2\pi}n^{n+{1\over2}}e^{-n}$$<br>有时也能简便一点</p>
 <h1 id="艾萨克·牛顿帮助塞缪尔·佩皮斯"><a href="#艾萨克·牛顿帮助塞缪尔·佩皮斯" class="headerlink" title="艾萨克·牛顿帮助塞缪尔·佩皮斯"></a>艾萨克·牛顿帮助塞缪尔·佩皮斯</h1><p>佩皮斯写信给牛顿问下面那件事是最可能发生的<br>（a）    掷6个骰子，至少得到1个6<br>（b）    掷12个骰子，至少得到2个6<br>（c）    掷18个骰子，至少得到3个6<br><img src="http://img.blog.csdn.net/20170528153307598?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcTF3MmUzcjQ0NzA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"></p>
 <h1 id="三角决斗"><a href="#三角决斗" class="headerlink" title="三角决斗"></a>三角决斗</h1><p>A，B和C玩三角手枪决斗。 所有人都知道，A的命中率是0.3，C是0.5，B不会失误。 他们将按照A，B，C循环的顺序自由选择目标决斗，直到最后一个人活下来。A的策略应该是什么？<br> <img src="http://img.blog.csdn.net/20170528163254932?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcTF3MmUzcjQ0NzA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"><br>如上图，若A先射C, A赢的概率是0.21，若A先射击B, A赢的概率将大于0.21. 因此A应先射B。此时的局面是AC互射，A赢的情况只可能为C一直射不中A, 而A在最后一次射击时射中了C, 因此A赢的概率为<br>C射1次A没射中, A第1次射就射死C:  $0.5 \times 0.3 +$<br>C射2次A没射中, A第2次射才射死C:  $0.5^2 \times 0.7 \times 0.3+$<br>C射3次A没射中, A第3次射才射死C:  $0.5^3 \times 0.7^2 \times 0.3 +$<br>C射4次A没射中, A第4次射才射死C:  $0.5^4 \times 0.7^3 \times 0.3 + $<br>…<br>这是个无穷递减等比数列求和，比值为0.5x0.7=0.35<br>$0.5 \times 0.3 \times (1+0.5 \times 0.7+(0.5 \times 0.7)^2+(0.5 \times 0.7)^3+…)=0.5 \times 0.3 \times \frac{1}{1-0.35}=3/13$<br>因此，若A先射B, A赢的概率为$0.21+0.3 \times 3/13=0.279$.<br>起码A的生还几率大了近7个点</p>
@@ -1469,11 +1527,11 @@ P(m=AB│n=B) &=& \frac{P(m=AB,n=B)}{P(n=B)} \\
 <li>低信噪比</li>
 <li>稀疏数据</li>
 </ol>
-<h1 id="线性回归模型"><a href="#线性回归模型" class="headerlink" title="线性回归模型"></a>线性回归模型</h1><p>约定数据集$X=(X_1,X_2,…,X_p)$有p个特征，$X_j \in R^N$共N个样本。<br>$$f(X)=\beta_0+\sum_{i=1}^p X_j\beta_j$$</p>
-<p>给X增加一列1，$X=(1, X_1,X_2,…,X_p)$， $\beta=(\beta_0, \beta_1, …, \beta_p)^T$，上式可写成矩阵形式：<br>$$f(X)=X\beta$$</p>
+<h1 id="线性回归模型"><a href="#线性回归模型" class="headerlink" title="线性回归模型"></a>线性回归模型</h1><p>约定数据集$X=(X_1,X_2,...,X_p)$有p个特征，$X_j \in R^N$共N个样本。<br>$$f(X)=\beta_0+\sum_{i=1}^p X_j\beta_j$$</p>
+<p>给X增加一列1，$X=(1, X_1,X_2,...,X_p)$， $\beta=(\beta_0, \beta_1, ..., \beta_p)^T$，上式可写成矩阵形式：<br>$$f(X)=X\beta$$</p>
 <p>这里的$f(X)$为真实模型，$\beta$为真实模型参数，相对应的有估计模型和估计参数, 估计模型的结果为估计的响应变量y<br>$$\hat{y}=\hat{f}(X)=X\hat{\beta}$$</p>
 <p>在统计学习里，我们一般认为真实的,即观测到的响应变量为估计与误差的叠加<br>$$y=\hat f(X)+\varepsilon=X \hat \beta+\varepsilon$$</p>
-<p>这里$\varepsilon=(\varepsilon_0, \varepsilon_1,…,\varepsilon_N)^T$, 是每个样本预测值和真实值的误差组成的向量，假设它服从高斯分布<br>$$\varepsilon \sim N(0, \sigma^2I_N )$$</p>
+<p>这里$\varepsilon=(\varepsilon_0, \varepsilon_1,...,\varepsilon_N)^T$, 是每个样本预测值和真实值的误差组成的向量，假设它服从高斯分布<br>$$\varepsilon \sim N(0, \sigma^2I_N )$$</p>
 <p>那么y也服从高斯分布<br>$$y \sim N(X\beta, \sigma^2I_N )$$</p>
 <p>根据X的不同来源，线性模型的表达能力可以得到极大的扩展：</p>
 <ul>
@@ -1489,30 +1547,64 @@ P(m=AB│n=B) &=& \frac{P(m=AB,n=B)}{P(n=B)} \\
 <p>其实，要使所求解为极小值点也必须满足<br>$$\frac{\partial ^2RSS(\beta)}{\partial \beta \partial \beta^T}=2X^TX&gt;0$$</p>
 <p>因此X列满秩是必须满足的条件。下面只讨论X列满秩的情况。<br>那么<br>$$\hat{y} =X\hat{\beta}$$</p>
 <p>可见，$\hat{y}$是X列向量的线性组合，$\hat{y} \in span<x_0, x_1,...,x_p="">$，所以<br>$$dim(\hat y)=p+1$$</x_0,></p>
-<p>真实的$y=f(X)+\varepsilon$, 由于误差的存在，y不在X的列空间里边。所以，对于最小二乘法来说，最小化残差平方和$min||y-\hat{y}||^2$即找到一个$\hat y$使得$y-\hat y$正交于X的列空间。此时，$||y-\hat{y}||$取得最小值，放张图感受一下。<br><img src="http://img.blog.csdn.net/20161111093602494" alt="这里写图片描述"><br>根据维数公式，有<br>$$\begin{eqnarray}dim(y)<br>    &amp;=&amp;dim(\hat y) + dim(y-\hat y)-dim(\hat y\bigcap (y-\hat y))\\<br>    &amp;=&amp;dim(\hat y) + dim(y-\hat y)\\<br>    \end{eqnarray}$$</p>
+<p>真实的$y=f(X)+\varepsilon$, 由于误差的存在，y不在X的列空间里边。所以，对于最小二乘法来说，最小化残差平方和$min||y-\hat{y}||^2$即找到一个$\hat y$使得$y-\hat y$正交于X的列空间。此时，$||y-\hat{y}||$取得最小值，放张图感受一下。<br><img src="http://img.blog.csdn.net/20161111093602494" alt="这里写图片描述"><br>根据维数公式，有<br>$$\begin{aligned}dim(y)<br>    &amp;=dim(\hat y) + dim(y-\hat y)-dim(\hat y\bigcap (y-\hat y))\<br>    &amp;=dim(\hat y) + dim(y-\hat y)\<br>    \end{aligned}$$</p>
 <p>所以，$dim(y-\hat y) = dim(y)-dim(\hat y) = N-(p+1)$(求这个是为了后面求卡方分布的自由度)<br>那么，什么是回归？就是求y在X列空间的投影，所以我们说$\hat{y}$是y在X上的回归。而最小二乘法所做的就是找到这种正交映射。令$H=X(X^TX)^{-1}X^T$<br>$$\hat{y} =X\hat{\beta}=X(X^TX)^{-1}X^Ty=Hy$$</p>
 <p>H就是这个投影矩阵。</p>
-<h2 id="hat-beta-的期望与方差"><a href="#hat-beta-的期望与方差" class="headerlink" title="$\hat \beta$的期望与方差"></a>$\hat \beta$的期望与方差</h2><p>我们估计的$\hat{\beta}$与真实的$\beta$差别有多大呢？<br>$$\begin{eqnarray}E_{Y|X}(\hat{\beta})<br>    &amp;=&amp;E_{Y|X}((X^TX)^{-1}X^Ty)\\<br>    &amp;=&amp;(X^TX)^{-1}X^TE_{Y|X}(y)\\<br>    &amp;=&amp;(X^TX)^{-1}X^TX\beta\\<br>    &amp;=&amp;\beta<br>    \end{eqnarray}$$</p>
-<p>可见，用最小二乘法所估计出来的模型参数是无偏估计。<br>$$\begin{eqnarray}Var_{Y|X}(\hat \beta)<br>        &amp;=&amp;E_{Y|X}[(\hat{\beta}-E_{Y|X}(\hat{\beta}))(\hat{\beta}-E_{Y|X}(\hat{\beta}))^T]\\<br>        &amp;=&amp;E_{Y|X}[((X^TX)^{-1}X^T\varepsilon)((X^TX)^{-1}X^T\varepsilon)^T]\\<br>        &amp;=&amp;E_{Y|X}[(X^TX)^{-1}X^T\varepsilon \varepsilon^TX(X^TX)^{-1}]\\<br>        &amp;=&amp;(X^TX)^{-1}X^TE_{Y|X}(\varepsilon \varepsilon^T)X(X^TX)^{-1}\\<br>        &amp;=&amp;(X^TX)^{-1}X^TX(X^TX)^{-1}E(\varepsilon \varepsilon^T)\\<br>        &amp;=&amp;(X^TX)^{-1}E(\varepsilon \varepsilon^T)\\<br>        &amp;=&amp;(X^TX)^{-1}[E(\varepsilon \varepsilon^T)-0]\\<br>        &amp;=&amp;(X^TX)^{-1}[E(\varepsilon \varepsilon^T)-E^2(\varepsilon)]\\<br>        &amp;=&amp;(X^TX)^{-1}Var(\varepsilon)\\<br>        &amp;=&amp;(X^TX)^{-1}\sigma^2I_N\\<br>    \end{eqnarray}$$</p>
-<p>其中<br>$$\begin{eqnarray}\hat{\beta}-E_{Y|X}(\hat{\beta})<br>    &amp;=&amp;(X^TX)^{-1}X^Ty-\beta\\<br>    &amp;=&amp;(X^TX)^{-1}X^Ty-(X^TX)^{-1}X^TX\beta\\<br>    &amp;=&amp;(X^TX)^{-1}X^T(y-X\beta)\\<br>    &amp;=&amp;(X^TX)^{-1}X^T\varepsilon\\<br>    \end{eqnarray}$$</p>
+<h2 id="hat-beta-的期望与方差"><a href="#hat-beta-的期望与方差" class="headerlink" title="$\hat \beta$的期望与方差"></a>$\hat \beta$的期望与方差</h2><p>我们估计的$\hat{\beta}$与真实的$\beta$差别有多大呢？<br>
+$$\begin{aligned}E_{Y|X}(\hat{\beta})
+	&=E_{Y|X}((X^TX)^{-1}X^Ty)\\
+	&=(X^TX)^{-1}X^TE_{Y|X}(y)\\
+	&=(X^TX)^{-1}X^TX\beta\\
+	&=\beta
+	\end{aligned}$$
+</p>
+<p>可见，用最小二乘法所估计出来的模型参数是无偏估计。<br>
+$$\begin{aligned}Var_{Y|X}(\hat \beta)
+		&=E_{Y|X}[(\hat{\beta}-E_{Y|X}(\hat{\beta}))(\hat{\beta}-E_{Y|X}(\hat{\beta}))^T]\\
+		&=E_{Y|X}[((X^TX)^{-1}X^T\varepsilon)((X^TX)^{-1}X^T\varepsilon)^T]\\
+		&=E_{Y|X}[(X^TX)^{-1}X^T\varepsilon \varepsilon^TX(X^TX)^{-1}]\\
+		&=(X^TX)^{-1}X^TE_{Y|X}(\varepsilon \varepsilon^T)X(X^TX)^{-1}\\
+		&=(X^TX)^{-1}X^TX(X^TX)^{-1}E(\varepsilon \varepsilon^T)\\
+		&=(X^TX)^{-1}E(\varepsilon \varepsilon^T)\\
+		&=(X^TX)^{-1}[E(\varepsilon \varepsilon^T)-0]\\
+		&=(X^TX)^{-1}[E(\varepsilon \varepsilon^T)-E^2(\varepsilon)]\\
+		&=(X^TX)^{-1}Var(\varepsilon)\\
+		&=(X^TX)^{-1}\sigma^2I_N\\
+	\end{aligned}$$
+</p>
+<p>其中<br>
+$$\begin{aligned}\hat{\beta}-E_{Y|X}(\hat{\beta})
+	&=(X^TX)^{-1}X^Ty-\beta\\
+	&=(X^TX)^{-1}X^Ty-(X^TX)^{-1}X^TX\beta\\
+	&=(X^TX)^{-1}X^T(y-X\beta)\\
+	&=(X^TX)^{-1}X^T\varepsilon\\
+	\end{aligned}$$
+</p>
 <p>另外，如果我们能估计出$\sigma$，那么也就能估计出$Var(\hat \beta)$, 也就能求出$\hat \beta$的置信区间了。<br>我们知道，误差服从高斯分布<br>$$y-\hat y \sim N(0, \sigma^2I_N)$$</p>
-<p>$$\frac{y-\hat y}{\sigma} \sim N(0, I_N)$$</p>
-<p>$$\frac{||y-\hat y||^2}{\sigma^2} \sim \chi^2_{dim(y-\hat y)}=\chi^2_{N-p-1}$$</p>
-<p>$$||y-\hat y||^2 \sim \sigma^2 \chi^2_{N-p-1}$$<br>残差平方和服从自由度为N-p-1的卡方分布(一个高斯分布的平方自然是$\chi ^ 2$分布了)，所以有<br>$$E||y-\hat y||^2 = (N-p-1)\sigma^2 $$</p>
+$$\frac{y-\hat y}{\sigma} \sim N(0, I_N)$$
+$$\frac{||y-\hat y||^2}{\sigma^2} \sim \chi^2_{dim(y-\hat y)}=\chi^2_{N-p-1}$$
+$$||y-\hat y||^2 \sim \sigma^2 \chi^2_{N-p-1}$$
+<p>残差平方和服从自由度为N-p-1的卡方分布(一个高斯分布的平方自然是$\chi ^ 2$分布了)，所以有<br>$$E||y-\hat y||^2 = (N-p-1)\sigma^2 $$</p>
 <p> 则</p>
 <p>$$\sigma^2 = \frac{1}{N-p-1}E||y-\hat y||^2$$</p>
-<p>$$\hat \sigma^2 = \frac{1}{N-p-1}\sum_{i=1}^N(y_i-\hat y_i)^2$$</p>
+$$\hat \sigma^2 = \frac{1}{N-p-1}\sum_{i=1}^N(y_i-\hat y_i)^2$$
 <p>可证明，上面的$\hat \sigma$是$\sigma$的无偏估计。因此<br>$$E(\hat \beta)=\beta$$</p>
-<p>$$Var(\hat \beta)=(X^TX)^{-1}\hat \sigma^2I_N$$</p>
-<h2 id="hat-beta-j-的假设检验"><a href="#hat-beta-j-的假设检验" class="headerlink" title="$\hat \beta_j$的假设检验"></a>$\hat \beta_j$的假设检验</h2><h3 id="单个-hat-beta-j-的假设检验"><a href="#单个-hat-beta-j-的假设检验" class="headerlink" title="单个$\hat \beta_j$的假设检验"></a>单个$\hat \beta_j$的假设检验</h3><p>由$\hat{\beta} = (X^TX)^{-1}X^Ty$，以及y服从高斯分布可知，$\hat{\beta}$也服从高斯分布<br>$$\hat{\beta} \sim N(\beta, (X^TX)^{-1}\hat \sigma^2I_N)$$</p>
+$$Var(\hat \beta)=(X^TX)^{-1}\hat \sigma^2I_N$$
+<h2 id="的假设检验"><a href="#的假设检验" class="headerlink" title="的假设检验"></a>$\hat \beta_j$的假设检验</h2><h3 id="单个的假设检验"><a href="#单个的假设检验" class="headerlink" title="单个的假设检验"></a>单个$\hat \beta_j$的假设检验</h3><p>由$\hat{\beta} = (X^TX)^{-1}X^Ty$，以及y服从高斯分布可知，$\hat{\beta}$也服从高斯分布<br>$$\hat{\beta} \sim N(\beta, (X^TX)^{-1}\hat \sigma^2I_N)$$</p>
 <p>写成分量形式，对于 j=1,2,…,N,<br>$$\hat{\beta_j} \sim N(\beta_j, v_{jj} \hat \sigma^2)$$</p>
-<p>其中，$v_{jj}$为$(X^TX)^{-1}$的第j个对角元，$v_{jj} \hat \sigma^2$是$\hat{\beta_j}$的方差，其标准差应为$\sqrt{v_{jj}} \hat \sigma$。不过，我们不知道是否有$v_{jj} &gt; 0$</p>
-<p>设$u \in R^{p+1}$列向量，构造$w=(X^TX)^{-1}u$，也是p+1维列向量，自然有$u=X^TXw$，因此<br>$$\begin{eqnarray}u^T(X^TX)^{-1}u<br>    &amp;=&amp;(X^TXw)^T(X^TX)^{-1}X^TXw \\<br>    &amp;=&amp;w^TX^TX(X^TX)^{-1}X^TXw \\<br>    &amp;=&amp;w^TX^TXw \\<br>    &amp;=&amp;(Xw)^T(Xw) \geq0<br>    \end{eqnarray}$$</p>
-<p>显然，只有当u=0时，才有w=0,进而才恒有$u^T(X^TX)^{-1}u=0$, 因此$(X^TX)^{-1}$正定，故$v_{jj}&gt;0$，此时我们可以写出参数$\hat \beta_j$的z分数了。<br>$$z=\frac{\hat \beta_j}{std(\hat \beta_j)}=\frac{\hat \beta_j}{ \sqrt{v_{jj}}\hat \sigma} \sim t_{N-p-1}$$</p>
-<p>在原假设$\hat \beta_j=0$下，z服从自由度为N-p-1的t分布(一个高斯分布除以一个$\chi ^ 2$分布的平方根，自然是t分布了)，绝对值大的z分数，其对应的p值(可以查t分布表)也就越小，越可以拒绝原假设，即$\hat \beta_j&gt;0$，相应的特征$X_j$应该被保留。<br>当N足够大时，t分布近似于高斯分布，t分布的尾分数与高斯分布的尾分数几乎相等，因此也可认为z服从高斯分布。这是一般的假设检验过程，这里不详述了。</p>
-<h3 id="多个-hat-beta-j-的假设检验"><a href="#多个-hat-beta-j-的假设检验" class="headerlink" title="多个$\hat \beta_j$的假设检验"></a>多个$\hat \beta_j$的假设检验</h3><p>F统计量可检验一组系数是否可置0,<br>$$F=\frac{(RSS_0-RSS_1)/(p_1-p_0)}{RSS_1/(N-p_1-1)}$$</p>
+<p>其中，$v_{jj}$为$(X^TX)^{-1}$的第j个对角元，$v_{jj} \hat \sigma^2$是$\hat{\beta_j}$的方差，其标准差应为$\sqrt{v_{jj}} \hat \sigma$。不过，我们不知道是否有$v_{jj} > 0$</p>
+<p>设$u \in R^{p+1}$列向量，构造$w=(X^TX)^{-1}u$，也是p+1维列向量，自然有$u=X^TXw$，因此<br>
+$$\begin{aligned}u^T(X^TX)^{-1}u
+	&=(X^TXw)^T(X^TX)^{-1}X^TXw \\
+	&=w^TX^TX(X^TX)^{-1}X^TXw \\
+	&=w^TX^TXw \\
+	&=(Xw)^T(Xw) \geq0
+	\end{aligned}$$
+<br>显然，只有当u=0时，才有w=0,进而才恒有$u^T(X^TX)^{-1}u=0$, 因此$(X^TX)^{-1}$正定，故$v_{jj}>0$，此时我们可以写出参数$\hat \beta_j$的z分数了。<br>$$z=\frac{\hat \beta_j}{std(\hat \beta_j)}=\frac{\hat \beta_j}{ \sqrt{v_{jj}}\hat \sigma} \sim t_{N-p-1}$$</p>
+<p>在原假设$\hat \beta_j=0$下，z服从自由度为N-p-1的t分布(一个高斯分布除以一个$\chi ^ 2$分布的平方根，自然是t分布了)，绝对值大的z分数，其对应的p值(可以查t分布表)也就越小，越可以拒绝原假设，即$\hat \beta_j>0$，相应的特征$X_j$应该被保留。<br>当N足够大时，t分布近似于高斯分布，t分布的尾分数与高斯分布的尾分数几乎相等，因此也可认为z服从高斯分布。这是一般的假设检验过程，这里不详述了。</p>
+<h3 id="多个的假设检验"><a href="#多个的假设检验" class="headerlink" title="多个的假设检验"></a>多个$\hat \beta_j$的假设检验</h3><p>F统计量可检验一组系数是否可置0,<br>$$F=\frac{(RSS_0-RSS_1)/(p_1-p_0)}{RSS_1/(N-p_1-1)}$$</p>
 <p>其中$RSS_1$是用较大模型(参数多)算出来的残差平方和，$p_1$是该模型的参数数量(特征维数)，$RSS_0$是较小模型的残差平方和，$p_0$是该模型的参数数量(特征维数)。在高斯假设下，设较小模型更正确为零假设下，F统计量服从$F_{p_1-p_0, N-p_1-1}$分布，可查表得到相应p值以判断是否拒绝原假设，即较小模型是否更好。</p>
-<h2 id="hat-beta-j-的置信区间"><a href="#hat-beta-j-的置信区间" class="headerlink" title="$\hat \beta_j$的置信区间"></a>$\hat \beta_j$的置信区间</h2><p>上面提到参数$\hat \beta_j$的z分数<br>$$z=\frac{\hat \beta_j}{ \sqrt{v_{jj}\hat \sigma^2}} \sim t_{N-p-1}$$</p>
+<h2 id="的置信区间"><a href="#的置信区间" class="headerlink" title="的置信区间"></a>$\hat \beta_j$的置信区间</h2><p>上面提到参数$\hat \beta_j$的z分数<br>$$z=\frac{\hat \beta_j}{ \sqrt{v_{jj}\hat \sigma^2}} \sim t_{N-p-1}$$</p>
 <p>z服从自由度为N-p-1的t分布，那么z的$1-\alpha$置信区间为<br>$$(-z^{1-{\alpha \over 2}}, z^{1-{\alpha \over 2}})$$</p>
 <p>因此真实模型参数$\beta_j$的$1-\alpha$置信区间为<br>$$(\hat \beta_j-z^{1-{\alpha \over 2}}v_{jj}^{1 \over 2}\hat \sigma, \hat \beta_j+z^{1-{\alpha \over 2}}v_{jj}^{1 \over 2}\hat \sigma)$$</p>
 <p>其中$z^{1-{\alpha \over 2}}$可通过查表得到。比如我想要个95%置信区间<br>$$\alpha=1-0.95=0.05$$</p>
@@ -1657,7 +1749,7 @@ P(m=AB│n=B) &=& \frac{P(m=AB,n=B)}{P(n=B)} \\
             <p>scipy.stats模块中有不少涉及计算统计量的子模块<br>如<br>scipy.stats.uniform<br>scipy.stats.norm<br>scipy.stats.t<br>scipy.stats.chi2<br>scipy.stats.f<br>更多子模块参见<a href="http://docs.scipy.org/doc/scipy/reference/stats.html" target="_blank" rel="external">这里</a></p>
 <p>其中scipy.stats.f内有如下方法：<br><img src="http://img.blog.csdn.net/20161006104131553" alt="图一"><br>来自于<a href="http://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.f.html#scipy.stats.f" target="_blank" rel="external">这里</a></p>
 <p>这些方法在其他子模块中都大同小异。这里重点介绍求F统计量的p值和分位数，t统计量，卡方，正态，的求法基本类似。</p>
-<p>例1：求$Pr(F_{4,58}&gt;1.67)=?$,即已知临界值求p值<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; from scipy.stats import f</div><div class="line">&gt;&gt;&gt; f.sf(1.67, 4, 58)</div><div class="line">0.16927935111708425</div><div class="line">&gt;&gt;&gt; 1 - f.cdf(1.67, 4, 58)</div><div class="line">0.16927935111708448</div></pre></td></tr></table></figure></p>
+<p>例1：求$Pr(F_{4,58}>1.67)=?$,即已知临界值求p值<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; from scipy.stats import f</div><div class="line">&gt;&gt;&gt; f.sf(1.67, 4, 58)</div><div class="line">0.16927935111708425</div><div class="line">&gt;&gt;&gt; 1 - f.cdf(1.67, 4, 58)</div><div class="line">0.16927935111708448</div></pre></td></tr></table></figure></p>
 <p>例2：求$F_{4,58}^{(1-0.17)}=?$ ,即已知p值求临界值<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; from scipy.stats import f</div><div class="line">&gt;&gt;&gt; f.isf(0.17, 4, 58)</div><div class="line">1.666945416681088</div><div class="line">&gt;&gt;&gt; f.ppf(1 - 0.17, 4, 58)</div><div class="line">1.666945416681088</div></pre></td></tr></table></figure></p>
 <p>其中，isf是sf的逆运算， ppf是cdf的逆运算。具体解释参见上图。其他统计量的相关计算方法与之类似，不同之处就是少了自由度作为参数。</p>
 

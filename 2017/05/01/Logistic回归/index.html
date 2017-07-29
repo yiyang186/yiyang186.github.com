@@ -102,7 +102,7 @@
 <meta property="og:description" content="逻辑回归的建模sigmoid函数说道建模，总有一些粗暴的地方，即强行给真实模型$f$指定某种形式$\hat f$，像线性回归里就强行指定了$\hat f(x)=\beta^T x, x \in R^p, \beta \in  R^{p+1}$这种形式，然后依靠所找到的最优的$\beta$使$\hat f$尽量接近$f$。分类问题与回归的问题的不同在于y的值域不同，对于分类问题，我们想把样本x分到$">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://img.blog.csdn.net/20170621150508657?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcTF3MmUzcjQ0NzA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
-<meta property="og:updated_time" content="2017-07-27T06:30:45.506Z">
+<meta property="og:updated_time" content="2017-07-29T07:30:12.811Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="逻辑回归">
 <meta name="twitter:description" content="逻辑回归的建模sigmoid函数说道建模，总有一些粗暴的地方，即强行给真实模型$f$指定某种形式$\hat f$，像线性回归里就强行指定了$\hat f(x)=\beta^T x, x \in R^p, \beta \in  R^{p+1}$这种形式，然后依靠所找到的最优的$\beta$使$\hat f$尽量接近$f$。分类问题与回归的问题的不同在于y的值域不同，对于分类问题，我们想把样本x分到$">
@@ -430,11 +430,31 @@ x \in R^p, \beta_k \in  R^{p+1}, k=1,2,...,K-1
 \end{equation}
 \tag 7$$<br>其中，$x \in R^p, \beta_k \in  R^{p+1}, k=1,2,...,K-1$。<br>这很像<strong>softmax回归</strong>，把(7)中的“1”替换成“$e^{-\beta_K^T x}$”就成了softmax回归。<br>$$P(y=k|x; \beta) = \frac{e^{-\beta_k^T x}}{\sum_{i=1}^Ke^{-\beta_i^T x}}, k=1,2,...,K \tag 8$$<br>softmax回归可以看做是logistic的推广。当然softmax回归并不是这么推倒出来的，它的建模过程有它自己的考虑，像logistic一样出于某种需求被逐步构建出，就像你做deep learning搭积木一样，是一种建模过程。你能根据模型的某种数学特点把他们归类在一起，比如GLM, tree。模型与模型间确定的推导关系是很难给出的, 至少我在写这个博客时还做不到。或者我该以另一种形式开头，如“人们找到一种叫做softmax的函数，它有这样那样的特点。。。”再写一篇博客。</p>
 <h1 id="逻辑回归的求解"><a href="#逻辑回归的求解" class="headerlink" title="逻辑回归的求解"></a>逻辑回归的求解</h1><p>用最大似然估计法估计$\beta$, 令<br>$$p_i=P(y_i=1|x_i)=1-sigmoid(\beta^Tx_i)$$<br>则<br>$$P(y_i=0|x_i)=1-p_i=sigmoid(\beta^Tx_i)$$<br>那么似然函数为：<br>$$l(\beta)=\prod_{i=1}^np_i^{y_i}(1-p_i)^{1-y_i}$$<br>对数似然为：<br>$$L(\beta)=\log l(\beta)=\sum_{i=1}^ny_i\log p_i+(1-y_i)\log(1-p_i)\tag8$$<br>最大化$L(\beta)$即最小化$-L(\beta)$<br>$$-L(\beta)=-\log l(\beta)=\sum_{i=1}^n-y_i\log p_i-(1-y_i)\log(1-p_i)\tag9$$<br>(9)等号右边每一项为交叉熵（cross entropy）,因此对逻辑回归使用最大似然估计等价于最小化交叉熵，因此在神经网络中以交叉熵为损失函数求解二分类问题与最大似然估计是等价的。<br>这里只介绍一般逻辑回归的求解，回到(8), 将(6)(7)带入(8)得<br>$$L(\beta)=\sum_{i=1}^ny_i\beta^Tx_i-\log(1+exp(\beta^Tx_i))$$<br>令其梯度为0有<br>$$\frac{\partial L(\beta)}{\partial \beta}=\sum_{i=1}^nx_i(y_i-\frac{exp(\beta^Tx_i)}{1+exp(\beta^Tx_i)})=\sum_{i=1}^nx_i(y_i-p_i)=0\tag{10}$$<br>(10)是非线性方程组，难以求得$\beta$的解析解，可使用Newton-Raphson算法（牛顿迭代法）求解(10)的零点，Newton-Raphson算法需要(10)的导数，也就是$L(\beta)$的Hessian矩阵（二阶导数）<br>$$\frac{\partial L^2(\beta)}{\partial \beta \partial \beta^T}=-\sum_{i=1}^nx_ix_i^Tp_i(1-p_i)$$<br>因此Newton-Raphson算法每一步的迭代公式为：<br>$$\beta^{new}=\beta^{old}-\bigg(\frac{\partial L^2(\beta)}{\partial \beta \partial \beta^T}\Bigg|_{\beta^{old}}\bigg)^{-1}\frac{\partial L(\beta)}{\partial \beta}\Bigg|_{\beta^{old}}\tag{11}$$<br>可根据(11)迭代即可求解出(10)的零点$\beta$，同时也是(8)的极值点。</p>
+<h1 id="最小化交叉熵损失与最大化似然函数"><a href="#最小化交叉熵损失与最大化似然函数" class="headerlink" title="最小化交叉熵损失与最大化似然函数"></a>最小化交叉熵损失与最大化似然函数</h1><p>最大化似然估计是显而易见的：<br>$$\max_{p_i} \sum_{i=1}^n y_i\log p_i+(1-y_i)\log(1-p_i)$$</p>
+<p>那么，<strong>如何理解最小化交叉熵(互熵)损失</strong>?<br><br>假设给定x,y真实的分布服从0-1分布，假设y取1的真实条件分布为p(y|x)有，$y|x \sim p(y|x)$。我们所估计的条件分布为$\hat p(y|x)$。如果这两个分布很接近的话，他们的KL散度应该尽量小，那么可以最小化KL散度为目标，找到最接近$p(y|x)$的$\hat p(y|x)$：</p>
+
+$$\begin{aligned}\min_{\hat p} D_{KL}(p \|\hat p)
+  &= \min_{\hat p} E_p \log \frac{p(y|x)}{\hat p(y|x)} \\
+  &= \min_{\hat p} \{E_p \log p(y|x) - E_p\log \hat p(y|x)\} \\
+  &= \min_{\hat p} \{E_p \log p(y|x)\} + \min_{\hat p} \{- E_p\log \hat p(y|x)\} \\
+  &= \min_{\hat p} \{-E_p\log \hat p(y|x)\} \\
+\end{aligned} \tag{12}$$
+
+<p>由于$E_p \log p(y|x)$与$\hat p$无关，所以式(12)的最后一个等号成立。其实根据交叉熵的定义，这是显而易见的:<br>$$H(p,\hat p)=H(p)+D_{KL}(p \| \hat p) \tag{13}$$</p>
+<p>其中, $H(p,\hat p)$是分布p与分布$\hat p$的交叉熵，H(p)是分布p的信息熵。由于数据集已知，H(p)已知，所以最小化KL散度$D_{KL}(p \| \hat p)$等价于最小化交叉熵$H(p,\hat p)$.<br><br>把交叉熵展开，可得到最小化交叉熵与最大化似然函数等价：<br>
+$$\begin{aligned}\min_{\hat p} \{-E_p\log \hat p(y|x)\}
+  &= \min_{\hat p} \{-E_{y|x}\log \hat p(y|x)\} \\
+  &= \min_{p_i} \frac{1}{n} \sum_{i=1}^n \{ \begin{matrix} -\log p_i & y_i=1|x_i \\ -\log (1-p_i) & y_i=0|x_i \end{matrix} \\
+  &= \min_{p_i} \frac{1}{n} \sum_{i=1}^n -y_i\log p_i -(1-y_i)\log (1-p_i) \\
+  &= \min_{p_i} \sum_{i=1}^n -y_i\log p_i -(1-y_i)\log (1-p_i) \\
+  &= \max_{p_i} \sum_{i=1}^n y_i\log p_i +(1-y_i)\log (1-p_i) \\
+\end{aligned} \tag{14}$$
+</p>
 <h1 id="以建模的遐想"><a href="#以建模的遐想" class="headerlink" title="以建模的遐想"></a>以$\log{{P(y=1|x)}\over {P(y=0|x)}}=\beta^Tx$建模的遐想</h1><p><strong>考虑任意样本$x_0$</strong>：</p>
 <ul>
 <li>若$x_0$属于1类的概率大于属于0类的概率，它应当在分类平面$\beta^Tx=0$的某一边，不妨设$\beta^Tx_0>0$；</li>
-<li>若$x_0$属于0类的概率大于属于1类的概率，它应当在分类平面$\beta^Tx=0$的另一边，即$\beta^Tx_0<0$。< li="">
-</0$。<></li></ul>
+<li>若$x_0$属于0类的概率大于属于1类的概率，它应当在分类平面$\beta^Tx=0$的另一边，即$\beta^Tx_0 < 0$。</li>
+</ul>
 <p>换成数学的语言就是：</p>
 <table>
 <thead>
@@ -449,12 +469,12 @@ x \in R^p, \beta_k \in  R^{p+1}, k=1,2,...,K-1
 <td>$$\beta^Tx_0>0$$</td>
 </tr>
 <tr>
-<td>$$\log{{P(y=1|x_0)}\over {P(y=0|x_0)}}\<0$$< td="">
-<td>$$\beta^Tx_0\<0$$< td="">
-</0$$<></td></0$$<></td></tr>
+<td>$$\log{{P(y=1|x_0)}\over {P(y=0|x_0)}} < 0$$</td>
+<td>$$\beta^Tx_0 < 0$$</td>
+</tr>
 </tbody>
 </table>
-<p>只要$\log{{P(y=1|x_0)}\over {P(y=0|x_0)}}$和$\beta^Tx_0$同号就是我们想要的模型。<strong>Logistic直接以$\log{{P(y=1|x)}\over {P(y=0|x)}}=\beta^Tx$建模</strong>保证了这种同号的要求，但是这样建模多了一个副产品，就是“绝对值相等”——<br>$$|\log{{P(y=1|x_0)}\over {P(y=0|x_0)}}|=|\beta^Tx_0|\tag{12}$$<br>容易理解，$|\beta^Tx_0|$是$x_0$到分类平面$\beta^Tx=0$的距离，而$|\log{{P(y=1|x_0)}\over {P(y=0|x_0)}}|$是样本$x_0$属于于0，1类概率的对数比率（log-odd）。二者相等吗？<strong>样本到分类平面的距离与样本属于各类概率的对数比率大小相等</strong>吗？有可能碰到正好满足的样本，但是绝大多数情况下不相等。<strong>我想</strong>，这种过度建模也许就是LR的缺陷所在。</p>
+<p>只要$\log{{P(y=1|x_0)}\over {P(y=0|x_0)}}$和$\beta^Tx_0$同号就是我们想要的模型。<strong>Logistic直接以$\log{{P(y=1|x)}\over {P(y=0|x)}}=\beta^Tx$建模</strong>保证了这种同号的要求，但是这样建模多了一个副产品，就是“绝对值相等”——<br>$$|\log{{P(y=1|x_0)}\over {P(y=0|x_0)}}|=|\beta^Tx_0|\tag{15}$$<br>容易理解，$|\beta^Tx_0|$是$x_0$到分类平面$\beta^Tx=0$的距离，而$|\log{{P(y=1|x_0)}\over {P(y=0|x_0)}}|$是样本$x_0$属于于0，1类概率的对数比率（log-odd）。二者相等吗？<strong>样本到分类平面的距离与样本属于各类概率的对数比率大小相等</strong>吗？有可能碰到正好满足的样本，但是绝大多数情况下不相等。这是逻辑回归建模稍稍强加于实际模型的假设。</p>
 <p>这些想法由ESL和<a href="https://www.zhihu.com/question/35322351/answer/141562541" target="_blank" rel="external">我在知乎中关于逻辑回归的回答</a>引申而来，我也没见过相关的文献，要是有相关的文献作为以上臆想的佐证或者驳斥，烦请通知我。</p>
 <h1 id="Newton-Raphson算法-牛顿迭代法"><a href="#Newton-Raphson算法-牛顿迭代法" class="headerlink" title="Newton-Raphson算法(牛顿迭代法)"></a>Newton-Raphson算法(牛顿迭代法)</h1><iframe height="490" width="680" src="https://upload.wikimedia.org/wikipedia/commons/e/e0/NewtonIteration_Ani.gif"></iframe>
       
@@ -662,7 +682,7 @@ x \in R^p, \beta_k \in  R^{p+1}, k=1,2,...,K-1
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#逻辑回归的建模"><span class="nav-number">1.</span> <span class="nav-text">逻辑回归的建模</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#sigmoid函数"><span class="nav-number">1.1.</span> <span class="nav-text">sigmoid函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二分类"><span class="nav-number">1.2.</span> <span class="nav-text">二分类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#逻辑回归的特质"><span class="nav-number">1.3.</span> <span class="nav-text">逻辑回归的特质</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多分类"><span class="nav-number">1.4.</span> <span class="nav-text">多分类</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#逻辑回归的求解"><span class="nav-number">2.</span> <span class="nav-text">逻辑回归的求解</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#以建模的遐想"><span class="nav-number">3.</span> <span class="nav-text">以$\log{{P(y=1|x)}\over {P(y=0|x)}}=\beta^Tx$建模的遐想</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Newton-Raphson算法-牛顿迭代法"><span class="nav-number">4.</span> <span class="nav-text">Newton-Raphson算法(牛顿迭代法)</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#逻辑回归的建模"><span class="nav-number">1.</span> <span class="nav-text">逻辑回归的建模</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#sigmoid函数"><span class="nav-number">1.1.</span> <span class="nav-text">sigmoid函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二分类"><span class="nav-number">1.2.</span> <span class="nav-text">二分类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#逻辑回归的特质"><span class="nav-number">1.3.</span> <span class="nav-text">逻辑回归的特质</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多分类"><span class="nav-number">1.4.</span> <span class="nav-text">多分类</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#逻辑回归的求解"><span class="nav-number">2.</span> <span class="nav-text">逻辑回归的求解</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#最小化交叉熵损失与最大化似然函数"><span class="nav-number">3.</span> <span class="nav-text">最小化交叉熵损失与最大化似然函数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#以建模的遐想"><span class="nav-number">4.</span> <span class="nav-text">以$\log{{P(y=1|x)}\over {P(y=0|x)}}=\beta^Tx$建模的遐想</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Newton-Raphson算法-牛顿迭代法"><span class="nav-number">5.</span> <span class="nav-text">Newton-Raphson算法(牛顿迭代法)</span></a></li></ol></div>
             
 
           </div>
