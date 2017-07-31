@@ -77,7 +77,7 @@
 <link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="R," />
+  <meta name="keywords" content="加法模型," />
 
 
 
@@ -93,18 +93,18 @@
 
 
 
-<meta name="description" content="问题实验室的redhat用的是centos源，跟centos情况应该差不多。 当我安装caret时，R提示我以下这些包安装失败 ‘car’‘nloptr’, ‘lme4’, ‘pbkrtest’‘minqa’ 理清依赖关系，最根源的问题是minqa和nloptr安装失败。 安装minqa安装minqa失败的原因是ld找不到libgfortran.so, 由于我已经安装了gcc, 应该有libgfo">
-<meta name="keywords" content="R">
+<meta name="description" content="介绍因为太简单太常见，加法模型往往容易被忽略，但它却蕴含着非常根本的建模思想。针对于某个案例，如果世间存在一个真实模型f(x),加法模型可以看做是它的一阶泰勒近似。   在时间序列分析里，时间序列通过加法分解为季节分量，趋势和误差项：$Y_t=S_t+T_t+\varepsilon$。其中$Y_t$为季节分量，$T_t$为趋势项，$\varepsilon$为误差项。 在线性回归里，使用预测子($x">
+<meta name="keywords" content="加法模型">
 <meta property="og:type" content="article">
-<meta property="og:title" content="centos安装caret包失败">
-<meta property="og:url" content="http://yoursite.com/2016/08/28/centos安装caret包失败/index.html">
+<meta property="og:title" content="加法模型感想">
+<meta property="og:url" content="http://yoursite.com/2017/07/30/加法模型/index.html">
 <meta property="og:site_name" content="Yiyang&#39;s Blog">
-<meta property="og:description" content="问题实验室的redhat用的是centos源，跟centos情况应该差不多。 当我安装caret时，R提示我以下这些包安装失败 ‘car’‘nloptr’, ‘lme4’, ‘pbkrtest’‘minqa’ 理清依赖关系，最根源的问题是minqa和nloptr安装失败。 安装minqa安装minqa失败的原因是ld找不到libgfortran.so, 由于我已经安装了gcc, 应该有libgfo">
+<meta property="og:description" content="介绍因为太简单太常见，加法模型往往容易被忽略，但它却蕴含着非常根本的建模思想。针对于某个案例，如果世间存在一个真实模型f(x),加法模型可以看做是它的一阶泰勒近似。   在时间序列分析里，时间序列通过加法分解为季节分量，趋势和误差项：$Y_t=S_t+T_t+\varepsilon$。其中$Y_t$为季节分量，$T_t$为趋势项，$\varepsilon$为误差项。 在线性回归里，使用预测子($x">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-07-27T02:00:44.497Z">
+<meta property="og:updated_time" content="2017-07-31T08:56:40.536Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="centos安装caret包失败">
-<meta name="twitter:description" content="问题实验室的redhat用的是centos源，跟centos情况应该差不多。 当我安装caret时，R提示我以下这些包安装失败 ‘car’‘nloptr’, ‘lme4’, ‘pbkrtest’‘minqa’ 理清依赖关系，最根源的问题是minqa和nloptr安装失败。 安装minqa安装minqa失败的原因是ld找不到libgfortran.so, 由于我已经安装了gcc, 应该有libgfo">
+<meta name="twitter:title" content="加法模型感想">
+<meta name="twitter:description" content="介绍因为太简单太常见，加法模型往往容易被忽略，但它却蕴含着非常根本的建模思想。针对于某个案例，如果世间存在一个真实模型f(x),加法模型可以看做是它的一阶泰勒近似。   在时间序列分析里，时间序列通过加法分解为季节分量，趋势和误差项：$Y_t=S_t+T_t+\varepsilon$。其中$Y_t$为季节分量，$T_t$为趋势项，$\varepsilon$为误差项。 在线性回归里，使用预测子($x">
 
 
 
@@ -132,13 +132,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2016/08/28/centos安装caret包失败/"/>
+  <link rel="canonical" href="http://yoursite.com/2017/07/30/加法模型/"/>
 
 
 
 
 
-  <title>centos安装caret包失败 | Yiyang's Blog</title>
+  <title>加法模型感想 | Yiyang's Blog</title>
   
 
 
@@ -297,7 +297,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/08/28/centos安装caret包失败/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/07/30/加法模型/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Yiyang Peng">
@@ -314,7 +314,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">centos安装caret包失败</h1>
+          <h1 class="post-title" itemprop="name headline">加法模型感想</h1>
         
 
         <div class="post-meta">
@@ -326,8 +326,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-08-28T10:02:00+08:00">
-                2016-08-28
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-30T18:37:22+08:00">
+                2017-07-30
               </time>
             
 
@@ -349,8 +349,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/操作/" itemprop="url" rel="index">
-                    <span itemprop="name">操作</span>
+                  <a href="/categories/机器学习/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习</span>
                   </a>
                 </span>
 
@@ -383,14 +383,20 @@
       
 
       
-        <h1 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h1><p>实验室的redhat用的是centos源，跟centos情况应该差不多。</p>
-<p>当我安装caret时，R提示我以下这些包安装失败<br> ‘car’‘nloptr’, ‘lme4’, ‘pbkrtest’‘minqa’</p>
-<p>理清依赖关系，最根源的问题是minqa和nloptr安装失败。</p>
-<h1 id="安装minqa"><a href="#安装minqa" class="headerlink" title="安装minqa"></a>安装minqa</h1><p>安装minqa失败的原因是ld找不到libgfortran.so, 由于我已经安装了gcc, 应该有libgfortran.so的。后来我在/usr/lib64/下边找到了libgfortran.so.3.0.0（你也可能会在/usr/lib或者/usr/local/lib、/usr/local/lib64里找到）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ln -sv /usr/lib64/libgfortran.so.3.0.0 /usr/lib64/libgfortran.so</div></pre></td></tr></table></figure></p>
-<p>然后再到R里安装minqa就行了。</p>
-<h1 id="安装nloptr"><a href="#安装nloptr" class="headerlink" title="安装nloptr"></a>安装nloptr</h1><p>在stack overflow里搜到的办法是, 系统需要安装nlopt和nlopt-devel<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">yum install nlopt nlopt-devel</div></pre></td></tr></table></figure></p>
-<p>回到R就可以安装nloptr了</p>
-<h1 id="安装caret包"><a href="#安装caret包" class="headerlink" title="安装caret包"></a>安装caret包</h1><p>接下来安装caret包就很顺利了，要是不顺利的话，再把上述依赖包一个一个安装，看看是什么问题，一个一个解决。</p>
+        <h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>因为太简单太常见，加法模型往往容易被忽略，但它却蕴含着非常根本的建模思想。针对于某个案例，如果世间存在一个真实模型f(x),加法模型可以看做是它的一阶泰勒近似。</p>
+<blockquote>
+<ol>
+<li>在时间序列分析里，时间序列通过加法分解为季节分量，趋势和误差项：$Y_t=S_t+T_t+\varepsilon$。其中$Y_t$为季节分量，$T_t$为趋势项，$\varepsilon$为误差项。</li>
+<li>在线性回归里，使用预测子($x \in R^p$)的线性组合对响应变量(y)建模：$y=x^T\beta+\varepsilon$，其中$\beta \in R^p$</li>
+<li>在逻辑回归里，使用预测子($X \in R^p$)的线性组合对类后验概率的log-odd建模：$\log(\frac{Pr(y=1|x)}{1-Pr(y=1|x)})=x^T\beta+\varepsilon$</li>
+</ol>
+</blockquote>
+<p>它随处可见，且极具拓展性。</p>
+<ol>
+<li><strong>基展开</strong>：引入基函数h(x)代替x，拓展输入空间，引入非线性，增强输入的表达能力，$y=\phi^T(x)\beta+\varepsilon$。统计学习中广泛使用的基函数有多项式基，log，sqrt，范数，指示函数，样条基，小波基等。<br><br><strong>此外，使用正定核$K(x,z)=\phi^T(x)\phi(z)$也是隐式地引入基展开。</strong></li>
+<li><strong>核方法</strong>：最小化经验损失时引入加权核$K_\lambda(x_0,x)$, 根据x到$x_0$的距离赋予x一个权值，可以突出x附近样本的在模型中的地位，为模型引入了局部性。$\min \sum_{i=1}^N K_\lambda(x,x_i)[y_i-\alpha-x_i^T\beta ]$。常用的加权核有高斯核，三次方核，Epanechnikov核，k近邻核。</li>
+<li><strong>多层嵌套</strong>：引入激活函数后，多层嵌套加法模型可以得到神经网络的雏形。$f(x)=\sigma(\sum_{i=1}^M\sigma(x^Tw_i))$中的x也可用$\sigma(x^T\beta)$代替。</li>
+</ol>
 
       
     </div>
@@ -420,7 +426,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/R/" rel="tag"># R</a>
+            <a href="/tags/加法模型/" rel="tag"># 加法模型</a>
           
         </div>
       
@@ -433,8 +439,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/07/08/python解压rar文件/" rel="next" title="python解压rar文件">
-                <i class="fa fa-chevron-left"></i> python解压rar文件
+              <a href="/2017/05/24/前端实时更新后端处理进度/" rel="next" title="前端实时更新后端处理进度">
+                <i class="fa fa-chevron-left"></i> 前端实时更新后端处理进度
               </a>
             
           </div>
@@ -442,10 +448,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2016/10/06/怎样用scipy求一些统计量的p值和分位数/" rel="prev" title="怎样用scipy求一些统计量的p值和分位数">
-                怎样用scipy求一些统计量的p值和分位数 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -595,7 +597,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#问题"><span class="nav-number">1.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装minqa"><span class="nav-number">2.</span> <span class="nav-text">安装minqa</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装nloptr"><span class="nav-number">3.</span> <span class="nav-text">安装nloptr</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装caret包"><span class="nav-number">4.</span> <span class="nav-text">安装caret包</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#介绍"><span class="nav-number">1.</span> <span class="nav-text">介绍</span></a></li></ol></div>
             
 
           </div>
