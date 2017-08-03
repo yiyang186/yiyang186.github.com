@@ -102,7 +102,7 @@
 <meta property="og:description" content="逻辑回归的建模sigmoid函数说道建模，总有一些粗暴的地方，即强行给真实模型$f$指定某种形式$\hat f$，像线性回归里就强行指定了$\hat f(x)=\beta^T x, x \in R^p, \beta \in  R^{p+1}$这种形式，然后依靠所找到的最优的$\beta$使$\hat f$尽量接近$f$。分类问题与回归的问题的不同在于y的值域不同，对于分类问题，我们想把样本x分到$">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://img.blog.csdn.net/20170621150508657?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcTF3MmUzcjQ0NzA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
-<meta property="og:updated_time" content="2017-07-29T07:30:12.811Z">
+<meta property="og:updated_time" content="2017-08-03T08:51:30.866Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="逻辑回归">
 <meta name="twitter:description" content="逻辑回归的建模sigmoid函数说道建模，总有一些粗暴的地方，即强行给真实模型$f$指定某种形式$\hat f$，像线性回归里就强行指定了$\hat f(x)=\beta^T x, x \in R^p, \beta \in  R^{p+1}$这种形式，然后依靠所找到的最优的$\beta$使$\hat f$尽量接近$f$。分类问题与回归的问题的不同在于y的值域不同，对于分类问题，我们想把样本x分到$">
@@ -444,7 +444,7 @@ $$\begin{aligned}\min_{\hat p} D_{KL}(p \|\hat p)
 <p>其中, $H(p,\hat p)$是分布p与分布$\hat p$的交叉熵，H(p)是分布p的信息熵。由于数据集已知，H(p)已知，所以最小化KL散度$D_{KL}(p \| \hat p)$等价于最小化交叉熵$H(p,\hat p)$.<br><br>把交叉熵展开，可得到最小化交叉熵与最大化似然函数等价：<br>
 $$\begin{aligned}\min_{\hat p} \{-E_p\log \hat p(y|x)\}
   &= \min_{\hat p} \{-E_{y|x}\log \hat p(y|x)\} \\
-  &= \min_{p_i} \frac{1}{n} \sum_{i=1}^n \{ \begin{matrix} -\log p_i & y_i=1|x_i \\ -\log (1-p_i) & y_i=0|x_i \end{matrix} \\
+  &= \min_{p_i} \frac{1}{n} \sum_{i=1}^n \bigg\{ \begin{matrix} -\log p_i & y_i=1|x_i \\ -\log (1-p_i) & y_i=0|x_i \end{matrix} \\
   &= \min_{p_i} \frac{1}{n} \sum_{i=1}^n -y_i\log p_i -(1-y_i)\log (1-p_i) \\
   &= \min_{p_i} \sum_{i=1}^n -y_i\log p_i -(1-y_i)\log (1-p_i) \\
   &= \max_{p_i} \sum_{i=1}^n y_i\log p_i +(1-y_i)\log (1-p_i) \\
@@ -605,7 +605,7 @@ $$\begin{aligned}\min_{\hat p} \{-E_p\log \hat p(y|x)\}
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">29</span>
+                <span class="site-state-item-count">30</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -616,7 +616,7 @@ $$\begin{aligned}\min_{\hat p} \{-E_p\log \hat p(y|x)\}
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-count">5</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -627,7 +627,7 @@ $$\begin{aligned}\min_{\hat p} \{-E_p\log \hat p(y|x)\}
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">30</span>
+                <span class="site-state-item-count">32</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
