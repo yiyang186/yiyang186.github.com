@@ -101,7 +101,7 @@
 <meta property="og:site_name" content="Yiyang&#39;s Blog">
 <meta property="og:description" content="Boosting不平等的委员会boosting提升方法的动机是合并许多“弱”学习器输出以产生有效的“委员会”。从这一角度看，boosting与同为ensamble集成方法的bagging袋装方法非常相似。其实这种相似是非常表面的，boosting与bagging有着本质的区别。 boosting的过程就是不断地修改数据集，在此之上应用弱学习器，由此产生一个弱学习器序列$b(x;\gamma_m),">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-08-03T13:46:37.277Z">
+<meta property="og:updated_time" content="2017-08-05T08:25:13.249Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="从boosting到GBDT">
 <meta name="twitter:description" content="Boosting不平等的委员会boosting提升方法的动机是合并许多“弱”学习器输出以产生有效的“委员会”。从这一角度看，boosting与同为ensamble集成方法的bagging袋装方法非常相似。其实这种相似是非常表面的，boosting与bagging有着本质的区别。 boosting的过程就是不断地修改数据集，在此之上应用弱学习器，由此产生一个弱学习器序列$b(x;\gamma_m),">
@@ -404,7 +404,7 @@
 </ol>
 </blockquote>
 <p>算法的要点是：在第m次迭代中，求解最优的弱学习器$b(x;\gamma_m)$和响应的系数$\beta_m$,并将其添加到当前的“委员会”$f_{m-1}(x)$中，由此产生新的“委员会”$f_{m}(x)$。之前添加的项并不会改变，每次都添加最优的弱学习器，这包含着<strong>贪心</strong>的思想。</p>
-<h2 id="前向分步拟合-指数损失-Adaboost"><a href="#前向分步拟合-指数损失-Adaboost" class="headerlink" title="前向分步拟合+指数损失=Adaboost"></a>前向分步拟合+指数损失=Adaboost</h2><p>考虑一个2分类问题，数据集为$\{x_i, y_i\}_{i=1}^N$，其中 $y_i \in \{ -1, 1\}$。面对分类问题，有时我们会使用指数损失：<br>$$L(y,f(x))=\exp(-yf(x))$$<br>对式(3)我们使用指数损失：</p>
+<h2 id="分类：前向分步拟合-指数损失-Adaboost"><a href="#分类：前向分步拟合-指数损失-Adaboost" class="headerlink" title="分类：前向分步拟合+指数损失=Adaboost"></a>分类：前向分步拟合+指数损失=Adaboost</h2><p>考虑一个2分类问题，数据集为$\{x_i, y_i\}_{i=1}^N$，其中 $y_i \in \{ -1, 1\}$。面对分类问题，有时我们会使用指数损失：<br>$$L(y,f(x))=\exp(-yf(x))$$<br>对式(3)我们使用指数损失：</p>
 
 $$\begin{aligned}(\beta_m, \gamma_m) 
     &= \arg\min_{\beta, \gamma}\sum_{i=1}^N \exp[-y_i(f_{m-1}(x_i)+\beta b(x_i;\gamma))] \\
@@ -465,7 +465,15 @@ w_i^{(m+1)} & = \exp(-y_if_m(x_i)) \\
 </ol>
 </blockquote>
 <p>我们惊奇地发现，这个算法和Adaboost一模一样。</p>
-<h1 id="GBDT"><a href="#GBDT" class="headerlink" title="GBDT"></a>GBDT</h1><h2 id="前向分步拟合-平方损失"><a href="#前向分步拟合-平方损失" class="headerlink" title="前向分步拟合+平方损失"></a>前向分步拟合+平方损失</h2>
+<h2 id="回归：前向分步拟合-平方损失-梯度下降"><a href="#回归：前向分步拟合-平方损失-梯度下降" class="headerlink" title="回归：前向分步拟合+平方损失=梯度下降"></a>回归：前向分步拟合+平方损失=梯度下降</h2><p>面对回归问题，通常使用平方损失：<br>$$L(y, f(x))=(y-f(x))^2$$<br>带入前向分布拟合的最小化目标函数中：<br>
+$$\begin{aligned}
+(\beta_m, \gamma_m) &= \arg\min_{\beta, \gamma}\sum_{i=1}^NL\bigg(y_i, f_{m-1}(x_i)+\beta b(x_i;\gamma)\bigg) \\
+&= \arg\min_{\beta, \gamma}\sum_{i=1}^N \bigg(y_i - f_{m-1}(x_i) - \beta b(x_i;\gamma)\bigg)^2 \\
+&= \arg\min_{\beta, \gamma}\sum_{i=1}^N \bigg(r_{im} - \beta b(x_i;\gamma)\bigg)^2
+\end{aligned}
+\tag{14}$$
+<br>其中$r_{im}=y<em>i - f</em>{m-1}(x_i)$,是当前模型(第上一次迭代所产生的模型)在第i个样本上的残差。这样，对于平方损失，每一次迭代都是把对当前模型残差拟合的最好的弱分类器及其系数$\beta_mb(x;\gamma_m)$加到总模型里。</p>
+
       
     </div>
 
@@ -667,7 +675,7 @@ w_i^{(m+1)} & = \exp(-y_if_m(x_i)) \\
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Boosting"><span class="nav-number">1.</span> <span class="nav-text">Boosting</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#不平等的委员会"><span class="nav-number">1.1.</span> <span class="nav-text">不平等的委员会</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Booting与加法模型"><span class="nav-number">1.2.</span> <span class="nav-text">Booting与加法模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#前向分步拟合Boosting"><span class="nav-number">1.3.</span> <span class="nav-text">前向分步拟合Boosting</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#前向分步拟合-指数损失-Adaboost"><span class="nav-number">1.4.</span> <span class="nav-text">前向分步拟合+指数损失=Adaboost</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#GBDT"><span class="nav-number">2.</span> <span class="nav-text">GBDT</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#前向分步拟合-平方损失"><span class="nav-number">2.1.</span> <span class="nav-text">前向分步拟合+平方损失</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Boosting"><span class="nav-number">1.</span> <span class="nav-text">Boosting</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#不平等的委员会"><span class="nav-number">1.1.</span> <span class="nav-text">不平等的委员会</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Booting与加法模型"><span class="nav-number">1.2.</span> <span class="nav-text">Booting与加法模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#前向分步拟合Boosting"><span class="nav-number">1.3.</span> <span class="nav-text">前向分步拟合Boosting</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分类：前向分步拟合-指数损失-Adaboost"><span class="nav-number">1.4.</span> <span class="nav-text">分类：前向分步拟合+指数损失=Adaboost</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#回归：前向分步拟合-平方损失-梯度下降"><span class="nav-number">1.5.</span> <span class="nav-text">回归：前向分步拟合+平方损失=梯度下降</span></a></li></ol></li></ol></div>
             
 
           </div>
