@@ -101,7 +101,7 @@
 <meta property="og:site_name" content="Yiyang&#39;s Blog">
 <meta property="og:description" content="介绍EM算法的材料里，我目前看过且觉得比较好的就是NG老师的CS229讲义和李航老师的统计学习方法。我也提不出什么新东西，就结合混合高斯分布，在这两位牛人的基础上，谈一点自己觉得看待EM算法很重要的2个必须弄清楚的问题：为什么要有EM算法，为什么叫E步和M步，还解释了一些介绍EM算法时免不了要提到的公式。如果不把这些问题和公式解释清楚真的能理解em吗？我想可能不能 为什么要有EM算法我把EM算法当">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-08-02T03:54:45.155Z">
+<meta property="og:updated_time" content="2017-08-05T08:45:28.226Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="如何理解EM算法">
 <meta name="twitter:description" content="介绍EM算法的材料里，我目前看过且觉得比较好的就是NG老师的CS229讲义和李航老师的统计学习方法。我也提不出什么新东西，就结合混合高斯分布，在这两位牛人的基础上，谈一点自己觉得看待EM算法很重要的2个必须弄清楚的问题：为什么要有EM算法，为什么叫E步和M步，还解释了一些介绍EM算法时免不了要提到的公式。如果不把这些问题和公式解释清楚真的能理解em吗？我想可能不能 为什么要有EM算法我把EM算法当">
@@ -458,7 +458,22 @@ $$\begin{aligned}
 
 <p>其实，E步就是求给定X下的条件期望，也就是后验期望，使得式(5)的琴生不等式能够取等号，是对琴声不等式中,小的那一端进行放大，使其等于大的那一端，这是一次放大；M步最大化联合分布，通过0梯度，拉格朗日法等方法求极值点，又是一次放大。只要似然函数是有界的，只要M步中的0梯度点是极大值点，一直放大下去就能找到最终所求。</p>
 <p><a href="https://www.yhihu.com/question/27976634/answer/163164402" target="_blank" rel="external">我的知乎回答</a></p>
-
+<p><div id="container"></div></p>
+<p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+var gitment = new Gitment({
+  id: 'understanding_em',
+  title: '如何理解EM算法',
+  owner: 'yiyang186',
+  repo: 'blog_comment',
+  oauth: {
+    client_id: '2786ddc8538588bfc0c8',
+    client_secret: '83713f049f4b7296d27fe579a30cdfe9e2e45215',
+  },
+})
+gitment.render('container')
+</script>
       
     </div>
 
