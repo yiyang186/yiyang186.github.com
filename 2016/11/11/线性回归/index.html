@@ -102,7 +102,7 @@
 <meta property="og:description" content="线性模型使用范围相比于非线性模型，线性模型更适用于：  小数据集 低信噪比 稀疏数据  线性回归模型约定数据集$X=(X_1,X_2,...,X_p)$有p个特征，$X_j \in R^N$共N个样本。$$f(X)=\beta_0+\sum_{i=1}^p X_j\beta_j$$ 给X增加一列1，$X=(1, X_1,X_2,...,X_p)$， $\beta=(\beta_0, \beta_1">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://img.blog.csdn.net/20161111093602494">
-<meta property="og:updated_time" content="2017-07-29T07:38:32.500Z">
+<meta property="og:updated_time" content="2017-08-05T08:51:09.011Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="线性回归">
 <meta name="twitter:description" content="线性模型使用范围相比于非线性模型，线性模型更适用于：  小数据集 低信噪比 稀疏数据  线性回归模型约定数据集$X=(X_1,X_2,...,X_p)$有p个特征，$X_j \in R^N$共N个样本。$$f(X)=\beta_0+\sum_{i=1}^p X_j\beta_j$$ 给X增加一列1，$X=(1, X_1,X_2,...,X_p)$， $\beta=(\beta_0, \beta_1">
@@ -477,7 +477,22 @@ $$\begin{aligned}u^T(X^TX)^{-1}u
 <p>所以$\beta_j$的95%置信区间为<br>$$(\hat \beta_j-1.96v_{jj}^{1 \over 2}\hat \sigma, \hat \beta_j+1.96v_{jj}^{1 \over 2}\hat \sigma)$$</p>
 <hr>
 <p>总结自The Elements of Statistical Learning</p>
-
+<p><div id="container"></div></p>
+<p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+var gitment = new Gitment({
+  id: 'linear_regression',
+  title: '线性回归',
+  owner: 'yiyang186',
+  repo: 'blog_comment',
+  oauth: {
+    client_id: '2786ddc8538588bfc0c8',
+    client_secret: '83713f049f4b7296d27fe579a30cdfe9e2e45215',
+  },
+})
+gitment.render('container')
+</script>
       
     </div>
 
