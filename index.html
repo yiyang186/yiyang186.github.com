@@ -1185,14 +1185,14 @@ gitment.render('container')
         
           
             <h1 id="锲子"><a href="#锲子" class="headerlink" title="锲子"></a>锲子</h1><p>最近在看《An Introduction to optimization》，颇有收获，因此想以二维空间$R^2$举例，从简单的无约束的优化（0梯度条件），到等式约束优化(拉格朗日条件)，再到不等式约束优化（KKT条件），写点对于优化问题自己能写的理解。</p>
-<h1 id="无约束的优化问题"><a href="#无约束的优化问题" class="headerlink" title="无约束的优化问题"></a>无约束的优化问题</h1><p>$$\min f(x)$$<br>其中，$x=(x_1, x_2)$. 注意我在下图里画了等高线。此时 f(x) 在局部极小值点 $x^*=(x_1^*,x_2^*)$ 处的梯度必然为0，比较容易理解。这个梯度为零的条件是局部极小值点的必要条件。这样，优化问题的求解变成了对该必要条件解方程组。<br><img src="https://pic3.zhimg.com/v2-be1629a8c17870add974d4ae0bf7d77a_b.png" alt="img"></p>
+<h1 id="无约束的优化问题"><a href="#无约束的优化问题" class="headerlink" title="无约束的优化问题"></a>无约束的优化问题</h1><p>$$\min f(x)$$<br>其中，$x=(x_1, x_2)$. 注意我在下图里画了等高线。此时 f(x) 在局部极小值点 $x^*=(x_1^*,x_2^*)$ 处的梯度必然为0，比较容易理解。这个梯度为零的条件是局部极小值点的必要条件。这样，优化问题的求解变成了对该必要条件解方程组。<br><img src="http://i2.bvimg.com/602416/41658556bdd425c0.png" alt="img"></p>
 <h1 id="带等式约束的优化问题"><a href="#带等式约束的优化问题" class="headerlink" title="带等式约束的优化问题"></a>带等式约束的优化问题</h1>
 $$\begin{aligned}
 \min f(x) \\ 
 s.t. \quad h(x) = 0
 \end{aligned}$$
 
-<p>与无约束的问题不同。我们所要求的极小值点被限制在曲线 $h(x) = 0$ 上，我们将 $\{x|h(x) = 0\}$ 称为可行域, 解只能在这个可行域里取。如下图所示，曲线 $h(x) = 0$ （黑色实曲线）经过无约束极小值点（黑点）附近。那么满足约束的极小值点应该与黑点尽可能近。我们将 $f(x)$ 的等高线不断放大，直到与曲线 $h(x) = 0$ 相切，切点即为所求。相切是关键，是极小值点的必要条件。<br><img src="https://pic1.zhimg.com/v2-549d697c93d9e4d3335c74d597808218_b.png" alt="img"><br>把 $h(x) = 0$ 沿着曲线方向参数化为 $x(t)$ , $x^*=x(t^*)$ 。必有 $f(x)$ 在红点 $x^*$ 的梯度方向与 $x(t)$ 的切线方向垂直，即<br>
+<p>与无约束的问题不同。我们所要求的极小值点被限制在曲线 $h(x) = 0$ 上，我们将 $\{x|h(x) = 0\}$ 称为可行域, 解只能在这个可行域里取。如下图所示，曲线 $h(x) = 0$ （黑色实曲线）经过无约束极小值点（黑点）附近。那么满足约束的极小值点应该与黑点尽可能近。我们将 $f(x)$ 的等高线不断放大，直到与曲线 $h(x) = 0$ 相切，切点即为所求。相切是关键，是极小值点的必要条件。<br><img src="http://i2.bvimg.com/602416/7a778c30cca1631c.png" alt="img"><br>把 $h(x) = 0$ 沿着曲线方向参数化为 $x(t)$ , $x^*=x(t^*)$ 。必有 $f(x)$ 在红点 $x^*$ 的梯度方向与 $x(t)$ 的切线方向垂直，即<br>
 $$\nabla f(x^*) \cdot \dot x(t^*) = 0$$
 <br>另外，由于 $h(x) = 0$ 为常数，那么也有复合函数  $h(x(t)) = 0$ , 因此 $h(x(t))$ 在 t 的导数必为0，根据链式法则有<br>$$\nabla h(x) \cdot \dot x(t) = 0$$<br> （内积为0，说明 $\nabla h(x^*)$ 与 $\dot x(t^*)$ 垂直）<br>因为 $\nabla f(x^*)$ 垂直于 $\dot{x}(t^*)$ ， $\nabla h(x^*)$ 垂直于 $\dot{x}(t^*)$ ，所以 $\nabla f(x^*)$ 与 $\nabla h(x^*)$ 共线，因此有<br>
 $$\nabla f(x^*)+\lambda \nabla h(x^*) = 0$$
@@ -1203,14 +1203,14 @@ $$\begin{aligned}
 s.t. \quad h(x) \leq0
 \end{aligned}$$
 
-<p>当只有一个不等式起作用时, 如我们把问题2里的等式约束 $h(x) = 0$ 改为 $h(x) \leq 0$ ，如下图所示，可行域变成了阴影部分，最小值点还是切点，情况和问题2完全一样，只需要把不等号当做等号去求解即可。<br><img src="https://pic3.zhimg.com/v2-283d1bb0119b63a862f3661b1413bfee_b.png" alt="img"></p>
+<p>当只有一个不等式起作用时, 如我们把问题2里的等式约束 $h(x) = 0$ 改为 $h(x) \leq 0$ ，如下图所示，可行域变成了阴影部分，最小值点还是切点，情况和问题2完全一样，只需要把不等号当做等号去求解即可。<br><img src="http://i2.bvimg.com/602416/e822b79b9d121aba.png" alt="img"></p>
 <h2 id="多于一个不等式起作用"><a href="#多于一个不等式起作用" class="headerlink" title="多于一个不等式起作用"></a>多于一个不等式起作用</h2><p>但是当两个不等式起作用时，那么问题就来了。<br>
 $$\begin{aligned}
 \min f(x) \\ 
 s.t. \quad g_1(x) \leq 0 \\
 \quad g_2(x) \leq 0
 \end{aligned}$$
-<br>如下图，当 $f(x)$ 的等高线慢慢扩大时，等高线与可行域(阴影部分)第一次相遇的点是个顶点，2个不等式同时起作用了。满足约束的最小值点从原来的黑点位置(切点)移动到了红点位置，现在跟哪条约束函数曲线都不相切。这时候就需要用到kkt条件了。这里的“条件”是指：某一个点它如果是最小值点的话，就必须满足这个条件（在含不等式约束的优化问题里）。这是个必要条件，前面说的也全部是必要条件。<br><img src="https://pic4.zhimg.com/v2-7d8461db6ca62803145bc716851bcca3_b.png" alt="img"><br>这个问题的解 $x^*$ 应满足的KKT（卡罗需-库恩-塔克）条件为：</p>
+<br>如下图，当 $f(x)$ 的等高线慢慢扩大时，等高线与可行域(阴影部分)第一次相遇的点是个顶点，2个不等式同时起作用了。满足约束的最小值点从原来的黑点位置(切点)移动到了红点位置，现在跟哪条约束函数曲线都不相切。这时候就需要用到kkt条件了。这里的“条件”是指：某一个点它如果是最小值点的话，就必须满足这个条件（在含不等式约束的优化问题里）。这是个必要条件，前面说的也全部是必要条件。<br><img src="http://i2.bvimg.com/602416/1e53adc055f4fd55.png" alt="img"><br>这个问题的解 $x^*$ 应满足的KKT（卡罗需-库恩-塔克）条件为：</p>
 <ol>
 <li>$\mu_1 \geq 0 , \mu_2 \geq 0$ ;   </li>
 <li>$\nabla f(x^*)+\mu_1\nabla g_1(x^*)+\mu_2\nabla g_2(x^*) = 0$ ;  </li>
@@ -1230,7 +1230,7 @@ s.t. \quad g_1(x) \leq 0 \\
 \quad g_2(x) \leq 0 \\
 \quad g_3(x) \leq 0
 \end{aligned}$$
-<br>如下图的 $g_3(x_1,x_2) \leq 0$ 是不起作用的<br><img src="https://pic3.zhimg.com/v2-07dc9efe827a4a70c684a089472e4076_b.png" alt="img"></p>
+<br>如下图的 $g_3(x_1,x_2) \leq 0$ 是不起作用的<br><img src="http://i2.bvimg.com/602416/91f14864fc993d38.png" alt="img"></p>
 <p>对于最小值点 $x^*$ ,三个不等式约束的不同在于<br>$g_1(x^*) = 0$ （起作用）<br>$g_2(x^*) = 0$ （起作用）<br>$g_3(x^*)<0$ （不起作用,="" 最小值点不在="" $g_3(x)="0$" 上）<br="">这时，这个问题的KKT条件1，2成了：</0$></p>
 <ol>
 <li>$\mu_1 \geq 0 , \mu_2 \geq 0 , \mu_3 \geq 0$ ; </li>
@@ -2567,7 +2567,7 @@ gitment.render('container')
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">36</span>
+                <span class="site-state-item-count">34</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
