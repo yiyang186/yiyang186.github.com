@@ -106,7 +106,7 @@
 <meta property="og:image" content="https://pic3.zhimg.com/v2-283d1bb0119b63a862f3661b1413bfee_b.png">
 <meta property="og:image" content="https://pic4.zhimg.com/v2-7d8461db6ca62803145bc716851bcca3_b.png">
 <meta property="og:image" content="https://pic3.zhimg.com/v2-07dc9efe827a4a70c684a089472e4076_b.png">
-<meta property="og:updated_time" content="2017-08-02T03:54:24.278Z">
+<meta property="og:updated_time" content="2017-08-06T03:00:41.913Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="优化问题基础">
 <meta name="twitter:description" content="锲子最近在看《An Introduction to optimization》，颇有收获，因此想以二维空间$R^2$举例，从简单的无约束的优化（0梯度条件），到等式约束优化(拉格朗日条件)，再到不等式约束优化（KKT条件），写点对于优化问题自己能写的理解。 无约束的优化问题$$\min f(x)$$其中，$x=(x_1, x_2)$. 注意我在下图里画了等高线。此时 f(x) 在局部极小值点 $x">
@@ -453,7 +453,22 @@ $$L(x, \mu)=f(x)+\mu_1 g_1(x)+\mu_2 g_2(x)+...$$
 <h1 id="尾声"><a href="#尾声" class="headerlink" title="尾声"></a>尾声</h1><p>顺带一提，以前读李航老师的《统计学习方法》时，当读到SVM部分的KKT条件一段时，觉得摸不着头脑，现在总结一番后清楚了不少。如《统计学习方法》第一版105页式(7.27)中的第1，2行就是这里的KKT条件2（我这里把偏置b算在x里了），第3行是KKT条件3，第4行是问题中的不等式约束，第5行是KKT条件1。</p>
 <p>最后说明一下，以上所有都是局部极小值点的必要条件。据此求得的解不一定是局部极小值点（更别提全局了），原因是上图中我所画的等高线也许根本就不闭合，也就是说我们一直想要靠近的等高线中间的黑点压根就是个鞍点或者近似鞍点！</p>
 <p><a href="https://www.zhihu.com/question/58584814/answer/159863739" target="_blank" rel="external">我在知乎上的回答</a></p>
-
+<p><div id="container"></div></p>
+<p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+var gitment = new Gitment({
+  id: 'optimization_elements',
+  title: '优化基础问题',
+  owner: 'yiyang186',
+  repo: 'blog_comment',
+  oauth: {
+    client_id: '2786ddc8538588bfc0c8',
+    client_secret: '83713f049f4b7296d27fe579a30cdfe9e2e45215',
+  },
+})
+gitment.render('container')
+</script>
       
     </div>
 
@@ -604,7 +619,7 @@ $$L(x, \mu)=f(x)+\mu_1 g_1(x)+\mu_2 g_2(x)+...$$
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">32</span>
+                <span class="site-state-item-count">36</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

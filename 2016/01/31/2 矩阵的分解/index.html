@@ -104,7 +104,7 @@
 <meta property="og:image" content="http://img.blog.csdn.net/20160929153348292">
 <meta property="og:image" content="http://img.blog.csdn.net/20160131104725445">
 <meta property="og:image" content="http://img.blog.csdn.net/20160929152827925">
-<meta property="og:updated_time" content="2017-07-29T13:20:37.646Z">
+<meta property="og:updated_time" content="2017-08-06T02:57:45.877Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="几种常用矩阵分解">
 <meta name="twitter:description" content="矩阵分解 (decomposition, factorization)是将矩阵拆解为数个矩阵的乘积或加和的过程，可分为三角分解、满秩分解、QR分解、Jordan分解、SVD（奇异值）分解和谱分解等，其中三角分解(LU分解)是高斯消元法的另一种表现形式，在本科的线性代数里已经被我们用烂了，Jordan分解在上一章线性代数引论“求Jordan标准形”里已经介绍。这一章只介绍QR分解、满秩分解、SVD（">
@@ -510,6 +510,22 @@ S_r & 0 \\
 <li>$A_1-A_2$ 为幂等阵的充分必要条件为：$A_1A_2 =A_2A_1=A_2$且有：$R(A_1-A_2) =R(A_1)∩N (A_2 )$；<br>$N (A_1 - A_2 ) =N (A_1 )⊕R (A_2)$；</li>
 <li>若$A_1A_2 =A_2A_1$，则$A_1A_2$ 为幂等阵，且有：<br>$R (A_1A_2 ) =R (A_1 ) ∩R (A_2 )$；<br>$N (A_1A_2 ) =N (A_1 ) +N (A_2 )$。</li>
 </ol>
+<p><div id="container"></div></p>
+<p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+var gitment = new Gitment({
+  id: 'matrix_decomposition',
+  title: '矩阵的分解',
+  owner: 'yiyang186',
+  repo: 'blog_comment',
+  oauth: {
+    client_id: '2786ddc8538588bfc0c8',
+    client_secret: '83713f049f4b7296d27fe579a30cdfe9e2e45215',
+  },
+})
+gitment.render('container')
+</script>
 
       
     </div>
@@ -659,7 +675,7 @@ S_r & 0 \\
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">32</span>
+                <span class="site-state-item-count">36</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

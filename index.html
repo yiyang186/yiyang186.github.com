@@ -297,7 +297,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/08/01/从boosting到GBDT/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/08/01/boosting与指数损失/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Yiyang Peng">
@@ -316,7 +316,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2017/08/01/从boosting到GBDT/" itemprop="url">从boosting到GBDT</a></h1>
+                <a class="post-title-link" href="/2017/08/01/boosting与指数损失/" itemprop="url">boosting与指数损失</a></h1>
         
 
         <div class="post-meta">
@@ -387,9 +387,13 @@
       
         
           
-            <h1 id="Boosting"><a href="#Boosting" class="headerlink" title="Boosting"></a>Boosting</h1><h2 id="不平等的委员会"><a href="#不平等的委员会" class="headerlink" title="不平等的委员会"></a>不平等的委员会</h2><p>boosting提升方法的动机是合并许多“弱”学习器输出以产生有效的“委员会”。从这一角度看，boosting与同为ensamble集成方法的bagging袋装方法非常相似。其实这种相似是非常表面的，boosting与bagging有着本质的区别。</p>
-<p>boosting的过程就是不断地修改数据集，在此之上应用弱学习器，由此产生一个弱学习器序列$b(x;\gamma_m), m = 1, 2, ..., M$。最后通过加权的多数表决来合并每个若学习器的预测结果。总的学习器可以写成：<br>$$G(x) = \sum_{m=1}^M \beta_m b(x; \gamma_m) \tag 1$$<br>其中，$\beta_m > 0$为若学习器$b(x;\gamma_m)$的权重，$\gamma_m$为$b_m(x)$的模型参数。显然，Boosting是加权表决，和Bagging的平均表决有着本质区别：其者的委员会是不平等的，后者的委员会是一人一票的。这也导致二者修改数据集的方式不相同。从这里开始，Boosting和Bagging彻底不同了。</p>
-<h2 id="Booting与加法模型"><a href="#Booting与加法模型" class="headerlink" title="Booting与加法模型"></a>Booting与加法模型</h2><p>观测式(1),可以发现Boosting是一种建立在弱学习器集合上的加法模型。<br>$$G(x) = \sum_{m=1}^M \beta_m b(x; \gamma_m)$$</p>
+            <h1 id="boosting-不平等的委员会"><a href="#boosting-不平等的委员会" class="headerlink" title="boosting-不平等的委员会"></a>boosting-不平等的委员会</h1><p>boosting提升方法的动机是合并许多“弱”学习器输出以产生有效的“委员会”。从这一角度看，boosting与同为ensamble集成方法的bagging袋装方法非常相似。其实这种相似是非常表面的，boosting与bagging有着本质的区别。</p>
+<p>boosting的过程就是不断地修改数据集，在此之上应用弱学习器，由此产生一个弱学习器序列$b(x;\gamma_m), m = 1, 2, ..., M$。最后通过加权的多数表决来合并每个若学习器的预测结果。总的学习器可以写成：<br>
+$$G(x) = \sum_{m=1}^M \beta_m b(x; \gamma_m) \tag 1$$
+<br>其中，$\beta_m > 0$为若学习器$b(x;\gamma_m)$的权重，$\gamma_m$为$b_m(x)$的模型参数。显然，Boosting是加权表决，和Bagging的平均表决有着本质区别：其者的委员会是不平等的，后者的委员会是一人一票的。这也导致二者修改数据集的方式不相同。从这里开始，Boosting和Bagging彻底不同了。</p>
+<h1 id="Boosting与加法模型"><a href="#Boosting与加法模型" class="headerlink" title="Boosting与加法模型"></a>Boosting与加法模型</h1><p>观测式(1),可以发现Boosting是一种建立在弱学习器集合上的加法模型。<br>
+$$G(x) = \sum_{m=1}^M \beta_m b(x; \gamma_m)$$
+</p>
 <blockquote>
 <ul>
 <li>在单隐藏层神经网络中，$b(x;w_m,b_m)=\sigma(w_m^Tx+b_m)$，其中$\gamma_m=(w_m,b_m)$是偏置和连接上的权重<br></li>
@@ -398,8 +402,10 @@
 <li>对于树，$b(x;R_{mj},\theta_m)=\sum_{j=1}^J\theta_{mj}I(x \in R_{mj})$，其中$\gamma_m=(R_{mj},\theta_{mj})$是树的矩形子空间划分和每个子空间上的均值(回归)或多数类(分类)</li>
 </ul>
 </blockquote>
-<p>模型求解策略一般都是最小化经验损失，如<br>$$\min_{\beta_m, \gamma_m}\sum_{i=1}^NL\bigg(y_i, \sum_{m=1}^M\beta_m b(x_i;\gamma_m)\bigg)\tag 2$$<br>但是数值求解boosting“委员会”时，“委员会”中还有多个弱学习器，所有弱学习器一同求解是比较困难的(当时是90年代)，但是贪心地，迭代地，一次只拟合一个弱学习器则是可行且快速的解决方案。</p>
-<h2 id="前向分步拟合Boosting"><a href="#前向分步拟合Boosting" class="headerlink" title="前向分步拟合Boosting"></a>前向分步拟合Boosting</h2><p>通过相继添加新的弱学习器到“委员会”（总的模型）里，而不调整已添加的弱学习器的模型参数及其在委员会中的权重系数，来逼近式(2)的解。算法如下</p>
+<p>模型求解策略一般都是最小化经验损失，如<br>
+$$\min_{\beta_m, \gamma_m}\sum_{i=1}^NL\bigg(y_i, \sum_{m=1}^M\beta_m b(x_i;\gamma_m)\bigg)\tag 2$$
+<br>但是数值求解boosting“委员会”时，“委员会”中还有多个弱学习器，所有弱学习器一同求解是比较困难的(当时是90年代)，但是贪心地，迭代地，一次只拟合一个弱学习器则是可行且快速的解决方案。</p>
+<h1 id="前向分步拟合Boosting"><a href="#前向分步拟合Boosting" class="headerlink" title="前向分步拟合Boosting"></a>前向分步拟合Boosting</h1><p>通过相继添加新的弱学习器到“委员会”（总的模型）里，而不调整已添加的弱学习器的模型参数及其在委员会中的权重系数，来逼近式(2)的解。算法如下</p>
 <blockquote>
 <p>前向分步</p>
 <ol>
@@ -408,7 +414,7 @@
 </ol>
 </blockquote>
 <p>算法的要点是：在第m次迭代中，求解最优的弱学习器$b(x;\gamma_m)$和响应的系数$\beta_m$,并将其添加到当前的“委员会”$f_{m-1}(x)$中，由此产生新的“委员会”$f_{m}(x)$。之前添加的项并不会改变，每次都添加最优的弱学习器，这包含着<strong>贪心</strong>的思想。</p>
-<h2 id="分类：前向分步拟合-指数损失-Adaboost"><a href="#分类：前向分步拟合-指数损失-Adaboost" class="headerlink" title="分类：前向分步拟合+指数损失=Adaboost"></a>分类：前向分步拟合+指数损失=Adaboost</h2><p>考虑一个2分类问题，数据集为$\{x_i, y_i\}_{i=1}^N$，其中 $y_i \in \{ -1, 1\}$。面对分类问题，有时我们会使用指数损失：<br>$$L(y,f(x))=\exp(-yf(x))$$<br>对式(3)我们使用指数损失：</p>
+<h1 id="前向分步拟合-指数损失-Adaboost"><a href="#前向分步拟合-指数损失-Adaboost" class="headerlink" title="前向分步拟合+指数损失=Adaboost"></a>前向分步拟合+指数损失=Adaboost</h1><h2 id="指数经验损失"><a href="#指数经验损失" class="headerlink" title="指数经验损失"></a>指数经验损失</h2><p>考虑一个2分类问题，数据集为$\{x_i, y_i\}_{i=1}^N$，其中 $y_i \in \{ -1, 1\}$。面对分类问题，有时我们会使用指数损失：<br>$$L(y,f(x))=\exp(-yf(x))$$<br>对式(3)我们使用指数损失：</p>
 
 $$\begin{aligned}(\beta_m, \gamma_m) 
     &= \arg\min_{\beta, \gamma}\sum_{i=1}^N \exp[-y_i(f_{m-1}(x_i)+\beta b(x_i;\gamma))] \\
@@ -417,7 +423,7 @@ $$\begin{aligned}(\beta_m, \gamma_m)
 \end{aligned}\tag 4 $$
 
 <p>由于$\exp(-y_if_{m-1}(x_i))$和$\beta, \gamma$无关，可以看做数值优化求解过程中的常数，但它与i,m有关，即和样本、迭代次数有关，令<br>$$w_i^{(m)}=\exp(-y_if_{m-1}(x_i)) \tag 5$$<br>把它看做第m次迭代时，样本i的损失权重，样本权重根据迭代而改变。</p>
-$\beta$与$\gamma$不存在相互依赖的关系，可以分开优化，对于任意的$\beta > 0$与样本无关,因此<br><br>
+<h2 id="求解弱学习器参数"><a href="#求解弱学习器参数" class="headerlink" title="求解弱学习器参数"></a>求解弱学习器参数</h2>$\beta$与$\gamma$不存在相互依赖的关系，可以分开优化，对于任意的$\beta > 0$与样本无关,因此<br><br>
 $$\begin{aligned}
 \gamma_m & = \arg\min_{\gamma}\sum_{i=1}^N w_i^{(m)}\exp(-y_i\beta b(x_i;\gamma)) \\
 & = \arg\min_{\gamma}\exp(\beta)\sum_{i=1}^N w_i^{(m)}\exp(-y_i b(x_i;\gamma)) \\
@@ -428,7 +434,7 @@ $$\begin{aligned}
 <blockquote>
 <p>注意$y_i$的取值为{+1，-1}，当$y_i=b(x;\gamma)$时，$\exp(-y_i b(x_i;\gamma))$和$I(y_i \neq b(x_i;\gamma))$都取到各自的最小值;当$y_i \neq b(x;\gamma)$时，$\exp(-y_i b(x_i;\gamma))$和$I(y_i \neq b(x_i;\gamma))$都取到各自的最大值。</p>
 </blockquote>
-<p>这样，对$\gamma$的优化变成了对单弱学习器参数的求解，得到$\gamma_m$。下面优化系数$\beta_m$。</p>
+<h2 id="求解弱学习器在boosting中的系数"><a href="#求解弱学习器在boosting中的系数" class="headerlink" title="求解弱学习器在boosting中的系数"></a>求解弱学习器在boosting中的系数</h2><p>对$\gamma$的优化变成了对单弱学习器参数的求解，得到$\gamma_m$。下面优化系数$\beta_m$。</p>
 
 $$\begin{aligned}
 \beta_m & = \arg\min_{\beta}\sum_{i=1}^N w_i^{(m)}\exp(-y_i\beta b(x_i;\gamma_m)) \\
@@ -459,7 +465,7 @@ w_i^{(m+1)} & = \exp(-y_if_m(x_i)) \\
 & = w_i^{(m)} \cdot \exp \Big(2\beta_m I(y_i \neq b(x_i; \gamma_m))\Big)e^{-\beta_m}
 \end{aligned}  \tag{11}$$
 
-<p>因为每个样本的权重都乘以因子$e^{-\beta_m}$,所以乘不乘都没关系，令<br>$$\alpha_m = 2\beta_m = \log\frac{1-err_m}{err_m} \tag{12}$$<br>有<br>$$w_i^{(m+1)} = w_i^{(m)} \cdot \exp \Big(\alpha_m I(y_i \neq b(x_i; \gamma_m))\Big) \tag{13}$$<br>最后，每个弱学习器的系数都乘以2，学习器间的权重分布未变，总模型“委员会”为<br>$$G(x)=sign\Big( \sum_{m=1}^M \alpha_m b_m(x)\Big)$$</p>
+<h2 id="导出与adaboost的等价性"><a href="#导出与adaboost的等价性" class="headerlink" title="导出与adaboost的等价性"></a>导出与adaboost的等价性</h2><p>因为每个样本的权重都乘以因子$e^{-\beta_m}$,所以乘不乘都没关系，令<br>$$\alpha_m = 2\beta_m = \log\frac{1-err_m}{err_m} \tag{12}$$<br>有<br>$$w_i^{(m+1)} = w_i^{(m)} \cdot \exp \Big(\alpha_m I(y_i \neq b(x_i; \gamma_m))\Big) \tag{13}$$<br>最后，每个弱学习器的系数都乘以2，学习器间的权重分布未变，总模型“委员会”为<br>$$G(x)=sign\Big( \sum_{m=1}^M \alpha_m b_m(x)\Big)$$</p>
 <p>我们把上面的过程简化，写成算法的形式：</p>
 <blockquote>
 <ol>
@@ -469,14 +475,22 @@ w_i^{(m+1)} & = \exp(-y_if_m(x_i)) \\
 </ol>
 </blockquote>
 <p>我们惊奇地发现，这个算法和Adaboost一模一样。</p>
-<h2 id="回归：前向分步拟合-平方损失-梯度下降"><a href="#回归：前向分步拟合-平方损失-梯度下降" class="headerlink" title="回归：前向分步拟合+平方损失=梯度下降"></a>回归：前向分步拟合+平方损失=梯度下降</h2><p>面对回归问题，通常使用平方损失：<br>$$L(y, f(x))=(y-f(x))^2$$<br>带入前向分布拟合的最小化目标函数中：<br>
-$$\begin{aligned}
-(\beta_m, \gamma_m) &= \arg\min_{\beta, \gamma}\sum_{i=1}^NL\bigg(y_i, f_{m-1}(x_i)+\beta b(x_i;\gamma)\bigg) \\
-&= \arg\min_{\beta, \gamma}\sum_{i=1}^N \bigg(y_i - f_{m-1}(x_i) - \beta b(x_i;\gamma)\bigg)^2 \\
-&= \arg\min_{\beta, \gamma}\sum_{i=1}^N \bigg(r_{im} - \beta b(x_i;\gamma)\bigg)^2
-\end{aligned}
-\tag{14}$$
-<br>其中$r_{im}=y<em>i - f</em>{m-1}(x_i)$,是当前模型(第上一次迭代所产生的模型)在第i个样本上的残差。这样，对于平方损失，每一次迭代都是把对当前模型残差拟合的最好的弱分类器及其系数$\beta_mb(x;\gamma_m)$加到总模型里。</p>
+<p><div id="container"></div></p>
+<p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+var gitment = new Gitment({
+  id: 'boosting_exponential_loss',
+  title: 'boosting与指数损失',
+  owner: 'yiyang186',
+  repo: 'blog_comment',
+  oauth: {
+    client_id: '2786ddc8538588bfc0c8',
+    client_secret: '83713f049f4b7296d27fe579a30cdfe9e2e45215',
+  },
+})
+gitment.render('container')
+</script>
 
           
         
@@ -610,7 +624,7 @@ $$\begin{aligned}
       
         
           
-            <h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>因为太简单太常见，加法模型往往容易被忽略，但它却蕴含着非常根本的建模思想。针对于某个案例，如果世间存在一个真实模型f(x),加法模型可以看做是它的一阶泰勒近似。</p>
+            <p>因为太简单太常见，加法模型往往容易被忽略，但它却蕴含着非常根本的建模思想。针对于某个案例，如果世间存在一个真实模型f(x),加法模型可以看做是它的一阶泰勒近似。</p>
 <blockquote>
 <ol>
 <li>在时间序列分析里，时间序列通过加法分解为季节分量，趋势和误差项：$Y_t=S_t+T_t+\varepsilon$。其中$Y_t$为季节分量，$T_t$为趋势项，$\varepsilon$为误差项。</li>
@@ -624,7 +638,23 @@ $$\begin{aligned}
 <li><strong>核方法</strong>：最小化经验损失时引入加权核$K_\lambda(x_0,x)$, 根据x到$x_0$的距离赋予x一个权值，可以突出x附近样本的在模型中的地位，为模型引入了局部性。$\min \sum_{i=1}^N K_\lambda(x,x_i)[y_i-\alpha-x_i^T\beta ]$。常用的加权核有高斯核，三次方核，Epanechnikov核，k近邻核。</li>
 <li><strong>多层嵌套</strong>：引入激活函数后，多层嵌套加法模型可以得到神经网络的雏形。$f(x)=\sigma(\sum_{i=1}^M\sigma(x^Tw_i))$中的x也可用$\sigma(x^T\beta)$代替。</li>
 </ol>
-
+<hr>
+<p><div id="container"></div></p>
+<p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+var gitment = new Gitment({
+  id: 'additive_model',
+  title: '加法模型',
+  owner: 'yiyang186',
+  repo: 'blog_comment',
+  oauth: {
+    client_id: '2786ddc8538588bfc0c8',
+    client_secret: '83713f049f4b7296d27fe579a30cdfe9e2e45215',
+  },
+})
+gitment.render('container')
+</script>
           
         
       
@@ -781,6 +811,23 @@ $$\begin{aligned}
 <hr>
 <h1 id="实现效果"><a href="#实现效果" class="headerlink" title="实现效果"></a>实现效果</h1><p>未完成形态<br><img src="http://img.blog.csdn.net/20170524194815680?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcTF3MmUzcjQ0NzA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"></p>
 <p>完成形态<br><img src="http://img.blog.csdn.net/20170524194715913?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcTF3MmUzcjQ0NzA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"></p>
+<hr>
+<p><div id="container"></div></p>
+<p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+var gitment = new Gitment({
+  id: 'backend_progress',
+  title: '前端实时更新后端处理进度',
+  owner: 'yiyang186',
+  repo: 'blog_comment',
+  oauth: {
+    client_id: '2786ddc8538588bfc0c8',
+    client_secret: '83713f049f4b7296d27fe579a30cdfe9e2e45215',
+  },
+})
+gitment.render('container')
+</script>
 
           
         
@@ -1201,7 +1248,22 @@ $$L(x, \mu)=f(x)+\mu_1 g_1(x)+\mu_2 g_2(x)+...$$
 <h1 id="尾声"><a href="#尾声" class="headerlink" title="尾声"></a>尾声</h1><p>顺带一提，以前读李航老师的《统计学习方法》时，当读到SVM部分的KKT条件一段时，觉得摸不着头脑，现在总结一番后清楚了不少。如《统计学习方法》第一版105页式(7.27)中的第1，2行就是这里的KKT条件2（我这里把偏置b算在x里了），第3行是KKT条件3，第4行是问题中的不等式约束，第5行是KKT条件1。</p>
 <p>最后说明一下，以上所有都是局部极小值点的必要条件。据此求得的解不一定是局部极小值点（更别提全局了），原因是上图中我所画的等高线也许根本就不闭合，也就是说我们一直想要靠近的等高线中间的黑点压根就是个鞍点或者近似鞍点！</p>
 <p><a href="https://www.zhihu.com/question/58584814/answer/159863739" target="_blank" rel="external">我在知乎上的回答</a></p>
-
+<p><div id="container"></div></p>
+<p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+var gitment = new Gitment({
+  id: 'optimization_elements',
+  title: '优化基础问题',
+  owner: 'yiyang186',
+  repo: 'blog_comment',
+  oauth: {
+    client_id: '2786ddc8538588bfc0c8',
+    client_secret: '83713f049f4b7296d27fe579a30cdfe9e2e45215',
+  },
+})
+gitment.render('container')
+</script>
           
         
       
@@ -1425,9 +1487,25 @@ $$\begin{aligned}\min_{\hat p} \{-E_p\log \hat p(y|x)\}
 </table>
 <p>只要$\log{{P(y=1|x_0)}\over {P(y=0|x_0)}}$和$\beta^Tx_0$同号就是我们想要的模型。<strong>Logistic直接以$\log{{P(y=1|x)}\over {P(y=0|x)}}=\beta^Tx$建模</strong>保证了这种同号的要求，但是这样建模多了一个副产品，就是“绝对值相等”——<br>$$|\log{{P(y=1|x_0)}\over {P(y=0|x_0)}}|=|\beta^Tx_0|\tag{15}$$<br>容易理解，$|\beta^Tx_0|$是$x_0$到分类平面$\beta^Tx=0$的距离，而$|\log{{P(y=1|x_0)}\over {P(y=0|x_0)}}|$是样本$x_0$属于于0，1类概率的对数比率（log-odd）。二者相等吗？<strong>样本到分类平面的距离与样本属于各类概率的对数比率大小相等</strong>吗？有可能碰到正好满足的样本，但是绝大多数情况下不相等。这是逻辑回归建模稍稍强加于实际模型的假设。</p>
 <p>这些想法由ESL和<a href="https://www.zhihu.com/question/35322351/answer/141562541" target="_blank" rel="external">我在知乎中关于逻辑回归的回答</a>引申而来，我也没见过相关的文献，要是有相关的文献作为以上臆想的佐证或者驳斥，烦请通知我。</p>
-<h1 id="Newton-Raphson算法-牛顿迭代法"><a href="#Newton-Raphson算法-牛顿迭代法" class="headerlink" title="Newton-Raphson算法(牛顿迭代法)"></a>Newton-Raphson算法(牛顿迭代法)</h1><div><br><iframe height="490" width="680" src="https://upload.wikimedia.org/wikipedia/commons/e/e0/NewtonIteration_Ani.gif"><br></iframe></div>
+<h1 id="Newton-Raphson算法-牛顿迭代法"><a href="#Newton-Raphson算法-牛顿迭代法" class="headerlink" title="Newton-Raphson算法(牛顿迭代法)"></a>Newton-Raphson算法(牛顿迭代法)</h1><div id="gif"><br><iframe height="490" width="680" src="https://upload.wikimedia.org/wikipedia/commons/e/e0/NewtonIteration_Ani.gif"><br></iframe></div>
 
-
+<hr>
+<p><div id="container"></div></p>
+<p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+var gitment = new Gitment({
+  id: 'logistic_regression',
+  title: 'logistic回归',
+  owner: 'yiyang186',
+  repo: 'blog_comment',
+  oauth: {
+    client_id: '2786ddc8538588bfc0c8',
+    client_secret: '83713f049f4b7296d27fe579a30cdfe9e2e45215',
+  },
+})
+gitment.render('container')
+</script>
 
           
         
@@ -1664,7 +1742,22 @@ $$\begin{aligned}\min_{\hat p} \{-E_p\log \hat p(y|x)\}
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">./hex2raw         // 输入文件名 输出文件名</div><div class="line">./hex2raw -n      // 输入文件名 输出文件名</div></pre></td></tr></table></figure>
 <p>只支持以上两种格式<br>用于csapplab的bufbomb, 官网上下载的hex2raw死活用不了，出现同样问题的同学可以拿它自己编译试试</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gcc -g -c main.c -o hex2raw</div></pre></td></tr></table></figure>
-
+<p><div id="container"></div></p>
+<p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+var gitment = new Gitment({
+  id: 'CSAPP_bufbomb',
+  title: 'CSAPP实验bufbomb',
+  owner: 'yiyang186',
+  repo: 'blog_comment',
+  oauth: {
+    client_id: '2786ddc8538588bfc0c8',
+    client_secret: '83713f049f4b7296d27fe579a30cdfe9e2e45215',
+  },
+})
+gitment.render('container')
+</script>
           
         
       
@@ -1973,7 +2066,22 @@ P(m=AB│n=B) &=& \frac{P(m=AB,n=B)}{P(n=B)} \\
 <h1 id="三角决斗"><a href="#三角决斗" class="headerlink" title="三角决斗"></a>三角决斗</h1><p>A，B和C玩三角手枪决斗。 所有人都知道，A的命中率是0.3，C是0.5，B不会失误。 他们将按照A，B，C循环的顺序自由选择目标决斗，直到最后一个人活下来。A的策略应该是什么？<br> <img src="http://img.blog.csdn.net/20170528163254932?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcTF3MmUzcjQ0NzA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"><br>如上图，若A先射C, A赢的概率是0.21，若A先射击B, A赢的概率将大于0.21. 因此A应先射B。此时的局面是AC互射，A赢的情况只可能为C一直射不中A, 而A在最后一次射击时射中了C, 因此A赢的概率为<br>C射1次A没射中, A第1次射就射死C:  $0.5 \times 0.3 +$<br>C射2次A没射中, A第2次射才射死C:  $0.5^2 \times 0.7 \times 0.3+$<br>C射3次A没射中, A第3次射才射死C:  $0.5^3 \times 0.7^2 \times 0.3 +$<br>C射4次A没射中, A第4次射才射死C:  $0.5^4 \times 0.7^3 \times 0.3 + $<br>…<br>这是个无穷递减等比数列求和，比值为0.5x0.7=0.35<br>$0.5 \times 0.3 \times (1+0.5 \times 0.7+(0.5 \times 0.7)^2+(0.5 \times 0.7)^3+…)=0.5 \times 0.3 \times \frac{1}{1-0.35}=3/13$<br>因此，若A先射B, A赢的概率为$0.21+0.3 \times 3/13=0.279$.<br>起码A的生还几率大了近7个点</p>
 <h1 id="放回抽样还是不放回抽样"><a href="#放回抽样还是不放回抽样" class="headerlink" title="放回抽样还是不放回抽样"></a>放回抽样还是不放回抽样</h1><p>两个装有红球和黑球的桶。A桶有2个红球和1个黑球，B桶有101个红球和100个黑球。桶被随机选择。在第一个球被取出并报告颜色后你可以决定它是否放回原来的桶中（当然你看不到是哪个桶），再从这个桶中取出第二个球（2个球来自同一个桶），你根据这2个球的颜色判断它们来自哪个桶，判断对了可获得奖励。</p>
 <p>如果第一个取出的球是红色，被取出球的桶剩余的红球数与黑球数相等，这样不好做判断，因此最好放回；若第一个取出的球是黑色，被取出桶中的黑球更少了，有利于我们根据期望判断。<br>假设第1次取出红球，放回红球，再取出又是红球。<br>如果球来自A桶，这种情况发生的概率为1/2<em>2/3</em>2/3=0.222<br>如果球来自B桶，这种情况发生的概率为1/2<em>101/201</em>101/201=0.126<br>当球来自A桶，这种情况发生的概率大，因此我们推断球来自A桶<br>同样地有<br><img src="http://img.blog.csdn.net/20170531232638938?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcTF3MmUzcjQ0NzA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"></p>
-
+<p><div id="container"></div></p>
+<p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+var gitment = new Gitment({
+  id: 'interesting_probabilities',
+  title: '有趣的概率题',
+  owner: 'yiyang186',
+  repo: 'blog_comment',
+  oauth: {
+    client_id: '2786ddc8538588bfc0c8',
+    client_secret: '83713f049f4b7296d27fe579a30cdfe9e2e45215',
+  },
+})
+gitment.render('container')
+</script>
           
         
       
@@ -2198,6 +2306,7 @@ $$\begin{aligned}u^T(X^TX)^{-1}u
 <p>所以$\beta_j$的95%置信区间为<br>$$(\hat \beta_j-1.96v_{jj}^{1 \over 2}\hat \sigma, \hat \beta_j+1.96v_{jj}^{1 \over 2}\hat \sigma)$$</p>
 <hr>
 <p>总结自The Elements of Statistical Learning</p>
+<hr>
 <p><div id="container"></div></p>
 <p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
 <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
@@ -2458,7 +2567,7 @@ gitment.render('container')
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">32</span>
+                <span class="site-state-item-count">36</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

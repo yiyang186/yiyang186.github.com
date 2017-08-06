@@ -101,7 +101,7 @@
 <meta property="og:site_name" content="Yiyang&#39;s Blog">
 <meta property="og:description" content="bufbomb是一个很有意思的，带有游戏性质的缓冲区溢出实验, 能够帮助你加深理解《Computer Systems A Programmer’s Perspective》书中第三章《Machine-Level Representation of Programs》中的内容。点 Self-Study Handout下载。或者，到下载地址找到Buffer Lab [Updated Sep 10, 2">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-07-27T02:39:36.666Z">
+<meta property="og:updated_time" content="2017-08-06T03:20:40.498Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="CSAPP实验bufbomb">
 <meta name="twitter:description" content="bufbomb是一个很有意思的，带有游戏性质的缓冲区溢出实验, 能够帮助你加深理解《Computer Systems A Programmer’s Perspective》书中第三章《Machine-Level Representation of Programs》中的内容。点 Self-Study Handout下载。或者，到下载地址找到Buffer Lab [Updated Sep 10, 2">
@@ -486,7 +486,22 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">./hex2raw         // 输入文件名 输出文件名</div><div class="line">./hex2raw -n      // 输入文件名 输出文件名</div></pre></td></tr></table></figure>
 <p>只支持以上两种格式<br>用于csapplab的bufbomb, 官网上下载的hex2raw死活用不了，出现同样问题的同学可以拿它自己编译试试</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gcc -g -c main.c -o hex2raw</div></pre></td></tr></table></figure>
-
+<p><div id="container"></div></p>
+<p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+var gitment = new Gitment({
+  id: 'CSAPP_bufbomb',
+  title: 'CSAPP实验bufbomb',
+  owner: 'yiyang186',
+  repo: 'blog_comment',
+  oauth: {
+    client_id: '2786ddc8538588bfc0c8',
+    client_secret: '83713f049f4b7296d27fe579a30cdfe9e2e45215',
+  },
+})
+gitment.render('container')
+</script>
       
     </div>
 
@@ -635,7 +650,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">32</span>
+                <span class="site-state-item-count">36</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
