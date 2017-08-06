@@ -101,7 +101,7 @@
 <meta property="og:site_name" content="Yiyang&#39;s Blog">
 <meta property="og:description" content="Boosting在另一篇博客中(boosting与指数损失)介绍了关于Boosting的一些简单内容。  boosting的过程是不断地修改数据集，在此之上应用弱学习器，由此产生一个弱学习器序列$b(x;\gamma_m), m = 1, 2, ..., M$。最后通过加权的多数表决来合并每个弱学习器的预测结果。 Boosting是一种建立在弱学习器集合上的加法模型。 通过前向分步拟合的方法来拟合">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-08-06T13:13:59.188Z">
+<meta property="og:updated_time" content="2017-08-06T13:32:58.102Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="boosting与平方损失">
 <meta name="twitter:description" content="Boosting在另一篇博客中(boosting与指数损失)介绍了关于Boosting的一些简单内容。  boosting的过程是不断地修改数据集，在此之上应用弱学习器，由此产生一个弱学习器序列$b(x;\gamma_m), m = 1, 2, ..., M$。最后通过加权的多数表决来合并每个弱学习器的预测结果。 Boosting是一种建立在弱学习器集合上的加法模型。 通过前向分步拟合的方法来拟合">
@@ -457,7 +457,22 @@ $$\bigg\{ \begin{matrix}
 <p>在梯度下降算法中，每次迭代需要求当前搜索位置的梯度，然后沿着负梯度方向搜索，直到找到0梯度位置为止。</p>
 </blockquote>
 <p>与梯度下降算法比较，梯度提升算法，相当于以模型预测值$f(x)$为参数做梯度下降。这里的残差为真实的负梯度，我们以弱学习器去拟合真实的负梯度，再沿着拟合的负梯度方向搜索。实际上并不是在真实的梯度方向下降，而是在拟合的梯度方向下降。</p>
-
+<p><div id="container"></div></p>
+<p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+var gitment = new Gitment({
+  id: 'boosting_square_loss',
+  title: 'boosting与平方损失',
+  owner: 'yiyang186',
+  repo: 'blog_comment',
+  oauth: {
+    client_id: '2786ddc8538588bfc0c8',
+    client_secret: '83713f049f4b7296d27fe579a30cdfe9e2e45215',
+  },
+})
+gitment.render('container')
+</script>
       
     </div>
 
