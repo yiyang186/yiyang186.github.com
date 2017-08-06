@@ -101,7 +101,7 @@
 <meta property="og:site_name" content="Yiyang&#39;s Blog">
 <meta property="og:description" content="boosting-不平等的委员会boosting提升方法的动机是合并许多“弱”学习器输出以产生有效的“委员会”。从这一角度看，boosting与同为ensamble集成方法的bagging袋装方法非常相似。其实这种相似是非常表面的，boosting与bagging有着本质的区别。 boosting的过程就是不断地修改数据集，在此之上应用弱学习器，由此产生一个弱学习器序列$b(x;\gamma_m)">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-08-06T03:10:56.968Z">
+<meta property="og:updated_time" content="2017-08-06T13:11:04.035Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="boosting与指数损失">
 <meta name="twitter:description" content="boosting-不平等的委员会boosting提升方法的动机是合并许多“弱”学习器输出以产生有效的“委员会”。从这一角度看，boosting与同为ensamble集成方法的bagging袋装方法非常相似。其实这种相似是非常表面的，boosting与bagging有着本质的区别。 boosting的过程就是不断地修改数据集，在此之上应用弱学习器，由此产生一个弱学习器序列$b(x;\gamma_m)">
@@ -384,11 +384,11 @@
 
       
         <h1 id="boosting-不平等的委员会"><a href="#boosting-不平等的委员会" class="headerlink" title="boosting-不平等的委员会"></a>boosting-不平等的委员会</h1><p>boosting提升方法的动机是合并许多“弱”学习器输出以产生有效的“委员会”。从这一角度看，boosting与同为ensamble集成方法的bagging袋装方法非常相似。其实这种相似是非常表面的，boosting与bagging有着本质的区别。</p>
-<p>boosting的过程就是不断地修改数据集，在此之上应用弱学习器，由此产生一个弱学习器序列$b(x;\gamma_m), m = 1, 2, ..., M$。最后通过加权的多数表决来合并每个若学习器的预测结果。总的学习器可以写成：<br>
-$$G(x) = \sum_{m=1}^M \beta_m b(x; \gamma_m) \tag 1$$
-<br>其中，$\beta_m > 0$为若学习器$b(x;\gamma_m)$的权重，$\gamma_m$为$b_m(x)$的模型参数。显然，Boosting是加权表决，和Bagging的平均表决有着本质区别：其者的委员会是不平等的，后者的委员会是一人一票的。这也导致二者修改数据集的方式不相同。从这里开始，Boosting和Bagging彻底不同了。</p>
+<p>boosting的过程就是不断地修改数据集，在此之上应用弱学习器，由此产生一个弱学习器序列$b(x;\gamma_m), m = 1, 2, ..., M$。最后通过加权的多数表决来合并每个弱学习器的预测结果。总的学习器可以写成：<br>
+$$f(x) = \sum_{m=1}^M \beta_m b(x; \gamma_m) \tag 1$$
+<br>其中，$\beta_m > 0$为若学习器$b(x;\gamma_m)$的权重，$\gamma_m$为$b_m(x)$的模型参数。显然，Boosting是加权表决，和Bagging的平均表决有着本质区别：前者的委员会是不平等的，后者的委员会是一人一票的。这也导致二者修改数据集的方式不相同。从这里开始，Boosting和Bagging彻底不同了。</p>
 <h1 id="Boosting与加法模型"><a href="#Boosting与加法模型" class="headerlink" title="Boosting与加法模型"></a>Boosting与加法模型</h1><p>观测式(1),可以发现Boosting是一种建立在弱学习器集合上的加法模型。<br>
-$$G(x) = \sum_{m=1}^M \beta_m b(x; \gamma_m)$$
+$$f(x) = \sum_{m=1}^M \beta_m b(x; \gamma_m)$$
 </p>
 <blockquote>
 <ul>
@@ -403,7 +403,7 @@ $$\min_{\beta_m, \gamma_m}\sum_{i=1}^NL\bigg(y_i, \sum_{m=1}^M\beta_m b(x_i;\gam
 <br>但是数值求解boosting“委员会”时，“委员会”中还有多个弱学习器，所有弱学习器一同求解是比较困难的(当时是90年代)，但是贪心地，迭代地，一次只拟合一个弱学习器则是可行且快速的解决方案。</p>
 <h1 id="前向分步拟合Boosting"><a href="#前向分步拟合Boosting" class="headerlink" title="前向分步拟合Boosting"></a>前向分步拟合Boosting</h1><p>通过相继添加新的弱学习器到“委员会”（总的模型）里，而不调整已添加的弱学习器的模型参数及其在委员会中的权重系数，来逼近式(2)的解。算法如下</p>
 <blockquote>
-<p>前向分步</p>
+<p>前向分步拟合算法</p>
 <ol>
 <li>初始化$f_0(x)=0$</li>
 <li>对于m=1到M:<br>(a)计算 <bt>$$(\beta_m, \gamma_m)=\arg\min_{\beta, \gamma}\sum_{i=1}^NL\bigg(y_i, f_{m-1}(x_i)+\beta b(x_i;\gamma)\bigg) \tag 3$$ <br>(b)更新$f_m(x)=f_{m-1}(x)+\beta_m b(x; \gamma_m)$</bt></li>
@@ -461,13 +461,13 @@ w_i^{(m+1)} & = \exp(-y_if_m(x_i)) \\
 & = w_i^{(m)} \cdot \exp \Big(2\beta_m I(y_i \neq b(x_i; \gamma_m))\Big)e^{-\beta_m}
 \end{aligned}  \tag{11}$$
 
-<h2 id="导出与adaboost的等价性"><a href="#导出与adaboost的等价性" class="headerlink" title="导出与adaboost的等价性"></a>导出与adaboost的等价性</h2><p>因为每个样本的权重都乘以因子$e^{-\beta_m}$,所以乘不乘都没关系，令<br>$$\alpha_m = 2\beta_m = \log\frac{1-err_m}{err_m} \tag{12}$$<br>有<br>$$w_i^{(m+1)} = w_i^{(m)} \cdot \exp \Big(\alpha_m I(y_i \neq b(x_i; \gamma_m))\Big) \tag{13}$$<br>最后，每个弱学习器的系数都乘以2，学习器间的权重分布未变，总模型“委员会”为<br>$$G(x)=sign\Big( \sum_{m=1}^M \alpha_m b_m(x)\Big)$$</p>
+<h2 id="导出与adaboost的等价性"><a href="#导出与adaboost的等价性" class="headerlink" title="导出与adaboost的等价性"></a>导出与adaboost的等价性</h2><p>因为每个样本的权重都乘以因子$e^{-\beta_m}$,所以乘不乘都没关系，令<br>$$\alpha_m = 2\beta_m = \log\frac{1-err_m}{err_m} \tag{12}$$<br>有<br>$$w_i^{(m+1)} = w_i^{(m)} \cdot \exp \Big(\alpha_m I(y_i \neq b(x_i; \gamma_m))\Big) \tag{13}$$<br>最后，每个弱学习器的系数都乘以2，学习器间的权重分布未变，总模型“委员会”为<br>$$f(x)=sign\Big( \sum_{m=1}^M \alpha_m b_m(x)\Big)$$</p>
 <p>我们把上面的过程简化，写成算法的形式：</p>
 <blockquote>
 <ol>
 <li>初始化样本权重$w_i=1/N,i=1,2,...,N$<br></li>
 <li>对于m=1,…,M:<br><br>(a)在样本权重为$w_i$的训练集上拟合一个弱学习器$b(x;\gamma_m)$<br>(b)计算<br>$$err_m=\frac{\sum_{i=1}^Nw_i^{(m)}I(y_i \neq b(x; \gamma_m))}{\sum_{i=1}^Nw_i^{(m)}}$$ (c)计算<br> $$\alpha_m = \log\frac{1-err_m}{err_m}$$ (d)更新样本权重$w_i^{(m+1)} = w_i^{(m)} \cdot \exp \Big(\alpha_m I(y_i \neq b(x_i; \gamma_m))\Big),i=1,2,...,N$</li>
-<li>输出最终模型$G(x)=sign\Big( \sum_{m=1}^M \alpha_m b_m(x)\Big)$</li>
+<li>输出最终模型$f(x)=sign\Big( \sum_{m=1}^M \alpha_m b_m(x)\Big)$</li>
 </ol>
 </blockquote>
 <p>我们惊奇地发现，这个算法和Adaboost一模一样。</p>
@@ -545,6 +545,10 @@ gitment.render('container')
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2017/08/06/boosting与平方损失/" rel="prev" title="boosting与平方损失">
+                boosting与平方损失 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -616,7 +620,7 @@ gitment.render('container')
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">30</span>
+                <span class="site-state-item-count">31</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -638,7 +642,7 @@ gitment.render('container')
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">34</span>
+                <span class="site-state-item-count">36</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

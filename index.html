@@ -297,6 +297,213 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/08/06/boosting与平方损失/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Yiyang Peng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/7233064.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Yiyang's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/08/06/boosting与平方损失/" itemprop="url">boosting与平方损失</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-06T21:06:22+08:00">
+                2017-08-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/机器学习/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Boosting"><a href="#Boosting" class="headerlink" title="Boosting"></a>Boosting</h1><p>在另一篇博客中(<a href="/2017/08/01/boosting与指数损失/" title="boosting与指数损失">boosting与指数损失</a>)介绍了关于Boosting的一些简单内容。</p>
+<ul>
+<li>boosting的过程是不断地修改数据集，在此之上应用弱学习器，由此产生一个弱学习器序列$b(x;\gamma_m), m = 1, 2, ..., M$。最后通过加权的多数表决来合并每个弱学习器的预测结果。</li>
+<li>Boosting是一种建立在弱学习器集合上的加法模型。</li>
+<li>通过前向分步拟合的方法来拟合Boosting，相继添加新的弱学习器到Boosting“委员会”里，而不调整已添加的弱学习器的模型参数及其在委员会中的权重系数，这是一种贪心的方法，一次只拟合一个最优的弱学习器。</li>
+<li><p>前向分步拟合方法使用指数损失拟合Boosting分类模型，等价于Adaboost</p>
+</li>
+<li><blockquote>
+<p>前向分步拟合算法</p>
+<ol>
+<li>初始化$f_0(x)=0$</li>
+<li>对于m=1到M:<br>(a)计算 <bt>$$(\beta_m, \gamma_m)=\arg\min_{\beta, \gamma}\sum_{i=1}^NL\bigg(y_i, f_{m-1}(x_i)+\beta b(x_i;\gamma)\bigg) \tag 3$$ <br>(b)更新$f_m(x)=f_{m-1}(x)+\beta_m b(x; \gamma_m)$</bt></li>
+</ol>
+</blockquote>
+</li>
+</ul>
+<h1 id="平方损失-前向分步拟合-梯度提升-Gradient-boosting"><a href="#平方损失-前向分步拟合-梯度提升-Gradient-boosting" class="headerlink" title="平方损失+前向分步拟合=梯度提升(Gradient boosting)"></a>平方损失+前向分步拟合=梯度提升(Gradient boosting)</h1><h2 id="平方经验损失的梯度"><a href="#平方经验损失的梯度" class="headerlink" title="平方经验损失的梯度"></a>平方经验损失的梯度</h2><p>令f为所求的boosting模型<br>
+{% raw %}$$f(x) = \sum_{m=1}^M \beta_m b(x; \gamma_m) \tag 1$${% endraw %}<br></p>
+<p>面对回归问题，通常使用平方损失：<br>
+$$L(y, f(x))=(y-f(x))^2\tag 2$$
+<br>令$y=(y_1,...,y_N)^T, f(x)=(f(x_1),...,f(x_N))^T$为boosting模型的预测值，那么最小化平方经验损失的过程可以等价于<br>
+$$
+\min_fL(y, f(x))=\min_f(y-f(x))^T(y-f(x))=\min_f\frac{1}{2}(y-f(x))^T(y-f(x))
+\tag 3$$
+</p>
+<p>显然这是凸优化，其负梯度方向为<br>
+$$\begin{aligned}
+- \frac{\partial}{\partial f(x)} \bigg(\frac{1}{2}(y-f(x))^T(y-f(x))\bigg)
+&= - \frac{1}{2} \cdot 2 \cdot \Big(\frac{\partial}{\partial f(x)} (y-f(x))^T\Big) \cdot (y-f(x)) \\
+&= - \Big(\frac{\partial y^T}{\partial f(x)} - \frac{\partial f^T(x)}{\partial f(x)}\Big) \cdot (y-f(x)) \\
+&= -(0-I)\cdot (y-f(x)) \\
+&= y-f(x)
+\end{aligned} \tag4$$
+<br>我们发现，模型残差就是平方经验损失相对于模型预测值的负梯度方向。不过在模型$f$没有求出来之前，我们没法计算梯度。</p>
+<blockquote>
+<p><strong>注意</strong>： 这和我们平时所见的梯度不同，一般梯度下降法里的梯度是经验损失相对于模型参数的梯度，而这里的梯度是经验损失相对于模型预测值的梯度。</p>
+</blockquote>
+<h2 id="前向分步拟合最小化平方经验损失"><a href="#前向分步拟合最小化平方经验损失" class="headerlink" title="前向分步拟合最小化平方经验损失"></a>前向分步拟合最小化平方经验损失</h2><p>在前向分步拟合算法中，第m次迭代的模型为<br>
+{% raw %}$$f_m(x) = \sum_{i=1}^m \beta_i b(x; \gamma_i)=f_{m-1}+\beta_m b(x;\gamma_m)\tag 5$${% endraw %}<br><br>每次迭代，最小化平方经验损失的过程为<br>
+$$\begin{aligned}
+\min_{f_m}L(y, f_m(x))
+&= \min_{f_m}(y-f_m(x))^T(y-f_m(x)) \\
+&= \min_{f_m}\|y-f_m(x)\|^2\\
+&= \min_{\beta, \gamma}\|y-f_{m-1}(x)-\beta_mb(x;\gamma_m)\|^2\\
+&= \min_{\beta, \gamma}\|r_{m-1} - \beta_m b(x;\gamma)\|^2
+\end{aligned}
+\tag{6}$$
+<br>令$r_{m}=(r_{m1},...,r_{mN})^T, r_{mi}=y_i - f_m(x_i)$，当然$r_{m-1}$就是是当前模型(第m-1次迭代所产生的模型)的残差。这样，对于平方损失，每一次迭代都是把对当前模型残差拟合的最好的弱分类器及其系数$\beta_mb(x;\gamma_m)$加到新模型$f_m(x)$里。将这个目标函数带入到前向分布拟合算法中来</p>
+<blockquote>
+<ol>
+<li>初始化$f_0(x)=0$</li>
+<li>对于m=1到M:<br>(a)计算残差<br>$$r_{m-1}=y - f_{m-1}(x)$$ <br> (b)估计模型参数，拟合残差 <bt>$$(\beta_m, \gamma_m)=\min_{\beta, \gamma}\|r_{m-1} - \beta b(x;\gamma)\|^2 \tag 7$$ <br>(c)更新$f_m(x)=f_{m-1}(x)+\beta_m b(x; \gamma_m)$</bt></li>
+</ol>
+</blockquote>
+<p>式(7)中$\beta, \gamma$的优化不存在相互依赖，可以分开优化，式(7)等价于<br>
+$$\bigg\{ \begin{matrix}
+\gamma_m = \arg\min_{\gamma}\|r_{m-1} - b(x;\gamma)\|^2 \\
+\beta_m = \arg\min_{\beta}\|r_{m-1} - \beta b(x;\gamma)\|^2
+\end{matrix}
+\tag{8}$$
+</p>
+<h2 id="梯度提升-Gradient-boosting"><a href="#梯度提升-Gradient-boosting" class="headerlink" title="梯度提升(Gradient boosting)"></a>梯度提升(Gradient boosting)</h2><p>由上一小节我们知道$r_{m-1}$就是平方经验损失相对于当前模型预测值的负梯度方向，那么这里的$b(x;\gamma_m)$就是对当前模型预测值的负梯度方向最优的拟合。而一维实数$\beta_m$可以看做是梯度下降时的步长。上述算法等价于</p>
+<blockquote>
+<p>梯度提升</p>
+<ol>
+<li>初始化$f_0(x)=0$</li>
+<li>对于m=1到M:<br>(a)计算残差<br>$$r_{m-1}=y - f_{m-1}(x)$$ <br> (b)估计模型参数，拟合残差 <bt>$$\gamma_m = \arg\min_{\gamma}\|r_{m-1} - b(x;\gamma)\|^2 \tag 9$$ 则梯度为$-b(x;\gamma_m)$, 若梯度非常接近0可提前结束迭代<br>(c)估计最优步长 <bt>$$\beta_m = \arg\min_{\beta}\|r_{m-1} - \beta b(x;\gamma_m)\|^2 \tag{10}$$ <br>(d)梯度下降<br>$$f_m(x)=f_{m-1}(x)-\beta_m (-b(x; \gamma_m))$$</bt></bt></li>
+</ol>
+</blockquote>
+<p>考虑实际的梯度下降算法</p>
+<blockquote>
+<p>在梯度下降算法中，每次迭代需要求当前搜索位置的梯度，然后沿着负梯度方向搜索，直到找到0梯度位置为止。</p>
+</blockquote>
+<p>与梯度下降算法比较，梯度提升算法，相当于以模型预测值$f(x)$为参数做梯度下降。这里的残差为真实的负梯度，我们以弱学习器去拟合真实的负梯度，再沿着拟合的负梯度方向搜索。实际上并不是在真实的梯度方向下降，而是在拟合的梯度方向下降。</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/08/01/boosting与指数损失/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -388,11 +595,11 @@
         
           
             <h1 id="boosting-不平等的委员会"><a href="#boosting-不平等的委员会" class="headerlink" title="boosting-不平等的委员会"></a>boosting-不平等的委员会</h1><p>boosting提升方法的动机是合并许多“弱”学习器输出以产生有效的“委员会”。从这一角度看，boosting与同为ensamble集成方法的bagging袋装方法非常相似。其实这种相似是非常表面的，boosting与bagging有着本质的区别。</p>
-<p>boosting的过程就是不断地修改数据集，在此之上应用弱学习器，由此产生一个弱学习器序列$b(x;\gamma_m), m = 1, 2, ..., M$。最后通过加权的多数表决来合并每个若学习器的预测结果。总的学习器可以写成：<br>
-$$G(x) = \sum_{m=1}^M \beta_m b(x; \gamma_m) \tag 1$$
-<br>其中，$\beta_m > 0$为若学习器$b(x;\gamma_m)$的权重，$\gamma_m$为$b_m(x)$的模型参数。显然，Boosting是加权表决，和Bagging的平均表决有着本质区别：其者的委员会是不平等的，后者的委员会是一人一票的。这也导致二者修改数据集的方式不相同。从这里开始，Boosting和Bagging彻底不同了。</p>
+<p>boosting的过程就是不断地修改数据集，在此之上应用弱学习器，由此产生一个弱学习器序列$b(x;\gamma_m), m = 1, 2, ..., M$。最后通过加权的多数表决来合并每个弱学习器的预测结果。总的学习器可以写成：<br>
+$$f(x) = \sum_{m=1}^M \beta_m b(x; \gamma_m) \tag 1$$
+<br>其中，$\beta_m > 0$为若学习器$b(x;\gamma_m)$的权重，$\gamma_m$为$b_m(x)$的模型参数。显然，Boosting是加权表决，和Bagging的平均表决有着本质区别：前者的委员会是不平等的，后者的委员会是一人一票的。这也导致二者修改数据集的方式不相同。从这里开始，Boosting和Bagging彻底不同了。</p>
 <h1 id="Boosting与加法模型"><a href="#Boosting与加法模型" class="headerlink" title="Boosting与加法模型"></a>Boosting与加法模型</h1><p>观测式(1),可以发现Boosting是一种建立在弱学习器集合上的加法模型。<br>
-$$G(x) = \sum_{m=1}^M \beta_m b(x; \gamma_m)$$
+$$f(x) = \sum_{m=1}^M \beta_m b(x; \gamma_m)$$
 </p>
 <blockquote>
 <ul>
@@ -407,7 +614,7 @@ $$\min_{\beta_m, \gamma_m}\sum_{i=1}^NL\bigg(y_i, \sum_{m=1}^M\beta_m b(x_i;\gam
 <br>但是数值求解boosting“委员会”时，“委员会”中还有多个弱学习器，所有弱学习器一同求解是比较困难的(当时是90年代)，但是贪心地，迭代地，一次只拟合一个弱学习器则是可行且快速的解决方案。</p>
 <h1 id="前向分步拟合Boosting"><a href="#前向分步拟合Boosting" class="headerlink" title="前向分步拟合Boosting"></a>前向分步拟合Boosting</h1><p>通过相继添加新的弱学习器到“委员会”（总的模型）里，而不调整已添加的弱学习器的模型参数及其在委员会中的权重系数，来逼近式(2)的解。算法如下</p>
 <blockquote>
-<p>前向分步</p>
+<p>前向分步拟合算法</p>
 <ol>
 <li>初始化$f_0(x)=0$</li>
 <li>对于m=1到M:<br>(a)计算 <bt>$$(\beta_m, \gamma_m)=\arg\min_{\beta, \gamma}\sum_{i=1}^NL\bigg(y_i, f_{m-1}(x_i)+\beta b(x_i;\gamma)\bigg) \tag 3$$ <br>(b)更新$f_m(x)=f_{m-1}(x)+\beta_m b(x; \gamma_m)$</bt></li>
@@ -465,13 +672,13 @@ w_i^{(m+1)} & = \exp(-y_if_m(x_i)) \\
 & = w_i^{(m)} \cdot \exp \Big(2\beta_m I(y_i \neq b(x_i; \gamma_m))\Big)e^{-\beta_m}
 \end{aligned}  \tag{11}$$
 
-<h2 id="导出与adaboost的等价性"><a href="#导出与adaboost的等价性" class="headerlink" title="导出与adaboost的等价性"></a>导出与adaboost的等价性</h2><p>因为每个样本的权重都乘以因子$e^{-\beta_m}$,所以乘不乘都没关系，令<br>$$\alpha_m = 2\beta_m = \log\frac{1-err_m}{err_m} \tag{12}$$<br>有<br>$$w_i^{(m+1)} = w_i^{(m)} \cdot \exp \Big(\alpha_m I(y_i \neq b(x_i; \gamma_m))\Big) \tag{13}$$<br>最后，每个弱学习器的系数都乘以2，学习器间的权重分布未变，总模型“委员会”为<br>$$G(x)=sign\Big( \sum_{m=1}^M \alpha_m b_m(x)\Big)$$</p>
+<h2 id="导出与adaboost的等价性"><a href="#导出与adaboost的等价性" class="headerlink" title="导出与adaboost的等价性"></a>导出与adaboost的等价性</h2><p>因为每个样本的权重都乘以因子$e^{-\beta_m}$,所以乘不乘都没关系，令<br>$$\alpha_m = 2\beta_m = \log\frac{1-err_m}{err_m} \tag{12}$$<br>有<br>$$w_i^{(m+1)} = w_i^{(m)} \cdot \exp \Big(\alpha_m I(y_i \neq b(x_i; \gamma_m))\Big) \tag{13}$$<br>最后，每个弱学习器的系数都乘以2，学习器间的权重分布未变，总模型“委员会”为<br>$$f(x)=sign\Big( \sum_{m=1}^M \alpha_m b_m(x)\Big)$$</p>
 <p>我们把上面的过程简化，写成算法的形式：</p>
 <blockquote>
 <ol>
 <li>初始化样本权重$w_i=1/N,i=1,2,...,N$<br></li>
 <li>对于m=1,…,M:<br><br>(a)在样本权重为$w_i$的训练集上拟合一个弱学习器$b(x;\gamma_m)$<br>(b)计算<br>$$err_m=\frac{\sum_{i=1}^Nw_i^{(m)}I(y_i \neq b(x; \gamma_m))}{\sum_{i=1}^Nw_i^{(m)}}$$ (c)计算<br> $$\alpha_m = \log\frac{1-err_m}{err_m}$$ (d)更新样本权重$w_i^{(m+1)} = w_i^{(m)} \cdot \exp \Big(\alpha_m I(y_i \neq b(x_i; \gamma_m))\Big),i=1,2,...,N$</li>
-<li>输出最终模型$G(x)=sign\Big( \sum_{m=1}^M \alpha_m b_m(x)\Big)$</li>
+<li>输出最终模型$f(x)=sign\Big( \sum_{m=1}^M \alpha_m b_m(x)\Big)$</li>
 </ol>
 </blockquote>
 <p>我们惊奇地发现，这个算法和Adaboost一模一样。</p>
@@ -1487,9 +1694,7 @@ $$\begin{aligned}\min_{\hat p} \{-E_p\log \hat p(y|x)\}
 </table>
 <p>只要$\log{{P(y=1|x_0)}\over {P(y=0|x_0)}}$和$\beta^Tx_0$同号就是我们想要的模型。<strong>Logistic直接以$\log{{P(y=1|x)}\over {P(y=0|x)}}=\beta^Tx$建模</strong>保证了这种同号的要求，但是这样建模多了一个副产品，就是“绝对值相等”——<br>$$|\log{{P(y=1|x_0)}\over {P(y=0|x_0)}}|=|\beta^Tx_0|\tag{15}$$<br>容易理解，$|\beta^Tx_0|$是$x_0$到分类平面$\beta^Tx=0$的距离，而$|\log{{P(y=1|x_0)}\over {P(y=0|x_0)}}|$是样本$x_0$属于于0，1类概率的对数比率（log-odd）。二者相等吗？<strong>样本到分类平面的距离与样本属于各类概率的对数比率大小相等</strong>吗？有可能碰到正好满足的样本，但是绝大多数情况下不相等。这是逻辑回归建模稍稍强加于实际模型的假设。</p>
 <p>这些想法由ESL和<a href="https://www.zhihu.com/question/35322351/answer/141562541" target="_blank" rel="external">我在知乎中关于逻辑回归的回答</a>引申而来，我也没见过相关的文献，要是有相关的文献作为以上臆想的佐证或者驳斥，烦请通知我。</p>
-<h1 id="Newton-Raphson算法-牛顿迭代法"><a href="#Newton-Raphson算法-牛顿迭代法" class="headerlink" title="Newton-Raphson算法(牛顿迭代法)"></a>Newton-Raphson算法(牛顿迭代法)</h1><div id="gif"><br><iframe height="490" width="680" src="https://upload.wikimedia.org/wikipedia/commons/e/e0/NewtonIteration_Ani.gif"><br></iframe></div>
-
-<hr>
+<h1 id="Newton-Raphson算法-牛顿迭代法"><a href="#Newton-Raphson算法-牛顿迭代法" class="headerlink" title="Newton-Raphson算法(牛顿迭代法)"></a>Newton-Raphson算法(牛顿迭代法)</h1><p><img src="https://upload.wikimedia.org/wikipedia/commons/e/e0/NewtonIteration_Ani.gif" alt="牛顿迭代法"></p>
 <p><div id="container"></div></p>
 <p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
 <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
@@ -2356,150 +2561,11 @@ gitment.render('container')
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/10/06/怎样用scipy求一些统计量的p值和分位数/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Yiyang Peng">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/7233064.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Yiyang's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/10/06/怎样用scipy求一些统计量的p值和分位数/" itemprop="url">怎样用scipy求一些统计量的p值和分位数</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-10-06T11:05:00+08:00">
-                2016-10-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/操作/" itemprop="url" rel="index">
-                    <span itemprop="name">操作</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>scipy.stats模块中有不少涉及计算统计量的子模块<br>如<br>scipy.stats.uniform<br>scipy.stats.norm<br>scipy.stats.t<br>scipy.stats.chi2<br>scipy.stats.f<br>更多子模块参见<a href="http://docs.scipy.org/doc/scipy/reference/stats.html" target="_blank" rel="external">这里</a></p>
-<p>其中scipy.stats.f内有如下方法：<br><img src="http://img.blog.csdn.net/20161006104131553" alt="图一"><br>来自于<a href="http://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.f.html#scipy.stats.f" target="_blank" rel="external">这里</a></p>
-<p>这些方法在其他子模块中都大同小异。这里重点介绍求F统计量的p值和分位数，t统计量，卡方，正态，的求法基本类似。</p>
-<p>例1：求$Pr(F_{4,58}>1.67)=?$,即已知临界值求p值<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; from scipy.stats import f</div><div class="line">&gt;&gt;&gt; f.sf(1.67, 4, 58)</div><div class="line">0.16927935111708425</div><div class="line">&gt;&gt;&gt; 1 - f.cdf(1.67, 4, 58)</div><div class="line">0.16927935111708448</div></pre></td></tr></table></figure></p>
-<p>例2：求$F_{4,58}^{(1-0.17)}=?$ ,即已知p值求临界值<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; from scipy.stats import f</div><div class="line">&gt;&gt;&gt; f.isf(0.17, 4, 58)</div><div class="line">1.666945416681088</div><div class="line">&gt;&gt;&gt; f.ppf(1 - 0.17, 4, 58)</div><div class="line">1.666945416681088</div></pre></td></tr></table></figure></p>
-<p>其中，isf是sf的逆运算， ppf是cdf的逆运算。具体解释参见上图。其他统计量的相关计算方法与之类似，不同之处就是少了自由度作为参数。</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -2545,7 +2611,7 @@ gitment.render('container')
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">30</span>
+                <span class="site-state-item-count">31</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -2567,7 +2633,7 @@ gitment.render('container')
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">34</span>
+                <span class="site-state-item-count">36</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
