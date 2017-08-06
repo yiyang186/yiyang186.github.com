@@ -1,5 +1,5 @@
 ---
-title: boosting与平方损失
+title: boosting与平方损失——梯度提升
 date: 2017-08-06 21:06:22
 categories:
   - 机器学习
@@ -20,7 +20,7 @@ tags:
 
 - > 前向分步拟合算法
   > 1. 初始化{% raw %}$f_0(x)=0${% endraw %}
-  > 2. 对于m=1到M:<br>(a)计算 <bt>{% raw %}$$(\beta_m, \gamma_m)=\arg\min_{\beta, \gamma}\sum_{i=1}^NL\bigg(y_i, f_{m-1}(x_i)+\beta b(x_i;\gamma)\bigg) \tag 3$${% endraw %} <br>(b)更新{% raw %}$f_m(x)=f_{m-1}(x)+\beta_m b(x; \gamma_m)${% endraw %}
+  > 2. 对于m=1到M:<br>(a)计算 <bt>{% raw %}$$(\beta_m, \gamma_m)=\arg\min_{\beta, \gamma}\sum_{i=1}^NL\bigg(y_i, f_{m-1}(x_i)+\beta b(x_i;\gamma)\bigg)$${% endraw %} (b)更新{% raw %}$f_m(x)=f_{m-1}(x)+\beta_m b(x; \gamma_m)${% endraw %}
 
 # 平方损失+前向分步拟合=梯度提升(Gradient boosting)
 ## 平方经验损失的梯度
@@ -71,8 +71,9 @@ $$\begin{aligned}
 {% endraw %}
 令{% raw %}$r_{m}=(r_{m1},...,r_{mN})^T, r_{mi}=y_i - f_m(x_i)${% endraw %}，当然{% raw %}$r_{m-1}${% endraw %}就是是当前模型(第m-1次迭代所产生的模型)的残差。这样，对于平方损失，每一次迭代都是把对当前模型残差拟合的最好的弱分类器及其系数{% raw %}$\beta_mb(x;\gamma_m)${% endraw %}加到新模型{% raw %}$f_m(x)${% endraw %}里。将这个目标函数带入到前向分布拟合算法中来
 
+> 平方损失的前向分步拟合算法
 > 1. 初始化{% raw %}$f_0(x)=0${% endraw %}
-> 2. 对于m=1到M:<br>(a)计算残差<br>{% raw %}$$r_{m-1}=y - f_{m-1}(x)$${% endraw %} <br> (b)估计模型参数，拟合残差 <bt>{% raw %}$$(\beta_m, \gamma_m)=\min_{\beta, \gamma}\|r_{m-1} - \beta b(x;\gamma)\|^2 \tag 7$${% endraw %} <br>(c)更新{% raw %}$f_m(x)=f_{m-1}(x)+\beta_m b(x; \gamma_m)${% endraw %}
+> 2. 对于m=1到M:<br>(a)计算残差<br>{% raw %}$$r_{m-1}=y - f_{m-1}(x)$${% endraw %} (b)估计模型参数，拟合残差 <bt>{% raw %}$$(\beta_m, \gamma_m)=\min_{\beta, \gamma}\|r_{m-1} - \beta b(x;\gamma)\|^2 \tag 7$${% endraw %} (c)更新{% raw %}$f_m(x)=f_{m-1}(x)+\beta_m b(x; \gamma_m)${% endraw %}
 
 式(7)中$\beta, \gamma$的优化不存在相互依赖，可以分开优化，式(7)等价于
 {% raw %}
@@ -84,17 +85,29 @@ $$\bigg\{ \begin{matrix}
 {% endraw %}
 
 
-## 梯度提升(Gradient boosting)
+## 平方损失下的梯度提升
 由上一小节我们知道{% raw %}$r_{m-1}${% endraw %}就是平方经验损失相对于当前模型预测值的负梯度方向，那么这里的{% raw %}$b(x;\gamma_m)${% endraw %}就是对当前模型预测值的负梯度方向最优的拟合。而一维实数{% raw %}$\beta_m${% endraw %}可以看做是梯度下降时的步长。上述算法等价于
 
-> 梯度提升
+> 平方损失下的梯度提升
 > 1. 初始化{% raw %}$f_0(x)=0${% endraw %}
-> 2. 对于m=1到M:<br>(a)计算残差<br>{% raw %}$$r_{m-1}=y - f_{m-1}(x)$${% endraw %} <br> (b)估计模型参数，拟合残差 <bt>{% raw %}$$\gamma_m = \arg\min_{\gamma}\|r_{m-1} - b(x;\gamma)\|^2 \tag 9$${% endraw %} 则梯度为{% raw %}$-b(x;\gamma_m)${% endraw %}, 若梯度非常接近0可提前结束迭代<br>(c)估计最优步长 <bt>{% raw %}$$\beta_m = \arg\min_{\beta}\|r_{m-1} - \beta b(x;\gamma_m)\|^2 \tag{10}$${% endraw %} <br>(d)梯度下降<br>{% raw %}$$f_m(x)=f_{m-1}(x)-\beta_m (-b(x; \gamma_m))$${% endraw %}
+> 2. 对于m=1到M:<br>(a)计算残差<br>{% raw %}$$r_{m-1}=y - f_{m-1}(x)$${% endraw %} 则梯度为{% raw %}$-r_{m-1}${% endraw %}, 若梯度非常接近0可提前结束迭代<br> (b)估计模型参数，拟合残差 <bt>{% raw %}$$\gamma_m = \arg\min_{\gamma}\|r_{m-1} - b(x;\gamma)\|^2 \tag 9$${% endraw %}(c)估计最优步长 <bt>{% raw %}$$\beta_m = \arg\min_{\beta}\|r_{m-1} - \beta b(x;\gamma_m)\|^2 \tag{10}$${% endraw %} (d)更新模型，梯度下降<br>{% raw %}$$f_m(x)=f_{m-1}(x)+\beta_m b(x; \gamma_m)=f_{m-1}(x)-\beta_m (-b(x; \gamma_m))$${% endraw %}
 
 考虑实际的梯度下降算法
 > 在梯度下降算法中，每次迭代需要求当前搜索位置的梯度，然后沿着负梯度方向搜索，直到找到0梯度位置为止。
 
-与梯度下降算法比较，梯度提升算法，相当于以模型预测值$f(x)$为参数做梯度下降。这里的残差为真实的负梯度，我们以弱学习器去拟合真实的负梯度，再沿着拟合的负梯度方向搜索。实际上并不是在真实的梯度方向下降，而是在拟合的梯度方向下降。
+与梯度下降算法比较，平方损失下的梯度提升算法，相当于以模型预测值$f(x)$为参数做梯度下降。这里的残差为真实的负梯度，我们以弱学习器去拟合真实的负梯度，再沿着拟合的负梯度方向搜索。实际上并不是在真实的梯度方向下降，而是在拟合的梯度方向下降。
+
+## 梯度提升(Gradient boosting)
+对于任意的可微的损失函数，我们可以在迭代的过程中求出梯度，并以负梯度作为残差的近似，再以弱学习器去拟合负梯度来完成梯度提升算法。但是需要注意，对于其他非平方损失的可微损失函数，负梯度不等于残差，而是残差的近似，因此负梯度也被称为伪残差(pseudo-residuals)。
+{% raw %}
+$$r_{m}\approx -\bigg[\frac{\partial L(y, f(x))}{\partial f(x)}\bigg]_{f(x)=f_{m}(x)} \tag{11}$$
+{% endraw %}
+与原来相比，我们得到一个好处，即可以使用任意的可微的损失函数，且仍然是拟合真实的梯度，仍然是在拟合的梯度方向上下降；坏处是前向分步拟合算法中的残差不在等于负梯度。不过前向分步拟合算法本来就是贪心的迭代算法，只要我们每一步迭代都能尽量地使残差{% raw %}$r_{m}${% endraw %}减小，并不违反前向分步拟合算分的初衷。最后，适用于任意可微损失函数的梯度提升算法为
+
+> 梯度提升算法
+> 1. 初始化{% raw %}$f_0(x)=0${% endraw %}
+> 2. 对于m=1到M:<br>(a)计算伪残差，即负梯度<br>{% raw %}$$r_{m-1}=-\bigg[\frac{\partial L(y, f(x))}{\partial f(x)}\bigg]_{f(x)=f_{m-1}(x)}$${% endraw %} 若梯度接近与0，可提前结束迭代<br> (b)以$b(x;\gamma_m)$拟合伪残差,估计模型参数$\gamma_m$<br>(c)估计最优步长 <bt>{% raw %}$$\beta_m = \arg\min_{\beta}L(r_{m-1}, \beta b(x;\gamma_m)) = \arg\min_{\beta}L(y, f_{m-1}(x)+\beta b(x;\gamma_m)) $${% endraw %} (d)更新模型<br>{% raw %}$$f_m(x)=f_{m-1}(x)+\beta_m b(x; \gamma_m)$${% endraw %}
+
 
 <div id="container"></div>
 <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
@@ -102,7 +115,7 @@ $$\bigg\{ \begin{matrix}
 <script>
 var gitment = new Gitment({
   id: 'boosting_square_loss',
-  title: 'boosting与平方损失',
+  title: 'boosting与平方损失——梯度提升',
   owner: 'yiyang186',
   repo: 'blog_comment',
   oauth: {

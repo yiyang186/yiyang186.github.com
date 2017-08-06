@@ -1,5 +1,5 @@
 ---
-title: boosting与指数损失
+title: boosting与指数损失——Adaboost
 date: 2017-08-01 15:59:22
 categories:
   - 机器学习
@@ -144,7 +144,7 @@ w_i^{(m+1)} & = \exp(-y_if_m(x_i)) \\
 <script>
 var gitment = new Gitment({
   id: 'boosting_exponential_loss',
-  title: 'boosting与指数损失',
+  title: 'boosting与指数损失——Adaboost',
   owner: 'yiyang186',
   repo: 'blog_comment',
   oauth: {
