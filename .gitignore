@@ -1,0 +1,13 @@
+.DS_Store
+Thumbs.db
+db.json
+*.log
+node_modules/
+public/
+.deploy*/
+!themes/landscape/_config.yml
+!themes/landscape/package.json
+themes/landscape/
+!themes/next/_config.yml
+!themes/next/package.json
+themes/next/
