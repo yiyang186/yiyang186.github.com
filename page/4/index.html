@@ -297,6 +297,179 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/01/17/在spark上做简单的文本分类(python)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Yiyang Peng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/7233064.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Yiyang's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/01/17/在spark上做简单的文本分类(python)/" itemprop="url">在spark上做简单的文本分类</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-01-17T23:58:00+08:00">
+                2016-01-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/大数据/" itemprop="url" rel="index">
+                    <span itemprop="name">大数据</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>数据集选的是20_newsgroups，我按7：3分的训练集和测试集。</p>
+<p>总的流程如下：</p>
+<p><img src="http://img.blog.csdn.net/20160117232525303" alt="文本分类基本步骤"><br>这里把数据集中的每一条文本都表示成TFTDF向量，用训练集的TFTDF向量来训练模型，用测试集的TFTDF向量进行分类测试，最后统计测试准确率。</p>
+<hr>
+<p>###初始化</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 设置训练集，测试集路径。</span></div><div class="line">trainPath = <span class="string">"hdfs:///user/yy/20_newsgroups/train/*"</span></div><div class="line">testPath = <span class="string">"hdfs:///user/yy/20_newsgroups/test/*"</span></div><div class="line"></div><div class="line"><span class="comment"># 分类时，新闻主题需要转换成数字，labelsDict将主题转换成数字</span></div><div class="line">labelsDict = &#123;<span class="string">'alt.atheism'</span>:<span class="number">0</span>, <span class="string">'comp.graphics'</span>:<span class="number">1</span>, <span class="string">'comp.os.ms-windows.misc'</span>:<span class="number">2</span>,\</div><div class="line">              <span class="string">'comp.sys.ibm.pc.hardware'</span>:<span class="number">3</span>, <span class="string">'comp.sys.mac.hardware'</span>:<span class="number">4</span>, <span class="string">'comp.windows.x'</span>:<span class="number">5</span>,\</div><div class="line">              <span class="string">'misc.forsale'</span>:<span class="number">6</span>, <span class="string">'rec.autos'</span>:<span class="number">7</span>, <span class="string">'rec.motorcycles'</span>:<span class="number">8</span>, <span class="string">'rec.sport.baseball'</span>:<span class="number">9</span>,\</div><div class="line">              <span class="string">'rec.sport.hockey'</span>:<span class="number">10</span>, <span class="string">'sci.crypt'</span>:<span class="number">11</span>, <span class="string">'sci.electronics'</span>:<span class="number">12</span>, <span class="string">'sci.med'</span>:<span class="number">13</span>,\</div><div class="line">              <span class="string">'sci.space'</span>:<span class="number">14</span>, <span class="string">'soc.religion.christian'</span>:<span class="number">15</span>, <span class="string">'talk.politics.guns'</span>:<span class="number">16</span>,\</div><div class="line">              <span class="string">'talk.politics.mideast'</span>:<span class="number">17</span>, <span class="string">'talk.politics.misc'</span>:<span class="number">18</span>, <span class="string">'talk.religion.misc'</span>:<span class="number">19</span>&#125;</div><div class="line"></div><div class="line"><span class="comment"># keyTolabels则将数字再转换回主题，主要是方便自己看的</span></div><div class="line">keyTolabels = &#123;<span class="number">0</span>:<span class="string">'alt.atheism'</span>, <span class="number">1</span>:<span class="string">'comp.graphics'</span>, <span class="number">2</span>:<span class="string">'comp.os.ms-windows.misc'</span>,\</div><div class="line">              <span class="number">3</span>:<span class="string">'comp.sys.ibm.pc.hardware'</span>, <span class="number">4</span>:<span class="string">'comp.sys.mac.hardware'</span>, <span class="number">5</span>:<span class="string">'comp.windows.x'</span>,\</div><div class="line">              <span class="number">6</span>:<span class="string">'misc.forsale'</span>, <span class="number">7</span>:<span class="string">'rec.autos'</span>, <span class="number">8</span>:<span class="string">'rec.motorcycles'</span>, <span class="number">9</span>:<span class="string">'rec.sport.baseball'</span>,\</div><div class="line">              <span class="number">10</span>:<span class="string">'rec.sport.hockey'</span>, <span class="number">11</span>:<span class="string">'sci.crypt'</span>, <span class="number">12</span>:<span class="string">'sci.electronics'</span>, <span class="number">13</span>:<span class="string">'sci.med'</span>,\</div><div class="line">              <span class="number">14</span>:<span class="string">'sci.space'</span>, <span class="number">15</span>:<span class="string">'soc.religion.christian'</span>, <span class="number">16</span>:<span class="string">'talk.politics.guns'</span>,\</div><div class="line">              <span class="number">17</span>:<span class="string">'talk.politics.mideast'</span>, <span class="number">18</span>:<span class="string">'talk.politics.misc'</span>, <span class="number">19</span>:<span class="string">'talk.religion.misc'</span>&#125;</div></pre></td></tr></table></figure>
+<hr>
+<p>###预处理函数<br>完成对文档的分词，去停用词，词干提取，同义词替换的工作，需要安装一个自然语言处理的第三方库nltk。当然，每个节点都需要安装。预处理的基本步骤如下：<br><img src="http://img.blog.csdn.net/20160117233401568" alt="预处理步骤"><br>这里的同义词替换做的非常简单，只是从单词的第一个同义词集里取出第一个同义词。这么做有时会产生歧义，因为单词在不同的语义下有不同的同义词集，只取第一个同义词集即限定了仅仅使用单词的第一个语义。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">tokenlize</span><span class="params">(doc)</span>:</span></div><div class="line">    <span class="keyword">import</span> nltk, re</div><div class="line">    <span class="keyword">from</span> nltk.corpus <span class="keyword">import</span> stopwords</div><div class="line">    <span class="keyword">from</span> nltk.corpus <span class="keyword">import</span> wordnet</div><div class="line">    </div><div class="line">    r = re.compile(<span class="string">r'[\w]+'</span>) <span class="comment"># 以非字母数字字符来进行分词</span></div><div class="line">    my_stopwords = nltk.corpus.stopwords.words(<span class="string">'english'</span>)</div><div class="line">    porter = nltk.PorterStemmer()</div><div class="line">    </div><div class="line">    newdoc = []</div><div class="line">    <span class="keyword">for</span> word <span class="keyword">in</span> nltk.regexp_tokenize(doc, r): <span class="comment"># 分词</span></div><div class="line">        newWord = porter.stem(word.lower()) <span class="comment"># 词干提取</span></div><div class="line">        <span class="keyword">if</span> newWord <span class="keyword">in</span> my_stopwords: <span class="comment"># 去停用词</span></div><div class="line">            <span class="keyword">continue</span></div><div class="line">        tokenSynsets = wordnet.synsets(newWord)</div><div class="line">        newdoc.append(newWord <span class="keyword">if</span> tokenSynsets == [] <span class="keyword">else</span> tokenSynsets[<span class="number">0</span>].lemma_names()[<span class="number">0</span>]) <span class="comment"># 同义词替换</span></div><div class="line">    <span class="keyword">return</span> newdoc</div></pre></td></tr></table></figure></p>
+<hr>
+<p>###导入训练集<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">trainTokens = sc.wholeTextFiles(trainPath)\</div><div class="line">                .map(<span class="keyword">lambda</span> (fileName, doc): doc)\</div><div class="line">                .map(<span class="keyword">lambda</span> doc: tokenlize(doc))</div></pre></td></tr></table></figure></p>
+<hr>
+<p>###构建单词映射哈希表，tfidf模型<br>训练集和测试集都需要使用这个哈希表，它的大小根据不同单词的数量来设置，一般取2的n方，在前期数据探索的时候需要计算一下不同单词的数量。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> pyspark.mllib.feature <span class="keyword">import</span> HashingTF</div><div class="line">hasingTF = HashingTF(<span class="number">2</span> ** <span class="number">16</span>)</div><div class="line"></div><div class="line"><span class="comment"># 将训练集每个文档都映射为tf向量</span></div><div class="line">trainTf = hasingTF.transform(trainTokens)</div><div class="line">trainTf.cache()</div><div class="line"></div><div class="line"><span class="comment"># 构建IDF模型，训练集和测试集都用它</span></div><div class="line"><span class="keyword">from</span> pyspark.mllib.feature <span class="keyword">import</span> IDF</div><div class="line">idf = IDF().fit(trainTf)</div><div class="line"></div><div class="line"><span class="comment"># 将训练集每个tf向量转换为tfidf向量</span></div><div class="line">trainTfidf = idf.transform(trainTf)</div><div class="line">trainTfidf.cache()</div></pre></td></tr></table></figure></p>
+<hr>
+<p>###标注训练集</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 为训练集标注，成为最终可用的训练集，每个样本都需要放在LabeledPoint里</span></div><div class="line"><span class="keyword">from</span> pyspark.mllib.regression <span class="keyword">import</span> LabeledPoint</div><div class="line">trainLabels = sc.wholeTextFiles(trainPath)\</div><div class="line">                .map(<span class="keyword">lambda</span> (path, doc): path.split(<span class="string">'/'</span>)[<span class="number">-2</span>])</div><div class="line">train = trainLabels.zip(trainTfidf)\</div><div class="line">                   .map(<span class="keyword">lambda</span> (topic, vector): LabeledPoint(labelsDict[topic], vector))</div><div class="line">train.cache()</div></pre></td></tr></table></figure>
+<hr>
+<p>###导入测试集</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 导入测试集并完成预处理</span></div><div class="line">testTokens = sc.wholeTextFiles(testPath)\</div><div class="line">               .map(<span class="keyword">lambda</span> (fileName, doc): doc)\</div><div class="line">               .map(<span class="keyword">lambda</span> doc: tokenlize(doc))</div></pre></td></tr></table></figure>
+<hr>
+<p>###将测试集转换成tfidf向量</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 将测试集每个文档都映射为tf向量，和训练集用的是同一个哈希映射hasingTF</span></div><div class="line"><span class="keyword">from</span> pyspark.mllib.feature <span class="keyword">import</span> HashingTF</div><div class="line">testTf = hasingTF.transform(testTokens)</div><div class="line"></div><div class="line"><span class="comment"># 将测试集每个tf向量转换为tfidf向量，和训练集用的是同一个IDF模型idf</span></div><div class="line"><span class="keyword">from</span> pyspark.mllib.feature <span class="keyword">import</span> IDF</div><div class="line">testTfidf = idf.transform(testTf)</div></pre></td></tr></table></figure>
+<hr>
+<p>###标注测试集</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 为测试集标注，成为最终可用与测试的测试集</span></div><div class="line"><span class="keyword">from</span> pyspark.mllib.regression <span class="keyword">import</span> LabeledPoint</div><div class="line">testLabels = sc.wholeTextFiles(testPath)\</div><div class="line">               .map(<span class="keyword">lambda</span> (path, doc): path.split(<span class="string">'/'</span>)[<span class="number">-2</span>])</div><div class="line"></div><div class="line">test = testLabels.zip(testTfidf)\</div><div class="line">                 .map(<span class="keyword">lambda</span> (topic, vector): LabeledPoint(labelsDict[topic], vector))</div><div class="line">testCount = test.count()</div></pre></td></tr></table></figure>
+<hr>
+<h3 id="训练朴素贝叶斯模型并计算准确率"><a href="#训练朴素贝叶斯模型并计算准确率" class="headerlink" title="训练朴素贝叶斯模型并计算准确率"></a>训练朴素贝叶斯模型并计算准确率</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> pyspark.mllib.classification <span class="keyword">import</span> NaiveBayes</div><div class="line">model = NaiveBayes.train(train, <span class="number">0.1</span>)</div><div class="line"></div><div class="line"><span class="comment"># 计算测试的准确率</span></div><div class="line">predictionAndLabel = test.map(<span class="keyword">lambda</span> p: (model.predict(p.features), p.label))</div><div class="line">accuracy = <span class="number">1.0</span> * predictionAndLabel.filter(<span class="keyword">lambda</span> x: x[<span class="number">0</span>] == x[<span class="number">1</span>]).count() / testCount</div><div class="line"><span class="keyword">print</span> accuracy</div></pre></td></tr></table></figure>
+<pre><code>0.803298634582
+</code></pre><hr>
+<p>###训练多元逻辑回归模型并计算准确率</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span>  pyspark.mllib.classification <span class="keyword">import</span> LogisticRegressionWithLBFGS</div><div class="line">lrModel = LogisticRegressionWithLBFGS.train(train, iterations=<span class="number">10</span>, numClasses=<span class="number">20</span>)</div><div class="line"></div><div class="line"><span class="comment"># 计算测试的准确率</span></div><div class="line">predictionAndLabel = test.map(<span class="keyword">lambda</span> p: (lrModel.predict(p.features), p.label))</div><div class="line">accuracy = <span class="number">1.0</span> * predictionAndLabel.filter(<span class="keyword">lambda</span> x: x[<span class="number">0</span>] == x[<span class="number">1</span>]).count() / testCount</div><div class="line"><span class="keyword">print</span> accuracy</div></pre></td></tr></table></figure>
+<pre><code>0.812897120454
+</code></pre><hr>
+<p>如果有兴趣，可以随便拿一份新闻组文本来测试一下，给自己一个更为直观的感受。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div></pre></td><td class="code"><pre><div class="line">aTestText = <span class="string">"""</span></div><div class="line">Path: cantaloupe.srv.cs.cmu.edu!rochester!udel!bogus.sura.net!howland.reston.ans.net!ira.uka.de!math.fu-berlin.de!cs.tu-berlin.de!ossip</div><div class="line">From: ossip@cs.tu-berlin.de (Ossip Kaehr)</div><div class="line">Newsgroups: comp.sys.mac.hardware</div><div class="line">Subject: SE/30 8bit card does not work with 20mb..</div><div class="line">Date: 21 Apr 1993 23:22:22 GMT</div><div class="line">Organization: Technical University of Berlin, Germany</div><div class="line">Lines: 27</div><div class="line">Message-ID: &lt;1r4kve$6cl@news.cs.tu-berlin.de&gt;</div><div class="line">NNTP-Posting-Host: trillian.cs.tu-berlin.de</div><div class="line">Mime-Version: 1.0</div><div class="line">Content-Type: text/plain; charset=iso-8859-1</div><div class="line">Content-Transfer-Encoding: 8bit</div><div class="line">Summary: HELP!</div><div class="line">Keywords: SE/30 MODE32 System7 PDS</div><div class="line"></div><div class="line">Hello!</div><div class="line"></div><div class="line">I have a SE/30 and a Generation Systems 8bit PDS card for a 17"</div><div class="line">screen.</div><div class="line">It worked great until I upgraded from 5 to 20 mb ram.</div><div class="line">Now with Sys7.1 and MODE32 or 32enabler it does not boot..</div><div class="line"></div><div class="line">a tech support person said the card does not support these 32bit</div><div class="line">fixes.</div><div class="line"></div><div class="line">BUT: when pressing the shift key while booting (when the ext. monitor</div><div class="line">goes black after having been grey) the system  SOMETIMES boots properly!!</div><div class="line">and then works ok with the 20mb and full graphics.</div><div class="line"></div><div class="line">WHAT's HAPPENING???</div><div class="line"></div><div class="line">Thanks a lot for any advice!!!</div><div class="line">please answer by mail.</div><div class="line"></div><div class="line">Ossip Kaehr</div><div class="line">ossip@cs.tu-berlin.de</div><div class="line">voice: +49.30.6226317</div><div class="line">-- </div><div class="line"> __   --------------------------------------------------------------   __</div><div class="line">/_/\  Ossip Kaehr	Hermannstrasse 32  D-1000 Berlin 44  Germany  /\_\</div><div class="line">\_\/  Tel. +49.30.6223910 or 6218814     EMail ossip@cs.tu-berlin.de  \/_/</div><div class="line">      --------------------------------------------------------------</div><div class="line"></div><div class="line">"""</div></pre></td></tr></table></figure></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">testTf = hasingTF.transform(tokenlize(aTestText)) <span class="comment"># 预处理后转换为tf向量</span></div><div class="line">testTfidf = idf.transform(testTf) <span class="comment"># 再转换成tfidf向量</span></div><div class="line"><span class="keyword">print</span> keyTolabels[lrModel.predict(testTfidf)] <span class="comment"># 预测并输出结果</span></div></pre></td></tr></table></figure>
+<pre><code>&apos;comp.sys.mac.hardware&apos;
+</code></pre><hr>
+<p>###总结spark上如何将文档转换成tfidf向量</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 构建哈希表用于映射所有单词</span></div><div class="line"><span class="keyword">from</span> pyspark.mllib.feature <span class="keyword">import</span> HashingTF</div><div class="line">hasingTF = HashingTF(<span class="number">2</span> ** <span class="number">16</span>) <span class="comment"># 维数需要大于不同单词的总数</span></div><div class="line"></div><div class="line"><span class="comment"># 将文档映射为tf向量，这里的trainTokens为rdd类型</span></div><div class="line">trainTf = hasingTF.transform(trainTokens)</div><div class="line">testTf = hasingTF.transform(testTokens)</div><div class="line"></div><div class="line"><span class="comment"># 构建IDF模型，训练集和测试集都用它</span></div><div class="line"><span class="keyword">from</span> pyspark.mllib.feature <span class="keyword">import</span> IDF</div><div class="line">idf = IDF().fit(trainTf)</div><div class="line"></div><div class="line"><span class="comment"># 将tf向量转换为tfidf向量</span></div><div class="line">trainTfidf = idf.transform(trainTf)</div><div class="line">testTfidf = idf.transform(testTf)</div></pre></td></tr></table></figure>
+<hr>
+<p>###相关阅读<br><a href="https://en.wikipedia.org/wiki/Tf%E2%80%93idf" target="_blank" rel="external">https://en.wikipedia.org/wiki/Tf%E2%80%93idf</a><br><a href="https://en.wikipedia.org/wiki/Natural_Language_Toolkit" target="_blank" rel="external">https://en.wikipedia.org/wiki/Natural_Language_Toolkit</a></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/01/02/MLlib里几个简单的分类模型(python)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -723,7 +896,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">32</span>
+                <span class="site-state-item-count">33</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -745,7 +918,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">38</span>
+                <span class="site-state-item-count">39</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

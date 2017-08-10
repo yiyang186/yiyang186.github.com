@@ -77,7 +77,7 @@
 <link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="matplotlib," />
+  <meta name="keywords" content="优化,对偶问题," />
 
 
 
@@ -93,18 +93,23 @@
 
 
 
-<meta name="description" content="最后的2行错误信息是12    from six.moves import _threadImportError: cannot import name _thread 发现是six出现了问题，用pip更新一下six，问题并没有解决，原因是并没有真正更新six的文件。在python下输入：12import sixprint six.__file__ /System/Library/Framewor">
-<meta name="keywords" content="matplotlib">
+<meta name="description" content="原问题和对偶问题原问题 $$\begin{aligned} \min \quad &amp; f(x) \\ s.t. \quad &amp; g_i(x) \leq 0 \qquad i=1,...,m\\ &amp; h_j(x)=0 \qquad j=1,...,l \\ &amp; x \in X \end{aligned}$$  对偶问题 $$\begin{aligned} \max \ &amp;\inf\ \bigg \{">
+<meta name="keywords" content="优化,对偶问题">
 <meta property="og:type" content="article">
-<meta property="og:title" content="matplotlib cannot import name _thread on mac">
-<meta property="og:url" content="http://yoursite.com/2016/03/01/matplotlib cannot import name _thread on mac/index.html">
+<meta property="og:title" content="对偶问题的简化几何解释">
+<meta property="og:url" content="http://yoursite.com/2017/05/20/对偶问题的简化几何解释/index.html">
 <meta property="og:site_name" content="Yiyang&#39;s Blog">
-<meta property="og:description" content="最后的2行错误信息是12    from six.moves import _threadImportError: cannot import name _thread 发现是six出现了问题，用pip更新一下six，问题并没有解决，原因是并没有真正更新six的文件。在python下输入：12import sixprint six.__file__ /System/Library/Framewor">
+<meta property="og:description" content="原问题和对偶问题原问题 $$\begin{aligned} \min \quad &amp; f(x) \\ s.t. \quad &amp; g_i(x) \leq 0 \qquad i=1,...,m\\ &amp; h_j(x)=0 \qquad j=1,...,l \\ &amp; x \in X \end{aligned}$$  对偶问题 $$\begin{aligned} \max \ &amp;\inf\ \bigg \{">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-07-27T01:22:53.211Z">
+<meta property="og:image" content="http://i4.bvimg.com/602416/fc59be77496f59d6.png">
+<meta property="og:image" content="http://i4.bvimg.com/602416/0d65e16e0e62793e.png">
+<meta property="og:image" content="http://i4.bvimg.com/602416/9b4a6cabbb52688d.png">
+<meta property="og:image" content="http://i4.bvimg.com/602416/29433fad9f170e1e.png">
+<meta property="og:updated_time" content="2017-08-10T15:26:44.068Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="matplotlib cannot import name _thread on mac">
-<meta name="twitter:description" content="最后的2行错误信息是12    from six.moves import _threadImportError: cannot import name _thread 发现是six出现了问题，用pip更新一下six，问题并没有解决，原因是并没有真正更新six的文件。在python下输入：12import sixprint six.__file__ /System/Library/Framewor">
+<meta name="twitter:title" content="对偶问题的简化几何解释">
+<meta name="twitter:description" content="原问题和对偶问题原问题 $$\begin{aligned} \min \quad &amp; f(x) \\ s.t. \quad &amp; g_i(x) \leq 0 \qquad i=1,...,m\\ &amp; h_j(x)=0 \qquad j=1,...,l \\ &amp; x \in X \end{aligned}$$  对偶问题 $$\begin{aligned} \max \ &amp;\inf\ \bigg \{">
+<meta name="twitter:image" content="http://i4.bvimg.com/602416/fc59be77496f59d6.png">
 
 
 
@@ -132,13 +137,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2016/03/01/matplotlib cannot import name _thread on mac/"/>
+  <link rel="canonical" href="http://yoursite.com/2017/05/20/对偶问题的简化几何解释/"/>
 
 
 
 
 
-  <title>matplotlib cannot import name _thread on mac | Yiyang's Blog</title>
+  <title>对偶问题的简化几何解释 | Yiyang's Blog</title>
   
 
 
@@ -297,7 +302,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/03/01/matplotlib cannot import name _thread on mac/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/20/对偶问题的简化几何解释/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Yiyang Peng">
@@ -314,7 +319,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">matplotlib cannot import name _thread on mac</h1>
+          <h1 class="post-title" itemprop="name headline">对偶问题的简化几何解释</h1>
         
 
         <div class="post-meta">
@@ -326,8 +331,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-03-01T19:55:00+08:00">
-                2016-03-01
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-20T11:35:00+08:00">
+                2017-05-20
               </time>
             
 
@@ -349,8 +354,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/操作/" itemprop="url" rel="index">
-                    <span itemprop="name">操作</span>
+                  <a href="/categories/数学/" itemprop="url" rel="index">
+                    <span itemprop="name">数学</span>
                   </a>
                 </span>
 
@@ -383,14 +388,60 @@
       
 
       
-        <p>最后的2行错误信息是<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">    from six.moves import _thread</div><div class="line">ImportError: cannot import name _thread</div></pre></td></tr></table></figure></p>
-<p>发现是six出现了问题，用pip更新一下six，问题并没有解决，原因是并没有真正更新six的文件。<br>在python下输入：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">import six</div><div class="line">print six.__file__</div></pre></td></tr></table></figure></p>
-<p>/System/Library/Frameworks/Python.framework/Versions/2.7/Extras/lib/python/six.pyc</p>
-<p>这是我们的python实际使用的six，而我们手动更新的six却是装在/Library/Python/2.7/site-packages/，我们把six.__file__的文件删除掉，python就只能用我们更新的six了<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo rm -rf /System/Library/Frameworks/Python.framework/Versions/2.7/Extras/lib/python/six.*</div></pre></td></tr></table></figure></p>
-<p>重启ipython/python就行了，如果之前并未有更新six, 应该在这一步中更新six。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo pip install --upgrade six</div></pre></td></tr></table></figure></p>
-<p>另外，在很多时候我们希望忽略过去下载的安装包，直接下载安装可以使用–ignore-installed这个参数，比如我发现的的matplotlib的mplot3d部分有点问题，我想再重新下载安装一遍，可以这么做<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo pip install --upgrade --ignore-installed matplotlib</div></pre></td></tr></table></figure></p>
-<p>这会把相关的包（numpy, pytz, six, python-dateutil, cycler, pyparsing, matplotlib）都下载安装一遍</p>
+        <h1 id="原问题和对偶问题"><a href="#原问题和对偶问题" class="headerlink" title="原问题和对偶问题"></a>原问题和对偶问题</h1><h2 id="原问题"><a href="#原问题" class="headerlink" title="原问题"></a>原问题</h2>
+$$\begin{aligned} \min \quad & f(x) \\
+s.t. \quad & g_i(x) \leq 0 \qquad i=1,...,m\\
+& h_j(x)=0 \qquad j=1,...,l \\
+& x \in X
+\end{aligned}$$
 
+<h2 id="对偶问题"><a href="#对偶问题" class="headerlink" title="对偶问题"></a>对偶问题</h2>
+$$\begin{aligned} \max \ &\inf\ \bigg \{ f(x)+\sum_{i=1}^m\mu_ig_i(x)+\sum_{j=1}^l\xi_ih_j(x)\bigg\} \\
+s.t. \quad &\mu_i \geq 0 \qquad i=1,...,m
+\end{aligned}$$
+
+<h2 id="问题简化"><a href="#问题简化" class="headerlink" title="问题简化"></a>问题简化</h2><p>为了便于用几何描述原问题和对偶问题的关系，把问题简化</p>
+<h3 id="简化后的原问题"><a href="#简化后的原问题" class="headerlink" title="简化后的原问题"></a>简化后的原问题</h3>
+$$\begin{aligned} \min \quad & f(x) \\
+s.t. \quad & g(x) \leq 0\\
+& h(x)=0\\
+& x \in X
+\end{aligned}$$
+
+<h3 id="简化后的对偶问题"><a href="#简化后的对偶问题" class="headerlink" title="简化后的对偶问题"></a>简化后的对偶问题</h3>
+$$\begin{aligned} \max \ &\inf\ \bigg \{ f(x)+\mu g(x)+\xi h(x)\bigg\} \\
+s.t. \quad &\mu \geq 0
+\end{aligned}$$
+
+<h1 id="几何解释"><a href="#几何解释" class="headerlink" title="几何解释"></a>几何解释</h1><h2 id="强对偶"><a href="#强对偶" class="headerlink" title="强对偶"></a>强对偶</h2><p>对偶问题的优化目标是最大化$f(x),h(x),g(x)$的线性组合的最小值，而这如何等价于在限制下最小化$f(x)$，需要观察$f(x),h(x),g(x)$的线性组合<br>将X集合中的所有元素x都通过变换投影到集合G中:<br>$$G={[h(x),g(x),f(x)], x \in X}$$<br>显然，G在$f(x),h(x),g(x)$的张成空间内。<br>为了在图形中表达对偶问题的优化过程，鉴于原问题的限制中有$h(x)=0$，再简化一下问题，只考虑对偶问题的G中位于$h(x)=0$薄片内的元素。如下图所示，因为最小值必须是G中最低的位置，又受到$g(x)\leq 0$的限制，所以原问题的最小值$f(x)_{min}$位于图中的红点位置。</p>
+<p><img src="http://i4.bvimg.com/602416/fc59be77496f59d6.png" alt=""></p>
+<p>对偶问题的目标函数是$f(x)+ug(x)$，我们令$a=f(x)+\mu g(x)$，它可以看作是[g(x),f(x)]平面内的直线$-\mu g(x)+a=f(x)$, 其中$-\mu$为斜率，a为截距。注意对偶问题中要求$\mu \leq 0$，因此我们只考虑斜率为负的情形。而直线的截距则是对偶问题的目标。</p>
+<p>原问题中要求$x \in X$，那么对偶问题中$[h(x),g(x),f(x)]$必须在G内，$a=f(x)+\mu g(x)$的中的f(x)和g(x)必须在G以内，也就是说直线$a=f(x)+\mu g(x)$必须经过G。<br>固定$\mu$不变，为了取到下界$\inf{f(x)+\mu g(x)}$，必须保证直线$a=f(x)+\mu g(x)$与G的下边缘相切。只有相切才能让$a=f(x)+\mu g(x)$取到下界，而x不超出G的范围。</p>
+<p><img src="http://i4.bvimg.com/602416/0d65e16e0e62793e.png" alt=""></p>
+<p>保持直线$a=f(x)+\mu g(x)$与G下边缘相切，调节斜率$-\mu$使截取a最大化。最大化的的结果就是截距所在位置与f(x)的最小值重合
+$$a=f(x)_{min}$$
+<br>此时，原问题的解与对偶问题的解等价，这种情形称为强对偶。</p>
+<p><img src="http://i4.bvimg.com/602416/9b4a6cabbb52688d.png" alt=""></p>
+<h2 id="弱对偶"><a href="#弱对偶" class="headerlink" title="弱对偶"></a>弱对偶</h2><p>如果G的形状不凑巧如下图所示，那么对偶问题的解就会和原问题的解存在间隙，这种情况称为弱对偶。</p>
+<p><img src="http://i4.bvimg.com/602416/29433fad9f170e1e.png" alt=""></p>
+<hr>
+<p>参考自<a href="http://www.eng.newcastle.edu.au/eecs/cdsc/books/cce/Slides/Duality.pdf" target="_blank" rel="external">Lagrangian Duality</a></p>
+<p><div id="container"></div></p>
+<p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+var gitment = new Gitment({
+  id: 'duality',
+  title: ' 对偶问题的简化几何解释',
+  owner: 'yiyang186',
+  repo: 'blog_comment',
+  oauth: {
+    client_id: '2786ddc8538588bfc0c8',
+    client_secret: '83713f049f4b7296d27fe579a30cdfe9e2e45215',
+  },
+})
+gitment.render('container')
+</script>
       
     </div>
 
@@ -419,7 +470,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/matplotlib/" rel="tag"># matplotlib</a>
+            <a href="/tags/优化/" rel="tag"># 优化</a>
+          
+            <a href="/tags/对偶问题/" rel="tag"># 对偶问题</a>
           
         </div>
       
@@ -432,8 +485,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/02/12/4 矩阵分析/" rel="next" title="矩阵的范数与导数">
-                <i class="fa fa-chevron-left"></i> 矩阵的范数与导数
+              <a href="/2017/05/06/如何理解EM算法/" rel="next" title="如何理解EM算法">
+                <i class="fa fa-chevron-left"></i> 如何理解EM算法
               </a>
             
           </div>
@@ -442,8 +495,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2016/03/06/怎么在mac终端上执行R脚本/" rel="prev" title="在mac终端上执行R脚本">
-                在mac终端上执行R脚本 <i class="fa fa-chevron-right"></i>
+              <a href="/2017/05/24/前端实时更新后端处理进度/" rel="prev" title="前端实时更新后端处理进度">
+                前端实时更新后端处理进度 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -492,8 +545,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/7233064.jpg"
@@ -575,6 +637,22 @@
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#原问题和对偶问题"><span class="nav-number">1.</span> <span class="nav-text">原问题和对偶问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#原问题"><span class="nav-number">1.1.</span> <span class="nav-text">原问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对偶问题"><span class="nav-number">1.2.</span> <span class="nav-text">对偶问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题简化"><span class="nav-number">1.3.</span> <span class="nav-text">问题简化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#简化后的原问题"><span class="nav-number">1.3.1.</span> <span class="nav-text">简化后的原问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#简化后的对偶问题"><span class="nav-number">1.3.2.</span> <span class="nav-text">简化后的对偶问题</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#几何解释"><span class="nav-number">2.</span> <span class="nav-text">几何解释</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#强对偶"><span class="nav-number">2.1.</span> <span class="nav-text">强对偶</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#弱对偶"><span class="nav-number">2.2.</span> <span class="nav-text">弱对偶</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
