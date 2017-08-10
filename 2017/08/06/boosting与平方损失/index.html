@@ -96,14 +96,14 @@
 <meta name="description" content="Boosting在另一篇博客中(boosting与指数损失)介绍了关于Boosting的一些简单内容。  boosting的过程是不断地修改数据集，在此之上应用弱学习器，由此产生一个弱学习器序列$b(x;\gamma_m), m = 1, 2, ..., M$。最后通过加权的多数表决来合并每个弱学习器的预测结果。 Boosting是一种建立在弱学习器集合上的加法模型。 通过前向分步拟合的方法来拟合">
 <meta name="keywords" content="boosting,损失函数,ensamble,梯度提升,梯度下降">
 <meta property="og:type" content="article">
-<meta property="og:title" content="boosting与平方损失——梯度提升">
+<meta property="og:title" content="boosting与平方损失">
 <meta property="og:url" content="http://yoursite.com/2017/08/06/boosting与平方损失/index.html">
 <meta property="og:site_name" content="Yiyang&#39;s Blog">
 <meta property="og:description" content="Boosting在另一篇博客中(boosting与指数损失)介绍了关于Boosting的一些简单内容。  boosting的过程是不断地修改数据集，在此之上应用弱学习器，由此产生一个弱学习器序列$b(x;\gamma_m), m = 1, 2, ..., M$。最后通过加权的多数表决来合并每个弱学习器的预测结果。 Boosting是一种建立在弱学习器集合上的加法模型。 通过前向分步拟合的方法来拟合">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-08-06T15:32:56.742Z">
+<meta property="og:updated_time" content="2017-08-10T03:23:10.439Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="boosting与平方损失——梯度提升">
+<meta name="twitter:title" content="boosting与平方损失">
 <meta name="twitter:description" content="Boosting在另一篇博客中(boosting与指数损失)介绍了关于Boosting的一些简单内容。  boosting的过程是不断地修改数据集，在此之上应用弱学习器，由此产生一个弱学习器序列$b(x;\gamma_m), m = 1, 2, ..., M$。最后通过加权的多数表决来合并每个弱学习器的预测结果。 Boosting是一种建立在弱学习器集合上的加法模型。 通过前向分步拟合的方法来拟合">
 
 
@@ -138,7 +138,7 @@
 
 
 
-  <title>boosting与平方损失——梯度提升 | Yiyang's Blog</title>
+  <title>boosting与平方损失 | Yiyang's Blog</title>
   
 
 
@@ -314,7 +314,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">boosting与平方损失——梯度提升</h1>
+          <h1 class="post-title" itemprop="name headline">boosting与平方损失</h1>
         
 
         <div class="post-meta">
@@ -445,7 +445,7 @@ $$\bigg\{ \begin{matrix}
 \end{matrix}
 \tag{8}$$
 </p>
-<h2 id="平方损失下的梯度提升"><a href="#平方损失下的梯度提升" class="headerlink" title="平方损失下的梯度提升"></a>平方损失下的梯度提升</h2><p>由上一小节我们知道$r_{m-1}$就是平方经验损失相对于当前模型预测值的负梯度方向，那么这里的$b(x;\gamma_m)$就是对当前模型预测值的负梯度方向最优的拟合。而一维实数$\beta_m$可以看做是梯度下降时的步长。上述算法等价于</p>
+<h1 id="平方损失下的梯度提升"><a href="#平方损失下的梯度提升" class="headerlink" title="平方损失下的梯度提升"></a>平方损失下的梯度提升</h1><p>由上一小节我们知道$r_{m-1}$就是平方经验损失相对于当前模型预测值的负梯度方向，那么这里的$b(x;\gamma_m)$就是对当前模型预测值的负梯度方向最优的拟合。而一维实数$\beta_m$可以看做是梯度下降时的步长。上述算法等价于</p>
 <blockquote>
 <p>平方损失下的梯度提升</p>
 <ol>
@@ -453,20 +453,10 @@ $$\bigg\{ \begin{matrix}
 <li>对于m=1到M:<br>(a)计算残差<br>$$r_{m-1}=y - f_{m-1}(x)$$ 则梯度为$-r_{m-1}$, 若梯度非常接近0可提前结束迭代<br> (b)估计模型参数，拟合残差 <bt>$$\gamma_m = \arg\min_{\gamma}\|r_{m-1} - b(x;\gamma)\|^2 \tag 9$$(c)估计最优步长 <bt>$$\beta_m = \arg\min_{\beta}\|r_{m-1} - \beta b(x;\gamma_m)\|^2 \tag{10}$$ (d)更新模型，梯度下降<br>$$f_m(x)=f_{m-1}(x)+\beta_m b(x; \gamma_m)=f_{m-1}(x)-\beta_m (-b(x; \gamma_m))$$</bt></bt></li>
 </ol>
 </blockquote>
+<p>上述算法是梯度提升算法在平方损失情形下的特例。每次迭代，梯度提升算法拟合经验损失在预测函数（值）上的梯度，然后在拟合的预测函数梯度减小最快的方向boost（我觉得翻译成“推进”更好），是对梯度下降的一种近似。</p>
 <p>考虑实际的梯度下降算法</p>
 <blockquote>
-<p>在梯度下降算法中，每次迭代需要求当前搜索位置的梯度，然后沿着负梯度方向搜索，直到找到0梯度位置为止。</p>
-</blockquote>
-<p>与梯度下降算法比较，平方损失下的梯度提升算法，相当于以模型预测值$f(x)$为参数做梯度下降。这里的残差为真实的负梯度，我们以弱学习器去拟合真实的负梯度，再沿着拟合的负梯度方向搜索。实际上并不是在真实的梯度方向下降，而是在拟合的梯度方向下降。</p>
-<h2 id="梯度提升-Gradient-boosting"><a href="#梯度提升-Gradient-boosting" class="headerlink" title="梯度提升(Gradient boosting)"></a>梯度提升(Gradient boosting)</h2><p>对于任意的可微的损失函数，我们可以在迭代的过程中求出梯度，并以负梯度作为残差的近似，再以弱学习器去拟合负梯度来完成梯度提升算法。但是需要注意，对于其他非平方损失的可微损失函数，负梯度不等于残差，而是残差的近似，因此负梯度也被称为伪残差(pseudo-residuals)。<br>
-$$r_{m}\approx -\bigg[\frac{\partial L(y, f(x))}{\partial f(x)}\bigg]_{f(x)=f_{m}(x)} \tag{11}$$
-<br>与原来相比，我们得到一个好处，即可以使用任意的可微的损失函数，且仍然是拟合真实的梯度，仍然是在拟合的梯度方向上下降；坏处是前向分步拟合算法中的残差不在等于负梯度。不过前向分步拟合算法本来就是贪心的迭代算法，只要我们每一步迭代都能尽量地使残差$r_{m}$减小，并不违反前向分步拟合算分的初衷。最后，适用于任意可微损失函数的梯度提升算法为</p>
-<blockquote>
-<p>梯度提升算法</p>
-<ol>
-<li>初始化$f_0(x)=0$</li>
-<li>对于m=1到M:<br>(a)计算伪残差，即负梯度<br>$$r_{m-1}=-\bigg[\frac{\partial L(y, f(x))}{\partial f(x)}\bigg]_{f(x)=f_{m-1}(x)}$$ 若梯度接近与0，可提前结束迭代<br> (b)以$b(x;\gamma_m)$拟合伪残差,估计模型参数$\gamma_m$<br>(c)估计最优步长 <bt>$$\beta_m = \arg\min_{\beta}L(r_{m-1}, \beta b(x;\gamma_m)) = \arg\min_{\beta}L(y, f_{m-1}(x)+\beta b(x;\gamma_m)) $$ (d)更新模型<br>$$f_m(x)=f_{m-1}(x)+\beta_m b(x; \gamma_m)$$</bt></li>
-</ol>
+<p>在梯度下降算法中，每次迭代需要求当前搜索位置的梯度，然后沿着负梯度方向搜索，直到找到0梯度位置为止。<br>与梯度下降算法比较，平方损失下的梯度提升算法，相当于以模型预测值$f(x)$为参数做梯度下降。这里的残差为真实的负梯度，我们以弱学习器去拟合真实的负梯度，再沿着拟合的负梯度方向搜索。实际上并不是在真实的梯度方向下降，而是在拟合的梯度方向下降。</p>
 </blockquote>
 <p><div id="container"></div></p>
 <p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
@@ -543,6 +533,10 @@ gitment.render('container')
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2017/08/10/从梯度提升到GBDT/" rel="prev" title="从梯度提升到GBDT">
+                从梯度提升到GBDT <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -614,7 +608,7 @@ gitment.render('container')
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">31</span>
+                <span class="site-state-item-count">32</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -636,7 +630,7 @@ gitment.render('container')
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">36</span>
+                <span class="site-state-item-count">38</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -691,7 +685,7 @@ gitment.render('container')
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Boosting"><span class="nav-number">1.</span> <span class="nav-text">Boosting</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#平方损失-前向分步拟合-梯度提升-Gradient-boosting"><span class="nav-number">2.</span> <span class="nav-text">平方损失+前向分步拟合=梯度提升(Gradient boosting)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#平方经验损失的梯度"><span class="nav-number">2.1.</span> <span class="nav-text">平方经验损失的梯度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#前向分步拟合最小化平方经验损失"><span class="nav-number">2.2.</span> <span class="nav-text">前向分步拟合最小化平方经验损失</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#平方损失下的梯度提升"><span class="nav-number">2.3.</span> <span class="nav-text">平方损失下的梯度提升</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#梯度提升-Gradient-boosting"><span class="nav-number">2.4.</span> <span class="nav-text">梯度提升(Gradient boosting)</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Boosting"><span class="nav-number">1.</span> <span class="nav-text">Boosting</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#平方损失-前向分步拟合-梯度提升-Gradient-boosting"><span class="nav-number">2.</span> <span class="nav-text">平方损失+前向分步拟合=梯度提升(Gradient boosting)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#平方经验损失的梯度"><span class="nav-number">2.1.</span> <span class="nav-text">平方经验损失的梯度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#前向分步拟合最小化平方经验损失"><span class="nav-number">2.2.</span> <span class="nav-text">前向分步拟合最小化平方经验损失</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#平方损失下的梯度提升"><span class="nav-number">3.</span> <span class="nav-text">平方损失下的梯度提升</span></a></li></ol></div>
             
 
           </div>

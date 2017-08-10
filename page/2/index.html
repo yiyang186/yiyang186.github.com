@@ -297,6 +297,247 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/11/11/线性回归/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Yiyang Peng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/7233064.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Yiyang's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/11/11/线性回归/" itemprop="url">线性回归</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-11-11T17:13:00+08:00">
+                2016-11-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/机器学习/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="线性模型使用范围"><a href="#线性模型使用范围" class="headerlink" title="线性模型使用范围"></a>线性模型使用范围</h1><p>相比于非线性模型，线性模型更适用于：</p>
+<ol>
+<li>小数据集</li>
+<li>低信噪比</li>
+<li>稀疏数据</li>
+</ol>
+<h1 id="线性回归模型"><a href="#线性回归模型" class="headerlink" title="线性回归模型"></a>线性回归模型</h1><p>约定数据集$X=(X_1,X_2,...,X_p)$有p个特征，$X_j \in R^N$共N个样本。<br>$$f(X)=\beta_0+\sum_{i=1}^p X_j\beta_j$$</p>
+<p>给X增加一列1，$X=(1, X_1,X_2,...,X_p)$， $\beta=(\beta_0, \beta_1, ..., \beta_p)^T$，上式可写成矩阵形式：<br>$$f(X)=X\beta$$</p>
+<p>这里的$f(X)$为真实模型，$\beta$为真实模型参数，相对应的有估计模型和估计参数, 估计模型的结果为估计的响应变量y<br>$$\hat{y}=\hat{f}(X)=X\hat{\beta}$$</p>
+<p>在统计学习里，我们一般认为真实的,即观测到的响应变量为估计与误差的叠加<br>$$y=\hat f(X)+\varepsilon=X \hat \beta+\varepsilon$$</p>
+<p>这里$\varepsilon=(\varepsilon_0, \varepsilon_1,...,\varepsilon_N)^T$, 是每个样本预测值和真实值的误差组成的向量，假设它服从高斯分布<br>$$\varepsilon \sim N(0, \sigma^2I_N )$$</p>
+<p>那么y也服从高斯分布<br>$$y \sim N(X\beta, \sigma^2I_N )$$</p>
+<p>根据X的不同来源，线性模型的表达能力可以得到极大的扩展：</p>
+<ul>
+<li>定量输入</li>
+<li>定量输入的变换，如log, 平方根，平方</li>
+<li>基展开，如$X_2=X_1^2, X_3=X_1^3$</li>
+<li>哑变量，类别变量做独热编码变成的由0，1组成的稀疏矩阵</li>
+<li>交互项，如$X_3=X_1X_2$</li>
+</ul>
+<h1 id="最小二乘法"><a href="#最小二乘法" class="headerlink" title="最小二乘法"></a>最小二乘法</h1><h2 id="求解方法与理解"><a href="#求解方法与理解" class="headerlink" title="求解方法与理解"></a>求解方法与理解</h2><p>为了求得真实模型，我们希望y和$\hat{y}=X\hat \beta$的误差尽量小，因此需要求得使残差平方和$RSS(\beta)=(y-X\beta)^T(y-X\beta)$最小的模型参数$\beta$，这是无约束二次优化问题，直接求导即可<br>$$\frac{\partial RSS(\beta)}{\partial \beta}=-2X^T(y-X\beta)=0$$</p>
+<p>$$X^TX\beta = X^Ty$$</p>
+<p>当X列满秩时，若以y为未知数，方程组Xy=0中y只有0解，而这里y≠0，因此Xy≠0，所以$y^T(X^TX)y=(Xy)^T(Xy)&gt;0$，即$X^TX$正定，非奇异，则<br>$$\hat{\beta} = (X^TX)^{-1}X^Ty$$</p>
+<p>其实，要使所求解为极小值点也必须满足<br>$$\frac{\partial ^2RSS(\beta)}{\partial \beta \partial \beta^T}=2X^TX&gt;0$$</p>
+<p>因此X列满秩是必须满足的条件。下面只讨论X列满秩的情况。<br>那么<br>$$\hat{y} =X\hat{\beta}$$</p>
+<p>可见，$\hat{y}$是X列向量的线性组合，$\hat{y} \in span<x_0, x_1,...,x_p="">$，所以<br>$$dim(\hat y)=p+1$$</x_0,></p>
+<p>真实的$y=f(X)+\varepsilon$, 由于误差的存在，y不在X的列空间里边。所以，对于最小二乘法来说，最小化残差平方和$min||y-\hat{y}||^2$即找到一个$\hat y$使得$y-\hat y$正交于X的列空间。此时，$||y-\hat{y}||$取得最小值，放张图感受一下。<br><img src="http://img.blog.csdn.net/20161111093602494" alt="这里写图片描述"><br>根据维数公式，有<br>$$\begin{aligned}dim(y)<br>    &amp;=dim(\hat y) + dim(y-\hat y)-dim(\hat y\bigcap (y-\hat y))\<br>    &amp;=dim(\hat y) + dim(y-\hat y)\<br>    \end{aligned}$$</p>
+<p>所以，$dim(y-\hat y) = dim(y)-dim(\hat y) = N-(p+1)$(求这个是为了后面求卡方分布的自由度)<br>那么，什么是回归？就是求y在X列空间的投影，所以我们说$\hat{y}$是y在X上的回归。而最小二乘法所做的就是找到这种正交映射。令$H=X(X^TX)^{-1}X^T$<br>$$\hat{y} =X\hat{\beta}=X(X^TX)^{-1}X^Ty=Hy$$</p>
+<p>H就是这个投影矩阵。</p>
+<h2 id="hat-beta-的期望与方差"><a href="#hat-beta-的期望与方差" class="headerlink" title="$\hat \beta$的期望与方差"></a>$\hat \beta$的期望与方差</h2><p>我们估计的$\hat{\beta}$与真实的$\beta$差别有多大呢？<br>
+$$\begin{aligned}E_{Y|X}(\hat{\beta})
+	&=E_{Y|X}((X^TX)^{-1}X^Ty)\\
+	&=(X^TX)^{-1}X^TE_{Y|X}(y)\\
+	&=(X^TX)^{-1}X^TX\beta\\
+	&=\beta
+	\end{aligned}$$
+</p>
+<p>可见，用最小二乘法所估计出来的模型参数是无偏估计。<br>
+$$\begin{aligned}Var_{Y|X}(\hat \beta)
+		&=E_{Y|X}[(\hat{\beta}-E_{Y|X}(\hat{\beta}))(\hat{\beta}-E_{Y|X}(\hat{\beta}))^T]\\
+		&=E_{Y|X}[((X^TX)^{-1}X^T\varepsilon)((X^TX)^{-1}X^T\varepsilon)^T]\\
+		&=E_{Y|X}[(X^TX)^{-1}X^T\varepsilon \varepsilon^TX(X^TX)^{-1}]\\
+		&=(X^TX)^{-1}X^TE_{Y|X}(\varepsilon \varepsilon^T)X(X^TX)^{-1}\\
+		&=(X^TX)^{-1}X^TX(X^TX)^{-1}E(\varepsilon \varepsilon^T)\\
+		&=(X^TX)^{-1}E(\varepsilon \varepsilon^T)\\
+		&=(X^TX)^{-1}[E(\varepsilon \varepsilon^T)-0]\\
+		&=(X^TX)^{-1}[E(\varepsilon \varepsilon^T)-E^2(\varepsilon)]\\
+		&=(X^TX)^{-1}Var(\varepsilon)\\
+		&=(X^TX)^{-1}\sigma^2I_N\\
+	\end{aligned}$$
+</p>
+<p>其中<br>
+$$\begin{aligned}\hat{\beta}-E_{Y|X}(\hat{\beta})
+	&=(X^TX)^{-1}X^Ty-\beta\\
+	&=(X^TX)^{-1}X^Ty-(X^TX)^{-1}X^TX\beta\\
+	&=(X^TX)^{-1}X^T(y-X\beta)\\
+	&=(X^TX)^{-1}X^T\varepsilon\\
+	\end{aligned}$$
+</p>
+<p>另外，如果我们能估计出$\sigma$，那么也就能估计出$Var(\hat \beta)$, 也就能求出$\hat \beta$的置信区间了。<br>我们知道，误差服从高斯分布<br>$$y-\hat y \sim N(0, \sigma^2I_N)$$</p>
+$$\frac{y-\hat y}{\sigma} \sim N(0, I_N)$$
+$$\frac{||y-\hat y||^2}{\sigma^2} \sim \chi^2_{dim(y-\hat y)}=\chi^2_{N-p-1}$$
+$$||y-\hat y||^2 \sim \sigma^2 \chi^2_{N-p-1}$$
+<p>残差平方和服从自由度为N-p-1的卡方分布(一个高斯分布的平方自然是$\chi ^ 2$分布了)，所以有<br>$$E||y-\hat y||^2 = (N-p-1)\sigma^2 $$</p>
+<p> 则</p>
+<p>$$\sigma^2 = \frac{1}{N-p-1}E||y-\hat y||^2$$</p>
+$$\hat \sigma^2 = \frac{1}{N-p-1}\sum_{i=1}^N(y_i-\hat y_i)^2$$
+<p>可证明，上面的$\hat \sigma$是$\sigma$的无偏估计。因此<br>$$E(\hat \beta)=\beta$$</p>
+$$Var(\hat \beta)=(X^TX)^{-1}\hat \sigma^2I_N$$
+<h2 id="的假设检验"><a href="#的假设检验" class="headerlink" title="的假设检验"></a>$\hat \beta_j$的假设检验</h2><h3 id="单个的假设检验"><a href="#单个的假设检验" class="headerlink" title="单个的假设检验"></a>单个$\hat \beta_j$的假设检验</h3><p>由$\hat{\beta} = (X^TX)^{-1}X^Ty$，以及y服从高斯分布可知，$\hat{\beta}$也服从高斯分布<br>$$\hat{\beta} \sim N(\beta, (X^TX)^{-1}\hat \sigma^2I_N)$$</p>
+<p>写成分量形式，对于 j=1,2,…,N,<br>$$\hat{\beta_j} \sim N(\beta_j, v_{jj} \hat \sigma^2)$$</p>
+<p>其中，$v_{jj}$为$(X^TX)^{-1}$的第j个对角元，$v_{jj} \hat \sigma^2$是$\hat{\beta_j}$的方差，其标准差应为$\sqrt{v_{jj}} \hat \sigma$。不过，我们不知道是否有$v_{jj} > 0$</p>
+<p>设$u \in R^{p+1}$列向量，构造$w=(X^TX)^{-1}u$，也是p+1维列向量，自然有$u=X^TXw$，因此<br>
+$$\begin{aligned}u^T(X^TX)^{-1}u
+	&=(X^TXw)^T(X^TX)^{-1}X^TXw \\
+	&=w^TX^TX(X^TX)^{-1}X^TXw \\
+	&=w^TX^TXw \\
+	&=(Xw)^T(Xw) \geq0
+	\end{aligned}$$
+<br>显然，只有当u=0时，才有w=0,进而才恒有$u^T(X^TX)^{-1}u=0$, 因此$(X^TX)^{-1}$正定，故$v_{jj}>0$，此时我们可以写出参数$\hat \beta_j$的z分数了。<br>$$z=\frac{\hat \beta_j}{std(\hat \beta_j)}=\frac{\hat \beta_j}{ \sqrt{v_{jj}}\hat \sigma} \sim t_{N-p-1}$$</p>
+<p>在原假设$\hat \beta_j=0$下，z服从自由度为N-p-1的t分布(一个高斯分布除以一个$\chi ^ 2$分布的平方根，自然是t分布了)，绝对值大的z分数，其对应的p值(可以查t分布表)也就越小，越可以拒绝原假设，即$\hat \beta_j>0$，相应的特征$X_j$应该被保留。<br>当N足够大时，t分布近似于高斯分布，t分布的尾分数与高斯分布的尾分数几乎相等，因此也可认为z服从高斯分布。这是一般的假设检验过程，这里不详述了。</p>
+<h3 id="多个的假设检验"><a href="#多个的假设检验" class="headerlink" title="多个的假设检验"></a>多个$\hat \beta_j$的假设检验</h3><p>F统计量可检验一组系数是否可置0,<br>$$F=\frac{(RSS_0-RSS_1)/(p_1-p_0)}{RSS_1/(N-p_1-1)}$$</p>
+<p>其中$RSS_1$是用较大模型(参数多)算出来的残差平方和，$p_1$是该模型的参数数量(特征维数)，$RSS_0$是较小模型的残差平方和，$p_0$是该模型的参数数量(特征维数)。在高斯假设下，设较小模型更正确为零假设下，F统计量服从$F_{p_1-p_0, N-p_1-1}$分布，可查表得到相应p值以判断是否拒绝原假设，即较小模型是否更好。</p>
+<h2 id="的置信区间"><a href="#的置信区间" class="headerlink" title="的置信区间"></a>$\hat \beta_j$的置信区间</h2><p>上面提到参数$\hat \beta_j$的z分数<br>$$z=\frac{\hat \beta_j}{ \sqrt{v_{jj}\hat \sigma^2}} \sim t_{N-p-1}$$</p>
+<p>z服从自由度为N-p-1的t分布，那么z的$1-\alpha$置信区间为<br>$$(-z^{1-{\alpha \over 2}}, z^{1-{\alpha \over 2}})$$</p>
+<p>因此真实模型参数$\beta_j$的$1-\alpha$置信区间为<br>$$(\hat \beta_j-z^{1-{\alpha \over 2}}v_{jj}^{1 \over 2}\hat \sigma, \hat \beta_j+z^{1-{\alpha \over 2}}v_{jj}^{1 \over 2}\hat \sigma)$$</p>
+<p>其中$z^{1-{\alpha \over 2}}$可通过查表得到。比如我想要个95%置信区间<br>$$\alpha=1-0.95=0.05$$</p>
+<p>$$1-{\alpha \over 2}=1-0.025=0.975$$</p>
+<p>若样本较多，N很大，可查标准正太分布表有<br>$$z^{1-{\alpha \over 2}}=z^{0.975}=1.96$$</p>
+<p>所以$\beta_j$的95%置信区间为<br>$$(\hat \beta_j-1.96v_{jj}^{1 \over 2}\hat \sigma, \hat \beta_j+1.96v_{jj}^{1 \over 2}\hat \sigma)$$</p>
+<hr>
+<p>总结自The Elements of Statistical Learning</p>
+<hr>
+<p><div id="container"></div></p>
+<p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+var gitment = new Gitment({
+  id: 'linear_regression',
+  title: '线性回归',
+  owner: 'yiyang186',
+  repo: 'blog_comment',
+  oauth: {
+    client_id: '2786ddc8538588bfc0c8',
+    client_secret: '83713f049f4b7296d27fe579a30cdfe9e2e45215',
+  },
+})
+gitment.render('container')
+</script>
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/10/06/怎样用scipy求一些统计量的p值和分位数/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1657,144 +1898,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/03/23/在vs2008中配置OpenMP/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Yiyang Peng">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/7233064.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Yiyang's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/03/23/在vs2008中配置OpenMP/" itemprop="url">在vs2008中配置OpenMP</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-03-23T11:37:00+08:00">
-                2016-03-23
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/操作/" itemprop="url" rel="index">
-                    <span itemprop="name">操作</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="在vs2008上编译OpenMP"><a href="#在vs2008上编译OpenMP" class="headerlink" title="在vs2008上编译OpenMP"></a>在vs2008上编译OpenMP</h1><ol>
-<li>试了好多方法，感觉直接在vs2008上写最简单，右键点击解决方案下面的项目名，在弹出的右键菜单选择最后一个“属性”。<br><img src="http://img.blog.csdn.net/20160323112356122" alt="这里写图片描述"></li>
-<li>依次点击 配置属性 =》C/C++ =》语言，把右侧的OpenMP支持一栏的否改为是。这样你的OpenMP程序就可以编译了。<br><img src="http://img.blog.csdn.net/20160323112557920" alt="这里写图片描述"></li>
-<li>如果运行程序时报错，找不到vcomp90.dll或者vcomp90d.dll，那么就到c:\windows\winsxs\目录下搜索vcomp90，并把vcomp90.dll和vcomp90d.dll这两个文件复制到你的项目根目录处，即有.vcproj的目录，而不是最外层的目录。这两个文件也可以到我的网盘下载<br><a href="http://pan.baidu.com/s/1skpWeKH" target="_blank" rel="external">点击进入网盘下载</a><br><img src="http://img.blog.csdn.net/20160323113217567" alt="这里写图片描述"></li>
-</ol>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -1845,7 +1948,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">31</span>
+                <span class="site-state-item-count">32</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1867,7 +1970,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">36</span>
+                <span class="site-state-item-count">38</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
