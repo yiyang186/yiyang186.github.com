@@ -26,15 +26,15 @@ $$r_{m}\approx -\bigg[\frac{\partial L(y, f(x))}{\partial f(x)}\bigg]_{f(x)=f_{m
 <br>
 > **注意**：这里的初始化与以往的前向分步拟合算法的初始化不同，其实只是把第二步中的第一次迭代放到初始化里来。此外，第一个弱学习器的权重为1。大家都有权重，其中一个权重设为1，相当于所有权重同乘以一个因子，对结果并没有影响。
 
-直到这里一直都没说用什么弱学习器$b(x;\gamma)$来拟合梯度（$-r_m$）,下面用决策树来拟合梯度，导出GBDT（Gradient Boosting Decision Tree,也叫 MART, Multiple Additive Regression Tree）算法。
+直到这里一直都没说用什么弱学习器$b(x;\gamma)$来拟合梯度（{% raw %} $-r_m$ {% endraw %}）,下面用决策树来拟合梯度，导出GBDT（Gradient Boosting Decision Tree,也叫 MART, Multiple Additive Regression Tree）算法。
 
 # GBDT
 从名字“梯度提升决策树”Gradient Boosting Decision Tree里可以看出，GBDT就是在梯度提升算法中用上决策树来做弱学习器$b(x;\gamma)$，下面我们用T代替b来表示决策树
-$$T(x;\gamma')=\sum_{j=1}^J\theta_jI(x\in R_j)$$
-其中参数J为子空间的数量（即叶子节点），$\gamma'=\{R_j, \theta_j\}_1^J$, $R_j$为一个子特征空间，$\theta_j$为该空间上的常数预测值。
+{% raw %} $$T(x;\gamma')=\sum_{j=1}^J\theta_jI(x\in R_j)$$ {% endraw %}
+其中参数J为子空间的数量（即叶子节点），{% raw %} $\gamma'=\{R_j, \theta_j\}_1^J$ {% endraw %}, {% raw %} $R_j$ {% endraw %}为一个子特征空间，{% raw %} $\theta_j$ {% endraw %}为该空间上的常数预测值。
 
 > 回顾一下决策树：
-> 决策树通过Gini系数或者信息增益求出每个特征维度的分裂点，再通过分裂点把特征空间分割成一个一个的矩形的子特征空间，在每个子空间内应用简单的分类或回归手段，如多数类、平均数，作为该子空间的预测值。<br>$$x \in R_j \Rightarrow T(x)=\theta_j$$
+> 决策树通过Gini系数或者信息增益求出每个特征维度的分裂点，再通过分裂点把特征空间分割成一个一个的矩形的子特征空间，在每个子空间内应用简单的分类或回归手段，如多数类、平均数，作为该子空间的预测值。<br>{% raw %} $$x \in R_j \Rightarrow T(x)=\theta_j$$ {% endraw %}
 
 提升树模型是这样的树加权和{% raw %}
 $$\begin{aligned}
@@ -44,15 +44,15 @@ f(x) &=\sum_{m=1}^M\beta_m'T(x;\gamma_m')\\
 &=\sum_{m=1}^M\sum_{j=1}^{J_m}\beta_{mj}I(x\in R_{mj})
 \end{aligned} \tag2$$
 {% endraw %}
-这里令$\beta_{mj}=\beta_m'\theta_{mj}$，这样相当于把树内的子空间当做弱学习器，预测值为样本是否在该子空间内$I(x\in R_{mj})$，而权重为子空间的预测值$\theta_{mj}$与该树权重$\beta_m'$的乘积$\beta_{mj}=\beta_m'\theta_{mj}$。更简单地，令$\gamma_m=\{R_{mj}, \beta_{mj}\}_{j=1}^{J_m}$，式(2)也相当于学习不带权重参数的M棵树：
-$$f(x) =\sum_{m=1}^M\sum_{j=1}^{J_m}\beta_{mj}I(x\in R_{mj})=\sum_{m=1}^MT(x;\gamma_m)$$
+这里令{% raw %} $\beta_{mj}=\beta_m'\theta_{mj}$ {% endraw %}，这样相当于把树内的子空间当做弱学习器，预测值为样本是否在该子空间内{% raw %} $I(x\in R_{mj})$ {% endraw %}，而权重为子空间的预测值{% raw %} $\theta_{mj}$ {% endraw %}与该树权重{% raw %} $\beta_m'$ {% endraw %}的乘积{% raw %} $\beta_{mj}=\beta_m'\theta_{mj}$ {% endraw %}。更简单地，令{% raw %} $\gamma_m=\{R_{mj}, \beta_{mj}\}_{j=1}^{J_m}$ {% endraw %}，式(2)也相当于学习不带权重参数的M棵树：
+{% raw %} $$f(x) =\sum_{m=1}^M\sum_{j=1}^{J_m}\beta_{mj}I(x\in R_{mj})=\sum_{m=1}^MT(x;\gamma_m)$$ {% endraw %}
 这里每棵树内每个子空间的预测值就已经包含了该树在最终委员会模型中的权重信息，可以减少要学习的参数，加快学习速度。那么，GBDT每一步迭代的优化就成了{% raw %}
 $$\begin{aligned}\gamma_m
 &=\arg\min_{\gamma}\sum_{i=1}^ML\bigg(y_i, f_{m-1}(x_i)+T(x_i;\gamma_m)\bigg)\\
 &=\arg\min_{\beta, R}\sum_{i=1}^ML\bigg(y_i, f_{m-1}(x_i)+\sum_{j=1}^{J_m}\beta_{mj}I(x\in R_{mj})\bigg)\\
 \end{aligned}\tag3$$
 {% endraw %}
-根据{% post_link boosting与平方损失 boosting与平方损失 %}中介绍的对任意可微损失函数的梯度提升算法，我们只需用$T(x;\gamma_m)$去拟合当前迭代中的伪残差即可{% raw %}
+根据{% post_link boosting与平方损失 boosting与平方损失 %}中介绍的对任意可微损失函数的梯度提升算法，我们只需用{% raw %} $T(x;\gamma_m)$ {% endraw %}去拟合当前迭代中的伪残差即可{% raw %}
 $$(\beta_m, R_m)=\arg\min_{\beta, R}\sum_{i=1}^ML(-\bigg[\frac{\partial L(y, f(x))}{\partial f(x)}\bigg]_{f(x)=f_{m-1}(x)}, \sum_{j=1}^{J_m}\beta_{mj}I(x\in R_{mj}))\tag4$$
 {% endraw %}
 
@@ -74,3 +74,21 @@ $$\begin{aligned}
 $$r_{m-1} \approx-\bigg[\frac{\partial L(y, f(x))}{\partial f(x)}\bigg]_{f(x)=f_{m-1}(x)}$$
 {% endraw %}
 5. 使用决策树作为弱学习的梯度提升算法是GBDT
+
+
+<div id="container"></div>
+<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+var gitment = new Gitment({
+  id: 'gredient_boosting_gbdt',
+  title: '从梯度提升到GBDT',
+  owner: 'yiyang186',
+  repo: 'blog_comment',
+  oauth: {
+    client_id: '2786ddc8538588bfc0c8',
+    client_secret: '83713f049f4b7296d27fe579a30cdfe9e2e45215',
+  },
+})
+gitment.render('container')
+</script>
