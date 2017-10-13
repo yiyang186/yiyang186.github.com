@@ -103,7 +103,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://img.blog.csdn.net/20170621150508657?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcTF3MmUzcjQ0NzA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
 <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/e/e0/NewtonIteration_Ani.gif">
-<meta property="og:updated_time" content="2017-08-12T03:39:22.233Z">
+<meta property="og:updated_time" content="2017-08-12T14:57:54.604Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="逻辑回归">
 <meta name="twitter:description" content="逻辑回归的建模sigmoid函数说道建模，总有一些粗暴的地方，即强行给真实模型$f$指定某种形式$\hat f$，像线性回归里就强行指定了$\hat f(x)=\beta^T x, x \in R^p, \beta \in  R^{p+1}$这种形式，然后依靠所找到的最优的$\beta$使$\hat f$尽量接近$f$。分类问题与回归的问题的不同在于y的值域不同，对于分类问题，我们想把样本x分到$">
@@ -462,7 +462,7 @@ $$\beta^{new}=\beta^{old}-\bigg(\frac{\partial L^2(\beta)}{\partial \beta \parti
 <h1 id="最小化交叉熵损失与最大化似然函数"><a href="#最小化交叉熵损失与最大化似然函数" class="headerlink" title="最小化交叉熵损失与最大化似然函数"></a>最小化交叉熵损失与最大化似然函数</h1><p>最大化似然估计是显而易见的：
 $$\max_{p_i} \sum_{i=1}^n y_i\log p_i+(1-y_i)\log(1-p_i)$$
 </p>
-<p>那么，<strong>如何理解最小化交叉熵(互熵)损失</strong>?<br><br>假设给定x，有y真实的分布服从0-1分布，假设y取1的真实条件分布为p(y|x)，有$y|x \sim p(y|x)$，因为这个分布时来自训练集的，所以也是经验条件分布。我们所估计的条件分布为$\hat p(y|x)$。如果这两个分布很接近的话，他们的KL散度应该尽量小，那么可以最小化KL散度为目标，找到最接近$p(y|x)$的$\hat p(y|x)$：
+<p>那么，<strong>如何理解最小化交叉熵(互熵)损失</strong>?<br><br>假设给定x，有y真实的分布服从0-1分布，假设y的真实条件分布为p(y|x)，有$y|x \sim p(y|x)$，因为这个分布时来自训练集的，所以也是经验条件分布。我们所估计的条件分布为$\hat p(y|x)$。如果这两个分布很接近的话，他们的KL散度应该尽量小，那么可以最小化KL散度为目标，找到最接近$p(y|x)$的$\hat p(y|x)$：
 $$\begin{aligned}\min_{\hat p} D_{KL}(p \|\hat p)
   &= \min_{\hat p} E_p \log \frac{p(y|x)}{\hat p(y|x)} \\
   &= \min_{\hat p} \{E_p \log p(y|x) - E_p\log \hat p(y|x)\} \\
@@ -661,7 +661,7 @@ gitment.render('container')
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">33</span>
+                <span class="site-state-item-count">34</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -683,7 +683,7 @@ gitment.render('container')
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">39</span>
+                <span class="site-state-item-count">41</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
