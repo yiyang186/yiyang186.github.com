@@ -377,19 +377,18 @@
       
         
           
-            <h1 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h1><p>为了解决IPv4地址短缺的问题，通过内网到外网出口的NAT路由器(有NAT功能的路由器), 将许多的内网IP地址映射为少数的几个外网IP地址，使得内网只有私有地址的计算机也能上网。</p>
-<h1 id="过程"><a href="#过程" class="headerlink" title="过程"></a>过程</h1><ol>
-<li>内网PC向外网PC发送请求，途径某出口NAT路由器</li>
-<li>该路由器先查看它自己是公网地址池，取出一条可用的公网地址，将“转换前的源地址和源端口号、转换后的源地址和源端口号”插入地址转换表中，便于外网PC响应时可以原路返回找到那台内网的PC</li>
-<li>NAT路由器用新的源地址和源端口号，而目的地址和端口号不变，重新封装报文，再将报文发送出去</li>
-<li>外网PC收到报文后发回应答报文，源地址和源端口号是刚才那条请求报文的目的地址和端口号，目的地址和端口号是NAT路由器封装后的源地址/端口号</li>
-<li>NAT收到应答报文，再根据应答报文的目的地址和端口查找地址转换表，再将报文的目的地址和端口改过来，才发送到内网。</li>
-<li>由于应答报文中的目的地址是内网的地址，因此内网中的那台PC能顺利收到应答报文<br><img src="http://img.blog.csdn.net/20160513214557643" alt="这里写图片描述"></li>
-</ol>
-<h1 id="H3C设置指令"><a href="#H3C设置指令" class="headerlink" title="H3C设置指令"></a>H3C设置指令</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"># 建立编号为2001的IPV4基本访问控制列表(Access Control Lists)[R1]acl basic 2001</div><div class="line"># 建立允许源地址为10.0.0.*(0.0.0.255为反掩码)的转换规则0</div><div class="line">[R1-acl-2001]rule 0 permit source 10.0.0.0 0.0.0.255 </div><div class="line"># 建立拒绝其他源地址的转换规则1</div><div class="line">[R1-acl-2001]rule 1 deny source any</div><div class="line"># 配置地址池1</div><div class="line">[R1]nat address-group 1</div><div class="line"># 为地址池1添加公网地址192.168.5.5-9</div><div class="line">[R1-address-group-1]address 192.168.5.5 192.168.5.9 </div><div class="line"># 进入e0/1接口</div><div class="line">[R1]inter GigabitEthernet 0/1</div><div class="line"># 配置出接口e0/1使用访问控制表2001和地址池1</div><div class="line">[R1-GigabitEthernet0/1]nat outbound 2001 address-group 1</div><div class="line">[R1-GigabitEthernet0/1]quit</div><div class="line"># 配置默认网关，参数分别是目的地址，子网掩码，下一条地址，</div><div class="line"># 如果目的地址和子网掩码都是0表示这是一条默认路由，</div><div class="line"># 下一条指向网关</div><div class="line">[R1]ip route-static 0.0.0.0 0.0.0.0 192.168.5.1</div></pre></td></tr></table></figure>
-<p>ACL编号的取值范围及其代表的ACL类型如下：<br>100～199：表示WLAN ACL；<br>2000～2999：表示IPv4基本ACL；<br>3000～3999：表示IPv4高级ACL；<br>4000～4999：表示二层ACL。</p>
-
-          
+          概念为了解决IPv4地址短缺的问题，通过内网到外网出口的NAT路由器(有NAT功能的路由器), 将许多的内网IP地址映射为少数的几个外网IP地址，使得内网只有私有地址的计算机也能上网。
+过程
+内网PC向外网PC发送请求，途径某出口NAT路由器
+该路由器先查看它自己是公网地址池，取出一条可用的公网地址
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2016/05/13/NAT地址转换/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -521,13 +520,15 @@
       
         
           
-            <p>使用pthread编写的多线程程序，若是用clock_t结构体和clock()函数计时，多线程程序的运行时间会偏大，如<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">#include &lt;time.h&gt;</div><div class="line">clock_t begin, end;</div><div class="line">begin = clock();</div><div class="line">// pthread多线程代码</div><div class="line">end = clock();</div><div class="line">printf(&quot;%f秒\n&quot;,  (double)(t1 - t0) / CLOCKS_PER_SEC);</div></pre></td></tr></table></figure></p>
-<p>这是因为clock()记录了所有CPU的时钟滴答数[^footer1], 求出的自然是所有Cores的使用时间之和。要计算实际并行计算的真实时间，应该使用lrt，如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">#include &lt;time.h&gt;</div><div class="line">struct timespec begin, end;</div><div class="line">double timediff;</div><div class="line">clock_gettime(CLOCK_MONOTONIC, &amp;begin);</div><div class="line">// pthread多线程代码</div><div class="line">clock_gettime(CLOCK_MONOTONIC, &amp;end);</div><div class="line">timediff = end.tv_sec - begin.tv_sec + (end.tv_nsec - begin.tv_nsec) / 1000000000.0;</div><div class="line">printf(&quot;排序时间为%f秒\n&quot;,  timediff);</div></pre></td></tr></table></figure></p>
-<p>其中的timespec的结构如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">struct timespec &#123;</div><div class="line">    time_t tv_sec;     // 秒    </div><div class="line">    long int tv_nsec;  // 纳秒   </div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
-<p>编译时需加入参数-lrt, 如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[root@slave02 yy]# g++ test.cpp -lrt -o test -lpthread</div></pre></td></tr></table></figure></p>
-<p>[^footer1]: 时钟滴答数（clock tick），从进程启动开始计时，因此这是相对时间。每秒钟包含CLOCKS_PER_SEC（time.h中定义的常量，一般为1000）个时钟滴答。时钟滴答数用数据类型clock_t表示。clock_t类型一般是32位整数类型。</p>
-
-          
+          使用pthread编写的多线程程序，若是用clock_t结构体和clock()函数计时，多线程程序的运行时间会偏大，如123456#include &lt;time.h&gt;clock_t begin, end;begin = clock();// pthread多线程代码end = clock(
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2016/04/06/pthread中如何计时/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -659,13 +660,18 @@
       
         
           
-            <h1 id="在vs2008上编译OpenMP"><a href="#在vs2008上编译OpenMP" class="headerlink" title="在vs2008上编译OpenMP"></a>在vs2008上编译OpenMP</h1><ol>
-<li>试了好多方法，感觉直接在vs2008上写最简单，右键点击解决方案下面的项目名，在弹出的右键菜单选择最后一个“属性”。<br><img src="http://img.blog.csdn.net/20160323112356122" alt="这里写图片描述"></li>
-<li>依次点击 配置属性 =》C/C++ =》语言，把右侧的OpenMP支持一栏的否改为是。这样你的OpenMP程序就可以编译了。<br><img src="http://img.blog.csdn.net/20160323112557920" alt="这里写图片描述"></li>
-<li>如果运行程序时报错，找不到vcomp90.dll或者vcomp90d.dll，那么就到c:\windows\winsxs\目录下搜索vcomp90，并把vcomp90.dll和vcomp90d.dll这两个文件复制到你的项目根目录处，即有.vcproj的目录，而不是最外层的目录。这两个文件也可以到我的网盘下载<br><a href="http://pan.baidu.com/s/1skpWeKH" target="_blank" rel="external">点击进入网盘下载</a><br><img src="http://img.blog.csdn.net/20160323113217567" alt="这里写图片描述"></li>
-</ol>
-
-          
+          在vs2008上编译OpenMP
+试了好多方法，感觉直接在vs2008上写最简单，右键点击解决方案下面的项目名，在弹出的右键菜单选择最后一个“属性”。
+依次点击 配置属性 =》C/C++ =》语言，把右侧的OpenMP支持一栏的否改为是。这样你的OpenMP程序就可以编译了。
+如果运行程序时报错，找
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2016/03/23/在vs2008中配置OpenMP/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -797,11 +803,17 @@
       
         
           
-            <p>在Python中生成密码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">from notebook.auth import passwd</div><div class="line">passwd(&apos;123456&apos;)</div><div class="line">&apos;sha1:1996ed5b2fc6:40da178c53092195aab3e1ce840e8c5c9e335fab&apos;</div></pre></td></tr></table></figure>
-<p>修改jupyter配置文件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">c = get_config() </div><div class="line">c.NotebookApp.ip = ‘*’ </div><div class="line">c.NotebookApp.password = u’sha1:1996ed5b2fc6:40da178c53092195aab3e1ce840e8c5c9e335fab’ </div><div class="line">c.NotebookApp.open_browser = False </div><div class="line">c.NotebookApp.port = 9999</div></pre></td></tr></table></figure>
-          
+          在Python中生成密码
+123from notebook.auth import passwdpasswd(&apos;123456&apos;)&apos;sha1:1996ed5b2fc6:40da178c53092195aab3e1ce840e8c5c9e335fab&apos;
+修改jup
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2016/03/16/为jupyter配置密码/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -933,27 +945,23 @@
       
         
           
-            <ol>
-<li>创建file.R文件</li>
-<li>键入R代码</li>
-<li><p>在输出图像（而非保存文本）如png(),jpeg(),…等函数后，一定要加上一行</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">dev.off()</div></pre></td></tr></table></figure>
-<p> 关闭虚拟显示设备。</p>
-</li>
-<li><p>注意将数据处理结果输出到文件</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">write.table(x=df , file=output.csv , sep=&apos;,&apos;, row.names=FALSE, quote=FALSE)</div></pre></td></tr></table></figure>
-</li>
-</ol>
-<ol>
-<li>保存成.R文件</li>
-<li><p>在工作目录下，在终端中输入以下命令:(xxx是脚本文件名，其他的照抄)</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">R CMD BATCH --args xxx.R</div></pre></td></tr></table></figure>
-</li>
-<li><p>等待执行结束。用这种方式执行脚本，终端不会输出执行过程代码，这些代码会保存到xxx.Rout文件中</p>
-</li>
-</ol>
-
           
+创建file.R文件
+键入R代码
+在输出图像（而非保存文本）如png(),jpeg(),…等函数后，一定要加上一行
+ 1dev.off()
+ 关闭虚拟显示设备。
+
+注意将数据处理结果输出到文件
+ 1write.table(x=df , file=output.csv , sep=&apos;,&a
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2016/03/06/怎么在mac终端上执行R脚本/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1085,15 +1093,16 @@
       
         
           
-            <p>最后的2行错误信息是<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">    from six.moves import _thread</div><div class="line">ImportError: cannot import name _thread</div></pre></td></tr></table></figure></p>
-<p>发现是six出现了问题，用pip更新一下six，问题并没有解决，原因是并没有真正更新six的文件。<br>在python下输入：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">import six</div><div class="line">print six.__file__</div></pre></td></tr></table></figure></p>
-<p>/System/Library/Frameworks/Python.framework/Versions/2.7/Extras/lib/python/six.pyc</p>
-<p>这是我们的python实际使用的six，而我们手动更新的six却是装在/Library/Python/2.7/site-packages/，我们把six.__file__的文件删除掉，python就只能用我们更新的six了<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo rm -rf /System/Library/Frameworks/Python.framework/Versions/2.7/Extras/lib/python/six.*</div></pre></td></tr></table></figure></p>
-<p>重启ipython/python就行了，如果之前并未有更新six, 应该在这一步中更新six。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo pip install --upgrade six</div></pre></td></tr></table></figure></p>
-<p>另外，在很多时候我们希望忽略过去下载的安装包，直接下载安装可以使用–ignore-installed这个参数，比如我发现的的matplotlib的mplot3d部分有点问题，我想再重新下载安装一遍，可以这么做<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo pip install --upgrade --ignore-installed matplotlib</div></pre></td></tr></table></figure></p>
-<p>这会把相关的包（numpy, pytz, six, python-dateutil, cycler, pyparsing, matplotlib）都下载安装一遍</p>
-
-          
+          最后的2行错误信息是12    from six.moves import _threadImportError: cannot import name _thread
+发现是six出现了问题，用pip更新一下six，问题并没有解决，原因是并没有真正更新six的文件。在python下输入：12imp
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2016/03/01/matplotlib cannot import name _thread on mac/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1225,134 +1234,15 @@
       
         
           
-            <h1 id="向量范数"><a href="#向量范数" class="headerlink" title="向量范数"></a>向量范数</h1><h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p>向量x属于空间V，若有一种实值函数f(x)能将向量x映射为一个实数，记作f(x)=||x||，只要这个实值函数||x||满足<br>1）正定性：           ||x|| ≥ 0<br>2）齐次性：            ||kx|| = |k|||x||（$k \in N$）<br>3）三角不等式：    ||x+y|| ≤ ||x||+||y|| ( x,y均为V空间的向量)<br>那么这个函数||x||就可以用来表征向量x的大小，叫做向量x的范数。凡是满足这三个条件的的实值函数都能当做向量范数。这个有了范数的空间V也叫做赋范线性空间。</p>
-<h2 id="常用的向量范数"><a href="#常用的向量范数" class="headerlink" title="常用的向量范数"></a>常用的向量范数</h2><p>p-范数<br>向量$x=(x_1,x_2,...x_n)$, 定义向量x的p-范数为<br>$$||x||_p=(\sum_{i=1}^n|x_i|^p)^{1/p}, 1 \leq p \leq + \infty $$</p>
-<table>
-<thead>
-<tr>
-<th>常用的向量范数</th>
-<th>求法</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>$||x||_1$</td>
-<td>向量中所有元素的模的和</td>
-</tr>
-<tr>
-<td>$||x||_2$</td>
-<td>向量中所有元素的模的平方和，再求和的平方根</td>
-</tr>
-<tr>
-<td>$||x||_p$</td>
-<td>向量中所有元素的模的p次幂的和，再对和开p次方</td>
-</tr>
-<tr>
-<td>$||x||_\infty$</td>
-<td>向量中所有元素的模的最大值</td>
-</tr>
-</tbody>
-</table>
-<h1 id="矩阵范数"><a href="#矩阵范数" class="headerlink" title="矩阵范数"></a>矩阵范数</h1><h2 id="概念-1"><a href="#概念-1" class="headerlink" title="概念"></a>概念</h2><p>定于矩阵A的一个实函数，记作f(A)=||A||，只要这个函数||A||满足<br>1）正定性：            || A || ≥ 0<br>2）齐次性：            ||k A || = |k||| A ||<br>3）三角不等式：    || A +B|| ≤ || A ||+||B||<br>4)  相容性：            ||AB|| ≤ ||A||||B||    （乘积不等式）<br>此时称||A||是矩阵A的范数，如果只满足前3个条件，那只是广义矩阵范数。</p>
-<h2 id="几种常见的矩阵范数"><a href="#几种常见的矩阵范数" class="headerlink" title="几种常见的矩阵范数"></a>几种常见的矩阵范数</h2><p><img src="http://img.blog.csdn.net/20160211144645736" alt="这里写图片描述"></p>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">常用的矩阵范数</th>
-<th style="text-align:left">名称</th>
-<th style="text-align:left">求法</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left">$||A||_1$</td>
-<td style="text-align:left">列和范数/列范数</td>
-<td style="text-align:left">对每一列求各个元素的模的和，有n列就有n个和，再取这些和的最大值</td>
-</tr>
-<tr>
-<td style="text-align:left">$||A||_∞$</td>
-<td style="text-align:left">行和范数/行范数</td>
-<td style="text-align:left">对每一行求各个元素的模的和，有n行就有n个和，再后取这些和的最大值</td>
-</tr>
-<tr>
-<td style="text-align:left">$||A||_2$</td>
-<td style="text-align:left">谱范数</td>
-<td style="text-align:left">$A^HA$的所有特征值中的最大值的平方根</td>
-</tr>
-</tbody>
-</table>
-<h1 id="特征值估计"><a href="#特征值估计" class="headerlink" title="特征值估计"></a>特征值估计</h1><h2 id="盖尔圆"><a href="#盖尔圆" class="headerlink" title="盖尔圆"></a>盖尔圆</h2><p>方阵的盖尔圆所在的平面为复平面，x轴为实数，y轴为虚数，方阵的特征值只会出现在盖尔圆内。N阶方阵$A(a_{ij})$共有n个盖尔圆，它的第i个盖尔圆以$a_{ii}$为圆心,以<br>$$R_i = |a_{i1}| + |a_{i2}| + … + |a_{in}| - |a_{ii}|$$<br>为半径，即第i个盖尔圆的半径以矩阵第i行，除去对角元素的，其他所有元素的模的和。<br>第i个盖尔圆$G_i$的表示为<br>$$G_i = \{ Z |  |Z-a_{ii}| \leq Ri \}, Z \in C$$<br>有k个孤立的盖尔圆内则至少有k个相异的特征值，相交的盖尔圆内可能有重根。</p>
-<h1 id="矩阵函数"><a href="#矩阵函数" class="headerlink" title="矩阵函数"></a>矩阵函数</h1><h2 id="概念-2"><a href="#概念-2" class="headerlink" title="概念"></a>概念</h2><ul>
-<li><p>矩阵函数<br>如果矩阵A中的每个元素$a_{ij}(t)$都是变量t的函数，则称A(t)为矩阵函数。如果矩阵的每个元素都有极限，则这个矩阵函数也有极限。</p>
-</li>
-<li><p>矩阵序列<br>矩阵序列$A(k)_{m \times n}, k  \in N$, 共有$m \times n$个元素，那么就有$m \times n$组数列， 当每个数列$\{a_{ij}(k)\}$均分别收敛于相应的极限$a_{ij}$时，则矩阵序列{A(t)}收敛于A, 其中A由$a_{ij}$组成。</p>
-</li>
-<li><p>谱半径<br>矩阵A所有特征值的模的最大值</p>
-</li>
-<li><p>单纯矩阵与矩阵函数<br>对于可对角化的单纯矩阵而言，f(A)的特征值就是f(λ)，可用来求f(A)的谱分解和谱半径</p>
-</li>
-</ul>
-<h2 id="判断矩阵幂级数敛散性"><a href="#判断矩阵幂级数敛散性" class="headerlink" title="判断矩阵幂级数敛散性"></a>判断矩阵幂级数敛散性</h2><ol>
-<li>考虑矩阵幂级数$\sum A(k)$, 先把矩阵A换成未知数x，计算这个数项幂级数$\sum x(k)$的收敛半径R</li>
-<li>求矩阵A的特征值，并计算其谱半径$\rho (λ)$  (特征值模的最大值)</li>
-<li>若$\rho (\lambda)<r$,则矩阵幂级数绝对收敛;<br>若$\rho (\lambda)>R$,则发散.</r$,则矩阵幂级数绝对收敛;<br></li>
-<li>若$\rho (λ)=R$，上述方法失效，可计算A(k)的Jordan形，$A(n)=P^{-1}J(k)P$，通过证明J(k)的敛散来证明A(k)的敛散，进而证明$\sum A(k)$的敛散。</li>
-<li>J(k)的每个元素都是关于n的级数，看看当n-&gt;∞时，所有元素是不是都收敛，有一个不收敛就是发散，都收敛时，A的矩阵幂级数才收敛<br><img src="http://img.blog.csdn.net/20160211151215293" alt="这里写图片描述"></li>
-</ol>
-<h2 id="矩阵函数的计算方法"><a href="#矩阵函数的计算方法" class="headerlink" title="矩阵函数的计算方法"></a>矩阵函数的计算方法</h2><ul>
-<li>Jordan标准型法（不推荐）<br>1）求m阶矩阵A的Jordan标准形J和可逆阵P, $P^{-1}$，使得$P^{-1}AP=J$<br>2）求f(J), $f(J)=diag(f(J_1), f(J_2), \dots f(J_m))$，其中$f(J_i)_{r \times r}$<br>3）$f(A)=Pf(J)P^{-1}$</li>
-</ul>
-<p><img src="http://img.blog.csdn.net/20160211152030968" alt="这里写图片描述"></p>
-<ul>
-<li>待定系数法(推荐)<br>1）求A的最小式，得到最小次的总次数degmA(λ)=k<br>2）令$p(λ)=b_0+b_1λ+b_2λ^2+…+b_{k-1}λ^{k-1}$， k是几就有几个b, $b_0 \dots b_{k-1}$<br>3）列方程组$p(λ_i)= f(λ_i)$
-若$λ_i$是2重根，则再设$p’(λ_i)= f’(λ_i)$<br>如f(A)=sinA, $m_{A(λ)}=( λ-2)^2( λ-1)$，令$p(λ)= b_0+b_1λ+b_2λ^2$,要满足的方程组为</li>
-</ul>
-
-$$
-\left\{
-\begin{array}{c}
-P(1)=sin1 \\
-P(2)=sin2 \\
-P’(2)=cos2
-\end{array}
-\right.
-$$
-    
-<p>即</p>
-
-$$
-\left\{
-\begin{array}{c}
-b0+b1+b2=sin1 \\
-b0+2b1+4b2=sin2 \\
-b1+4b2=cos2
-\end{array}
-\right.
-$$
-
-<p>4）解出$b_i$，即解出了p(λ), 把p(λ)换成A就是p(A), 最后f (A)= p(A)<br><img src="http://img.blog.csdn.net/20160211153159811" alt="这里写图片描述"></p>
-<h1 id="矩阵求导"><a href="#矩阵求导" class="headerlink" title="矩阵求导"></a>矩阵求导</h1><p>矩阵求导包括标量，行向量$x^T$, 列向量x，矩阵之间的求导。</p>
-<h2 id="矩阵Y-F-x-对标量x求导"><a href="#矩阵Y-F-x-对标量x求导" class="headerlink" title="矩阵Y=F(x)对标量x求导"></a>矩阵Y=F(x)对标量x求导</h2><p>相当于矩阵$Y_{m \times n}$中的每个元素对x求导，转化为$m \times n$次普通的求导<br><img src="http://img.blog.csdn.net/20160212165402569" alt="这里写图片描述"></p>
-<h2 id="标量y对列向量x求导"><a href="#标量y对列向量x求导" class="headerlink" title="标量y对列向量x求导"></a>标量y对列向量x求导</h2><p>相当于标量y对列向量x的每个分量求偏导，再组成一个新的列向量<br><img src="http://img.blog.csdn.net/20160212165451757" alt="这里写图片描述"></p>
-<h2 id="行向量-y-T-对列向量x求导"><a href="#行向量-y-T-对列向量x求导" class="headerlink" title="行向量$y^T$对列向量x求导"></a>行向量$y^T$对列向量x求导</h2><p>相当于行向量$y^T$的每一个分量作为标量对列向量x求导，转化为标量对列向量x求导的情况。考虑$y^T=(y_1, y_2, \dots y_n)^T, x=(x_1, x_2, \dots, x_m)$，则y的n个分量都对x的求导，得到n个维度为m的列向量，最后这n个列向量再组成m行n列的矩阵。<br><img src="http://img.blog.csdn.net/20160212165526790" alt="这里写图片描述"></p>
-<p>注意：</p>
-<ol>
-<li>$1 \times n$的行向量对$m \times 1$的列向量求导后是$m \times n$的矩阵。</li>
-<li>重要结论：<br>$${dx^T \over dx} = I$$$${d(Ax)^T \over dx} = A^T$$</li>
-</ol>
-<h2 id="列向量y对行向量-x-T-求导"><a href="#列向量y对行向量-x-T-求导" class="headerlink" title="列向量y对行向量$x^T$求导"></a>列向量y对行向量$x^T$求导</h2><p>转化为行向量$y^T$对列向量 x 的导数，然后转置。<br><img src="http://img.blog.csdn.net/20160212165614369" alt="这里写图片描述"><br>注意</p>
-<ol>
-<li>m×1 向量对 1×n 向量求导结果为 m×n 矩阵。</li>
-<li>重要结论：<br>$${dx \over dx^T} = ({dx^T \over dx})^T=I$$$${d(Ax) \over dx^T} =({d(Ax)^T \over dx})^T = (A^T)^T=A$$</li>
-</ol>
-<h2 id="向量积-u-Tv-对列向量x求导的运算法则"><a href="#向量积-u-Tv-对列向量x求导的运算法则" class="headerlink" title="向量积$u^Tv$对列向量x求导的运算法则"></a>向量积$u^Tv$对列向量x求导的运算法则</h2><p>$${d(u^Tv) \over dx}={d(u^T) \over dx} \cdot v+{d(v^T) \over dx} \cdot u$$<br>例如：$${d(x^Tx) \over dx}={d(x^T) \over dx} \cdot x+{d(x^T) \over dx} \cdot x=I \cdot x + I \cdot x =2x$$$${d(x^TAx) \over dx}={d(x^T) \over dx} \cdot Ax+{d(Ax)^T \over dx} \cdot x=I \cdot Ax + A^T \cdot x =(A+A^T)x$$</p>
-<h2 id="矩阵Y对列向量x求导"><a href="#矩阵Y对列向量x求导" class="headerlink" title="矩阵Y对列向量x求导"></a>矩阵Y对列向量x求导</h2><p>将Y对x的每一个分量求偏导，构成一个超列向量，超向量中的每个分量都是一个矩阵。转化为矩阵对标量求导的情况。<br><img src="http://img.blog.csdn.net/20160212215141519" alt="这里写图片描述"><br>注意：矩阵对列向量求导的结果是以矩阵作为分量的超向量。</p>
-<h2 id="矩阵Y对行向量-x-T-求导"><a href="#矩阵Y对行向量-x-T-求导" class="headerlink" title="矩阵Y对行向量$x^T$求导"></a>矩阵Y对行向量$x^T$求导</h2><p>相当于Y对$x^T$的每一个分量求偏导，结果是个超级行向量。<br>$$Y=F(x) \rightarrow {dY \over dx^T}=[{∂F \over ∂x_1} \ {∂F \over ∂x_2}\  \dots \ {∂F \over ∂x_n}] $$</p>
-<h2 id="标量y对矩阵X求导"><a href="#标量y对矩阵X求导" class="headerlink" title="标量y对矩阵X求导"></a>标量y对矩阵X求导</h2><p>相当于标量y对矩阵X中的每个元素求导，结果是个和矩阵X行列相等的矩阵<br><img src="http://img.blog.csdn.net/20160212215644947" alt="这里写图片描述"></p>
-<p>重要结论：$${d(u^TXv) \over dX} = u \cdot v^T$$$${d[(Xu)^TXu] \over dX} = 2Xu \cdot u^T$$$${d[(Xu-v)^T(Xu-v)] \over dX} = 2(Xu-v)u^T$$</p>
-<h2 id="矩阵Y对矩阵X求导"><a href="#矩阵Y对矩阵X求导" class="headerlink" title="矩阵Y对矩阵X求导"></a>矩阵Y对矩阵X求导</h2><p>将矩阵$Y_{m \times n}$的每个元素对矩阵X求导，转化为$m \times n$个标量对矩阵$X_{s \times r}$求导，最后排起来得到$m \times n$的超级矩阵，其中每个元素为$s \times r$的矩阵。<br>矩阵对矩阵求导的结果是以矩阵作为元素的超级矩阵。</p>
-
-          
+          向量范数概念向量x属于空间V，若有一种实值函数f(x)能将向量x映射为一个实数，记作f(x)=||x||，只要这个实值函数||x||满足1）正定性：           ||x|| ≥ 02）齐次性：            ||kx|| = |k|||x||（$k \in N$）3）三角不等式：  
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2016/02/12/4 矩阵分析/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1484,160 +1374,27 @@ $$
       
         
           
-            <h1 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h1><ul>
-<li>广义逆<br>$A_{m \times n}, X_{m \times n}$，若X满足moore-penrose条件</li>
-</ul>
-<ol>
-<li>AXA=A</li>
-<li>XAX=X</li>
-<li>$(AX)^H=AX$</li>
-<li>$(XA)^H=XA$<br>中的一部分，称X是A的广义逆矩阵, 简称广义逆</li>
-</ol>
-<ul>
-<li><p>伪逆$A^+$</p>
-<ul>
-<li>如果X满足上述所有moore-penrose条件，则称X是A的伪逆，或加号逆（M-P逆），记为$A^+$, 若A可逆，则$A^{-1} = A^+$。</li>
-<li>$\forall A_{n \times n} \in C，A^+$ 存在且唯一。</li>
-<li>性质</li>
-</ul>
-<ol>
-<li>$AA^+A=A$</li>
-<li>$A^+A A^+= A^+$</li>
-<li>$(AA^+)^H = AA^+$</li>
-<li>$(A^+A)^H = A^+A$</li>
-</ol>
-</li>
-<li><p>伪逆的运算<br>设$A_{n \times n} \in C$，则</p>
-</li>
-</ul>
-<ol>
-<li>伪逆的伪逆是自己，$(A^+)^+ = A$</li>
-<li>共轭转置的伪逆=伪逆的共轭转置，$(A^H)^+ = (A^+)^H$</li>
-<li>转置的伪逆=伪逆的转置，$(A^T)^+ = (A^+)^T$</li>
-<li>$(A^HA)^+ = A^+(A^H)^+，(AA^H)^+ = (A^H)^+A^+$</li>
-<li>一般的伪逆不能去括号，$(AB)^+ ≠ B^+A^+$</li>
-<li>一般地，A乘A的伪逆不等于单位阵，$A^+A ≠ AA^+ ≠ I$</li>
-<li>伪逆的秩=本身的秩，$r(A^+) = r(A)$</li>
-<li>$A^+ = (A^HA)^+A^H = A^H (AA^H)^+$ </li>
-<li>伪逆的像空间=共轭转置的像空间$R(A^+) = R(A^H)$</li>
-<li>伪逆的核空间=共轭转置的核空间$N(A^+) = N(A^H)$<br><img src="http://img.blog.csdn.net/20160201113818041" alt="这里写图片描述"></li>
-</ol>
-<ul>
-<li>A的{n}逆<br>满足第n个moore-pensore条件的广义逆叫做A的{n}逆，记作A(n), n=1,2,3,4，如：</li>
-</ul>
-<ol>
-<li>满足第1个mp条件为A的{1}逆，可写作A(1)，常记作$A^-$，也叫A的减号逆</li>
-<li>满足第2,3个mp条件的为A的{2,3}逆，可写作A(2,3)<br>以上均是A的广义逆</li>
-</ol>
-<h1 id="伪逆-A-的求法"><a href="#伪逆-A-的求法" class="headerlink" title="伪逆$A^+$的求法"></a>伪逆$A^+$的求法</h1><ul>
-<li>满秩分解求A+<br>对于$A_{m \times n}^r$, r &gt; 0, A有满秩分解 $A=F_{m \times r}G_{r \times n}$(列满秩×行满秩),则<br>$A^+ = G^H(GG^H)^{-1}(F^HF)^{-1}F^H = G^H(F^HAG^H)^{-1}F^H$<br>特别地，<br>当A列满秩，r=n时，$A^+ = (A^HA)^{-1}A^H$<br>当A行满秩，r=m时，$A^+ = A^H (AA^H)^{-1}$</li>
-</ul>
-<ul>
-<li>奇异值分解求$A^+$<br>对于$A_{m \times n}^r, r > 0$, A有奇异值分解</li>
-</ul>
+          定义
+广义逆$A_{m \times n}, X_{m \times n}$，若X满足moore-penrose条件
 
-$$A=V\left(
-\begin{matrix}
-S_r & 0 \\
-0 & 0
-\end{matrix}
-\right)U^H$$
 
-<p>则有</p>
+AXA=A
+XAX=X
+$(AX)^H=AX$
+$(XA)^H=XA$中的一部分，称X是A的广义逆矩阵, 简称广义逆
 
-$$A^+=U\left(
-\begin{matrix}
-S_r^{-1} & 0 \\
-0 & 0
-\end{matrix}
-\right)V^H$$
 
-<p>即UV位置对换，Sr取逆，对角元全变倒数：$Sr^{-1} = diag(σ_1^{-1}, … σ_r^{-1})$<br>或者，只需要U, $U=(U_1, U_2)$, 则$A^+ = U_1Λ_r^{-1}U_1^HA^H$, 这里$Λ_r=S_r^2=diag(λ_1, …, λ_n)$</p>
-<ul>
-<li>奇异值分解求A+的简化步骤：</li>
-</ul>
-<ol>
-<li>求出$A^HA$的r个非0特征值</li>
-<li>求出相应的特征向量，并schmidt正交化，组成酉高矩阵$U_1$</li>
-<li></li>
-</ol>
+伪逆$A^+$
 
-$$A^+=U_1\left(
-\begin{matrix}
-λ_1^{-1} &  & \\
- &  \ddots  &  \\
- & & λ_r^{-1} \\
-\end{matrix}
-\right)U_1^HA^H$$
-
-<ul>
-<li>秩1公式求$A^+$：若r(A)=1, 则$$A^+={1 \over \sum |a_{ij}|^2}A^H$$</li>
-</ul>
-<ul>
-<li>谱分解求$A^+$ (这个部分有些问题。。。有空再改)<br>$A^HA$有k个相异的特征值，$A^HA$的谱分解为$$A^HA= \sum_{i=1}^k λ_iG_i$$<br>这里$G_i = X_iY_i$，$X_i$是P的各列向量，$Y_i$是$P^{-1}$的各行向量，P是$A^HA$相似对角化时的可逆阵P, 则$$A^+=\sum_{i=1}^k λ_i{ \phi_i(A^HA) \over \phi_i(\lambda_i)}A^H$$
-其中$$\phi_i(\lambda)= \prod^k_{j=1, i≠j} (\lambda - \lambda_j)$$</li>
-</ul>
-<h1 id="广义逆与线性方程组"><a href="#广义逆与线性方程组" class="headerlink" title="广义逆与线性方程组"></a>广义逆与线性方程组</h1><ul>
-<li><p>方程组相容：<br>即Ax=b有解（当且仅当A列满秩时解唯一, $A_{m \times n}$）<br>Ax=b相容的充要条件为$AA^-b=b$, 其通解为：$$x=A^-b+(I_n-A^-A)y$$<br>y为n阶任意列向量，因为$A^+$是$A^-$的子集，所以将$A^-$替换为$A^+$也成立(这里的$I_n$的阶数与A的列数相等)： $$x=A^+b+(I_n-A^+A)y$$<br>极小范数解为：$$x_0=A^+b$$</p>
-</li>
-<li><p>方程组不相容：<br>x的最小二乘解的通解为：</p>
-$$x=A^+b+(I_n-A^+A)y$$
-<p>当且仅当A列满秩时，不相容方程组Ax=b的最小二乘解唯一，是：</p>
-$$x_0=A^+b$$
-<p>当A非列满秩时,最小二乘解不唯一，但上式是极小范数最小二乘解, 且唯一。</p>
-</li>
-</ul>
-<h1 id="A的-1-逆-A-的求法"><a href="#A的-1-逆-A-的求法" class="headerlink" title="A的{1}逆$A^-$的求法"></a>A的{1}逆$A^-$的求法</h1><p>对于$A_{m \times n}, \exists  P_m, Q_n$可逆，使得</p>
-
-$$PAQ=\left(
-\begin{matrix}
-I_r & 0 \\
-0 & 0
-\end{matrix}
-\right)U^H$$
-
-<p>则 </p>
-
-$$A^-=\left \{
-\begin{array}{c|c}
-Q\left(\begin{matrix}I_r & X_{12} \\
-X_{21} & X_{22} 
-\end{matrix} \right)P &X_{12},X_{21},X_{22}为任意适当阶子块
-\end{array} \right \}$$
-
-$X_{12}^{r \times (m-r)}， X_{12}^{(n-r) \times r}，X_{22}^{(n-r) \times (m-r)}$可取0, 则<br><br>
-$$A^-=Q\left( \begin{matrix} I_r & 0 \\
- 0 & 0 \end{matrix} \right)P$$
-
-<p>特别地，当$A_{n \times n}$ 为方阵且可逆时，有$$PAQ=I_n$$此时$$A^- = QI_nP=QP=A^{-1}$$</p>
-<ul>
-<li>初等行变换求P, Q</li>
-</ul>
-
-$$
-\left(\begin{matrix}A_{m \times n} & I_m \\
-I_n & 0\end{matrix}\right) \longrightarrow \left(\begin{matrix} \left(\begin{matrix}I_n & 0 \\
- 0 & 0\end{matrix}\right) & P \\
- Q & 0\end{matrix}\right)
-$$
-
-<p><div id="container"></div></p>
-<p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
-<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
-<script>
-var gitment = new Gitment({
-  id: 'inverse_matrix',
-  title: '广义逆矩阵',
-  owner: 'yiyang186',
-  repo: 'blog_comment',
-  oauth: {
-    client_id: '2786ddc8538588bfc0c8',
-    client_secret: '83713f049f4b7296d27fe579a30cdfe9e2e45215',
-  },
-})
-gitment.render('container')
-</script>
-          
+如果X满足上述所有moore-penr
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2016/02/01/3 广义逆矩阵/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1769,147 +1526,15 @@ gitment.render('container')
       
         
           
-            <p>矩阵分解 (decomposition, factorization)是将矩阵拆解为数个矩阵的乘积或加和的过程，可分为三角分解、满秩分解、QR分解、Jordan分解、SVD（奇异值）分解和谱分解等，其中三角分解(LU分解)是高斯消元法的另一种表现形式，在本科的线性代数里已经被我们用烂了，Jordan分解在上一章线性代数引论“求Jordan标准形”里已经介绍。这一章只介绍QR分解、满秩分解、SVD（奇异值）分解和谱分解。</p>
-<h1 id="QR分解"><a href="#QR分解" class="headerlink" title="QR分解"></a>QR分解</h1><ul>
-<li><p>描述<br>A=QR<br>A是满秩方阵，Q是正交矩阵，R是上三角阵，分解唯一<br>A=UR(把正交矩阵换成酉矩阵也一样)<br>如果A只是列满秩，($A_{m×n}, n≤m$, 秩为n)那么<br>$A_{m×n} = Q_{m×n}R_{n×n}$, Q只要满足n个列向量标准正交即可，R还是上三角阵</p>
-</li>
-<li><p>QR分解步骤</p>
-</li>
-</ul>
-<ol>
-<li>求r(A)判断A是否满秩</li>
-<li>按列分块$A=(x_1,  x_2,  x_3)$，正交化为$y_1, y_2,y_3$, 单位化为$z_1, z_2, z_3$</li>
-<li>令
-$$Q=(z_1,z_2,z_3)$$
-$$
-R= \left(
- \begin{matrix}
-   ||y_1|| & (x_2, z_1) & (x_3, z_1) \\
-   0 & ||y_2|| & (x_3, z_2) \\
-   0 & 0 & ||y_3||
-  \end{matrix}
-  \right)
-$$
-</li>
-<li>最后，A=QR</li>
-</ol>
-<ul>
-<li>scipy代码演示<br><img src="http://img.blog.csdn.net/20160929153348292" alt="这里写图片描述"></li>
-</ul>
-<h1 id="满秩分解"><a href="#满秩分解" class="headerlink" title="满秩分解"></a>满秩分解</h1><ul>
-<li><p>描述<br>任一矩阵可分解为一个列满秩与行满秩矩阵的乘积，但分解不唯一<br>$A_{m×n} = F_{m×r} G_{r×n}$ (A的秩为r)</p>
-</li>
-<li><p>满秩分解方法</p>
-</li>
-</ul>
-<ol>
-<li>经初等行变换化为简化阶梯型<br><img src="http://img.blog.csdn.net/20160131104725445" alt="这里写图片描述"></li>
-<li>取H中是单位向量的列的序号，找出A中对应序号的列组成F</li>
-<li>取H中的非0行（前r行）作为G</li>
-<li>最后，A=FG</li>
-</ol>
-<h1 id="奇异值分解"><a href="#奇异值分解" class="headerlink" title="奇异值分解"></a>奇异值分解</h1><ul>
-<li><p>描述</p>
-<ul>
-<li><strong>奇异值</strong>：复矩阵$A_{m \times n}^r$(秩为r)，$A^HA$有n个特征值，按<strong>从大到小</strong>的顺序排列，保证$ \lambda_1 \geq  \lambda_2 \geq   ... \geq \lambda_n$，有前r个为正，后n-r个为0，称 $σ_i=\sqrt{λ_i}$为A的奇异值，前r个$\sigma_1 \geq \sigma_2 \geq ... \geq \sigma_r$为正奇异值。</li>
-<li><strong>奇异值分解</strong>：$A=USV^H$$A_{m×n}^r  = U_{m×m} S_{m×n} V^H_{n×n}$
-其中，U和V为酉矩阵(见上一章)，S为A的奇异值组成的对角阵，前r个为正奇异值，后n-r个全为0
-$$A=U\left(
-\begin{matrix}
-S_r & 0 \\
-0 & 0
-\end{matrix}
-\right)V^H$$
-
-</li>
-</ul>
-</li>
-<li><p>奇异值分解步骤：</p>
-</li>
-</ul>
-<ol>
-<li>计算$A^HA$的n个特征值并按从大到小排序得到$λ_i(i=1...n)$, 取平方根得到奇异值$σ_i$</li>
-<li>计算这n个特征值$λ_i$对应的特征向量$α_i$，并schmidt正交化，得到标准正交特征向量$α_1, α_2, … α_r, α_{r+1}, … , α_n$。令$V_1=(α_1, … α_r), V_2=(α_{r+1}, … , α_n), V=(V_1, V_2)$;令$S_r=diag(σ_1, … σ_r),(\sigma_1 \geq \sigma_2 \geq ... \geq \sigma_r)$</li>
-<li>计算$U_1=(β_1, … β_r) =AV_1S_r^{-1}$</li>
-<li>求出$N(A^H)$的一组标准正交基$β_{r+1}, … β_m$(即求$A^H$齐次方程组的一组基础解系，也需要schmidt正交化)。令$U_2=(β_{r+1}, … β_m), U=(U_1, U_2)$, 则</li>
-</ol>
-
-$$A=U\left(
-\begin{matrix}
-S_r & 0 \\
-0 & 0
-\end{matrix}
-\right)V^H$$
-
-<ul>
-<li>scipy演示代码<br><img src="http://img.blog.csdn.net/20160929152827925" alt="这里写图片描述"></li>
-</ul>
-<h1 id="谱分解"><a href="#谱分解" class="headerlink" title="谱分解"></a>谱分解</h1><ul>
-<li><p>描述<br>N阶方阵$A_{n \times n}$的n个特征值称为A的谱（谱分解是对于单纯矩阵而言的）</p>
-</li>
-<li><p>谱分解步骤：</p>
-</li>
-</ul>
-<ol>
-<li>以A的线性无关的特征向量为列组成矩阵P，将P按列分块$P=(X_1, X_2, …, X_n)$</li>
-<li>求$P^{-1}$, 将$P^{-1}$按行分块   $P^{-1}=(Y_1, Y_2, …, Y_n)^T$</li>
-<li>则A的谱分解为$A = λ_1X_1Y_1 +λ_2X_2Y_2 + … + λ_kX_kY_k$  
-或$A = λ_1G_1 +λ_2G_2 + … + λ_kG_k$ 
-其中，$G_i = X_iY_i$, 这里的$G_i$是幂等矩阵, 且有如下性质: $G_i$两两正交，所有$G_i$的和为$I_n$</li>
-</ol>
-<ul>
-<li>特殊情况<br>若A是正规矩阵($A^HA=AA^H$)，则上述的$G_i$为幂等厄米特阵，A酉相似于对角阵，那么，将U按列分块<br>$U=( X_1, X_2, …, X_n)$,  取$G_i = X_iX_i^H$即可！</li>
-</ul>
-<h1 id="补充：幂等阵"><a href="#补充：幂等阵" class="headerlink" title="补充：幂等阵"></a>补充：幂等阵</h1><ul>
-<li><p>描述<br>幂等阵：$A∈C_{n×n}$, 若满足$A^2=A$, 则称A为幂等阵。</p>
-</li>
-<li><p>A为幂等阵的等价命题</p>
-</li>
-</ul>
-<ol>
-<li>与A相似的任意矩阵也是幂等阵；</li>
-<li>$A^H,A^T,A^*，I-A^H，I-A^T$都是幂等阵</li>
-<li>$A^k$是幂等阵, $k \in N$</li>
-</ol>
-<ul>
-<li>幂等阵的主要性质：</li>
-</ul>
-<ol>
-<li>幂等阵的特征值只可能是0，1；</li>
-<li>幂等阵可对角化；</li>
-<li>幂等阵的迹等于幂等阵的秩，即tr(A)=rank(A)；</li>
-<li>可逆的幂等阵为I；</li>
-<li>零方阵和单位矩阵都是幂等阵；</li>
-<li>幂等阵A满足：A(I-A)=(I-A)A=0；</li>
-<li>幂等阵A有Ax=x的充要条件是x∈R(A)；</li>
-<li>A的核空间N(A)等于I-A的像空间R(I-A), 且N(I-A)=R(A)。　</li>
-</ol>
-<ul>
-<li>幂等阵的运算：<br>设 $A_1,A_2$都是幂等阵</li>
-</ul>
-<ol>
-<li>$A_1+A_2$ 为幂等阵的充分必要条件为：$A_1A_2 =A_2A_1 = 0$且有：<br>$R(A_1+A_2) =R (A_1) ⊕R (A_2)$；(⊕表示直积)<br>$N(A_1+A_2) =N (A_1)∩N(A_2)$；</li>
-<li>$A_1-A_2$ 为幂等阵的充分必要条件为：$A_1A_2 =A_2A_1=A_2$且有：$R(A_1-A_2) =R(A_1)∩N (A_2 )$；<br>$N (A_1 - A_2 ) =N (A_1 )⊕R (A_2)$；</li>
-<li>若$A_1A_2 =A_2A_1$，则$A_1A_2$ 为幂等阵，且有：<br>$R (A_1A_2 ) =R (A_1 ) ∩R (A_2 )$；<br>$N (A_1A_2 ) =N (A_1 ) +N (A_2 )$。</li>
-</ol>
-<p><div id="container"></div></p>
-<p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
-<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
-<script>
-var gitment = new Gitment({
-  id: 'matrix_decomposition',
-  title: '矩阵的分解',
-  owner: 'yiyang186',
-  repo: 'blog_comment',
-  oauth: {
-    client_id: '2786ddc8538588bfc0c8',
-    client_secret: '83713f049f4b7296d27fe579a30cdfe9e2e45215',
-  },
-})
-gitment.render('container')
-</script>
-
-          
+          矩阵分解 (decomposition, factorization)是将矩阵拆解为数个矩阵的乘积或加和的过程，可分为三角分解、满秩分解、QR分解、Jordan分解、SVD（奇异值）分解和谱分解等，其中三角分解(LU分解)是高斯消元法的另一种表现形式，在本科的线性代数里已经被我们用烂了，Jordan
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2016/01/31/2 矩阵的分解/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -2041,162 +1666,17 @@ gitment.render('container')
       
         
           
-            <h1 id="Jordan标准形"><a href="#Jordan标准形" class="headerlink" title="Jordan标准形"></a>Jordan标准形</h1><ul>
-<li><p>Jordan块<br>主对角元素为<strong>某一特征值</strong>，副对角元素为1，如：<br>1阶J块：($\lambda$)<br>2阶J块：$\left(\begin{matrix}\lambda & 1 \\
-& \lambda \end{matrix}\right)$<br>3阶J块：$\left(\begin{matrix}\lambda & 1 &  \\
-& \lambda & 1 \\
-&  & \lambda \end{matrix}\right)$<br>4阶J块：$\left(\begin{matrix}\lambda & 1 &  &  \\
-  & \lambda & 1 &  \\
-  &  & \lambda & 1 \\
-  &  &  & \lambda\end{matrix}\right)$<br>……<br>n阶J块：$\left(\begin{matrix}\lambda & 1 &  &  &\\
-  & \lambda & 1 & & \\
-  &  & \ddots & \ddots \\
-  &  &  & \ddots & 1\\
-  &  &  & & \lambda \end{matrix}\right)$</p>
-</li>
-<li><p>Jordan标准形<br>由Jordan块组成的对角阵，如</p>
-
-$$\left(\begin{matrix}
-  J_1 &  &  &  \\
-  & J_2 &  &  \\
-  &  & \ddots &  \\
-  &  &  & J_n \end{matrix}\right)$$
-</li>
-<li>求矩阵A的Jordan标准形</li>
-</ul>
-<ol>
-<li>先求A的特征多项式，解出特征值</li>
-<li>特征值单重根为1阶J块，2重根为1个2阶J块或2个1阶J块，即副对角线元素为1或0，先设为*（3重以上的差不多，可能是3个1阶J块，或1个3阶J块，或1个1阶J块+1个2阶J块）</li>
-<li>对多重根算n-r(A- Iλ)=k，（r(A- Iλ)= r(Iλ-A)，实际上跟证相似对角化是一样的套路）k是多少那么那个特征值就对应几个J块，如k=1，则这个2重特征值对应1个2阶J块，*=1,。如k=2，则对应2个1阶J块，*=0。</li>
-</ol>
-<ul>
-<li><p>注意</p>
-<ul>
-<li>矩阵A有多少个正交的特征向量，就有多少个Jordan块</li>
-<li>A有n个相异的特征值，就有n个1阶J块</li>
-<li>不考虑J块次序，复矩阵A的Jordan形由A唯一确定</li>
-</ul>
-</li>
-<li><p>定理<br>任意n阶矩阵A都可相似于Jordan标准形</p>
-</li>
-</ul>
-<h1 id="λ矩阵理论"><a href="#λ矩阵理论" class="headerlink" title="λ矩阵理论"></a>λ矩阵理论</h1><p>λ矩阵——A(λ)表示矩阵元素含λ</p>
-<ul>
-<li><p>最小多项式<br>首1的，次数最低的，A的零化式，为A的最小多项式$m_A(λ)$ 。能让f(A)=0的就是A的零化式</p>
-</li>
-<li><p>求最小式<br>先求特征多项式 $f(λ)=| λI-A |$，设$g(λ)=( λ-a)^i(λ-b)^j…$从次数最低的开始尝试如$g_1(λ)=( λ-a)(λ-b)…$，算一算是否有$g_1(A)= 0$，不断提高次数直到遇到$g_X(A)=0$，它就是最小式</p>
-</li>
-<li><p>A的最小式无重根 等价于</p>
-</li>
-</ul>
-<ol>
-<li>A可对角化</li>
-<li>λI-A的不变因子无重根</li>
-<li>λI-A的初等因子均一次</li>
-</ol>
-<ul>
-<li><p>求初等因子<br><img src="http://img.blog.csdn.net/20160131000927987" alt="img{300x500}"><br>方法2中第2步所谓的分解因式是把不同类型的因式拆开，$(λ-1)^2(λ+1)^3$，同类型带次数的不要把次数拆开<br>方法3 常用，一般不考r&gt;3的清醒<br>初等因子可能有重复的，如北航矩阵论教材27页例5</p>
-</li>
-<li><p>求不变因子<br>A为几阶方阵就有几个不变因子，从第n个往前求。从初等因子组中取出同类型因子次数最高的项（如：λ-1, (λ-1)2, λ+2 ,( λ+2)3，带λ-1的是一个类型的，取出最高次(λ-1)2 ，带λ+1的是一个类型的，取出最高次(λ+1)3，组成(λ-1)2(λ+1)3）作为第n个不变因子dn(λ)，重复上述步奏直到初等因子全部用完，不变因子不足n个，用1补齐，如…=d2(λ)= d1(λ) = 1</p>
-</li>
-<li><p>求Smith标准形<br>不变因子顺序排下来，写在主对角线上，就是smith标准形<br>也可以直接由A(λ)经初等行变换化得，要保证第i项能被第i+1项整除，非常麻烦</p>
-</li>
-</ul>
-<h1 id="Hermite转置"><a href="#Hermite转置" class="headerlink" title="Hermite转置"></a>Hermite转置</h1><ul>
-<li>共轭转置:  $A^H$,对A取转置后再取共轭</li>
-<li>厄米特阵: $A^H=A$，若$x^HAx &gt; $0 则称A厄米特正定</li>
-<li>酉矩阵: $U^HU=I$ 类似正交阵($Q^TQ=I$)，但U是复数阵</li>
-<li>共轭转置Hermite转置的计算</li>
-</ul>
-<ol>
-<li>$(AB)^H = B^HA^H$，其中A为m行n列的矩阵，B为n行p列矩阵。</li>
-<li>$(A^H)^H = A$</li>
-<li>$(A +B)^H = A^H + B^H$。</li>
-<li>$(rA)^H = \overline rA^H$，其中r为复数，$\overline r$为r的共轭</li>
-<li>若A为方阵，则 $|A^H| = |A|^H$，且$tr(A^H) = (tr A)^H$</li>
-<li>A是可逆矩阵， 当且仅当 $A^H$可逆，且有$(A^H)^{-1} = (A^{-1})^H$</li>
-<li>$A^H$的特征值是A的特征值的复共轭。</li>
-<li>$(Ax,y) = (x, A^Hy)$，其中A为m行n列的矩阵，复向量x为n维列向量，复向量y为m维列向量，( , )为复数的内积。</li>
-<li>分块矩阵的运算与转置相同，先交换行列，在求每个分块的共轭转置</li>
-</ol>
-<h1 id="酉空间"><a href="#酉空间" class="headerlink" title="酉空间"></a>酉空间</h1><p>其实就是把欧式空间里的实数变成复数, 欧式空间是有限维的实内积空间，酉空间是有限维的复内积空间</p>
-<ul>
-<li>实对称阵，正交阵，厄米特阵与酉矩阵</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>.</th>
-<th>实数域</th>
-<th>复数域</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>对称</td>
-<td>实对称阵($A^T=A$)</td>
-<td>厄米特阵($A^H=A$)</td>
-</tr>
-<tr>
-<td>正交</td>
-<td>正交阵($A^TA=I$)</td>
-<td>酉矩阵($A^HA=I$)</td>
-</tr>
-</tbody>
-</table>
-<ol>
-<li>A是实对称阵（$A^T=A$）等价于 存在正交阵Q使得 A相似于 对角阵，即$Q^TAQ = diag(λ_i…)$，且$λ_i$为实数</li>
-<li>A是正交矩阵（$A^T=A^{-1}$） 等价于 存在酉矩阵U使得 A酉相似于 对角阵，即$U^HAU = diag(λ_i…)$, 且$|λ_i|=1$</li>
-<li>A是厄米特阵（$A^H=A$） 等价于 A酉相似于 对角阵，且特征值为实数</li>
-<li>A是酉矩阵（$A^H=A^{-1}$） 等价于 A酉相似于 对角阵，且特征值模为1</li>
-</ol>
-<ul>
-<li>相似, 正交相似与酉相似：</li>
-</ul>
-<ol>
-<li>$\exists$可逆阵P, 使得$P^{-1}AP = B$, 即A 相似于B</li>
-<li>$\exists$正交阵Q, 使得$Q^TAQ = B$, 即A 正交相似于B</li>
-<li>$\exists$酉矩阵U, 使得$U^HAU = B$, 即A 酉相似于B</li>
-</ol>
-<ul>
-<li><p>许尔引理（Schur）：$\forall A_{n \times n} \in C$, A都可 酉相似于 一个上三角阵，其主对角元为A的特征值    </p>
-</li>
-<li><p>正规矩阵（规范阵）：$\forall A_{n \times n} \in C$，有 $A^HA=AA^H$ </p>
-<ul>
-<li>实对称阵（$A^T=A$）    反实对称阵（$A^T= -A$）    正交阵（$A^T=A^{-1}$）</li>
-<li>厄米特阵（$A^H=A$）    反厄米特阵（$A^H= -A$）    酉矩阵（$A^H=A^{-1}$）<br>均是正规矩阵</li>
-</ul>
-</li>
-</ul>
-<h1 id="补充：正定矩阵"><a href="#补充：正定矩阵" class="headerlink" title="补充：正定矩阵"></a>补充：正定矩阵</h1><ul>
-<li><p>描述<br>设方阵$M_{n \times n}$，若对任何非零向量z，都有$z^TMz&gt; 0$，则称M为正定矩阵。</p>
-</li>
-<li><p>判定<br>正定矩阵在合同变换下可化为标准型， 即对角矩阵。<br>所有特征值大于零的对称矩阵（或厄米矩阵）也是正定矩阵。<br>判定定理1：对称阵A为正定的充分必要条件是 A的特征值全为正。<br>判定定理2：对称阵A为正定的充分必要条件是 A的各阶顺序主子式都为正。<br>判定定理3：任意阵A为正定的充分必要条件是 A合同于单位阵。</p>
-</li>
-<li><p>性质：</p>
-</li>
-</ul>
-<ol>
-<li>正定矩阵一定是非奇异的。（奇异矩阵的定义：若n阶矩阵A为奇异阵，则其的行列式为零，即 |A|=0）</li>
-<li>正定矩阵的任一主子矩阵也是正定矩阵。</li>
-</ol>
-<p><div id="container"></div></p>
-<p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
-<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
-<script>
-var gitment = new Gitment({
-  id: 'matrix_elements',
-  title: '矩阵论的线性代数基础',
-  owner: 'yiyang186',
-  repo: 'blog_comment',
-  oauth: {
-    client_id: '2786ddc8538588bfc0c8',
-    client_secret: '83713f049f4b7296d27fe579a30cdfe9e2e45215',
-  },
-})
-gitment.render('container')
-</script>
-          
+          Jordan标准形
+Jordan块主对角元素为某一特征值，副对角元素为1，如：1阶J块：($\lambda$)2阶J块：$\left(\begin{matrix}\lambda & 1 \\
+& \lambda \end{matrix}\right)$3阶J块：$\left(\begin{matri
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2016/01/31/1-线性代数引论/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>

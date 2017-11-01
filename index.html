@@ -377,79 +377,19 @@
       
         
           
-            <p>正则项的引入可以降低模型的复杂度，增强模型的泛化能力，对于这一点我的理解比较模糊，直到学习到了正则项的贝叶斯解释才逐渐清晰。<br>最终的推理逻辑是：<br></p>
-<ol>
-<li>给优化目标加入正则项等价于给模型参数引入先验；</li>
-<li>这种先验限制模型参数的置信空间，达到了限制模型假设空间的作用；</li>
-<li>模型假设空间小了，表达能力削弱后不容易学习到噪声，因此不容易出现过拟合，泛化能力得到增强。</li>
-</ol>
-<h1 id="正则化的贝叶斯解释"><a href="#正则化的贝叶斯解释" class="headerlink" title="正则化的贝叶斯解释"></a>正则化的贝叶斯解释</h1><h2 id="约定"><a href="#约定" class="headerlink" title="约定"></a>约定</h2><p>训练集：$\{x_i, y_i\}^N_1$；模型：$y_i=f(x_i; w)$。<br><br>其中N为样本量，$x_i$为模型输入，$y_i$为模型输出$(1 \leq i \leq N)$, $w$为模型参数,这里$x_i$和$w$为$K$维，$w=[w_1,...,w_j,...,w_K]^T$,$(1 \leq j \leq K)$</p>
-<p>贝叶斯观点看来，模型参数$w$是一个K维的随机变量，它存在一个先验概率$P(w)$,并可以通过最大化后验概率$\max_w P(w|x,y)$来求解最能拟合训练集$\{x_i, y_i\}^N_1$的$w$。在最大化后验概率的过程中会用到$w$的先验概率$P(w)$和似然$P(y|x, w)$（这里没写成$P(y|x; w)$是把$w$当做随机变量来看待）。<br></p>
-<p>我们假设w的各个维度相互独立，且先验概率服从均值为0，标准差为a的高斯分布</p>
-$$w_j \sim N(0,a^2)$$
-<p>有</p>
-$$P(w)=\prod_j^KP(w_j)= \prod_j^K\frac{1}{a \sqrt{2 \pi}}exp(-\frac{w_j^2}{2a^2})$$
-<p>同时假设$y_i$是独立的，$y_i$的噪声服从高斯分布，即$y_i$服从均值为$f(x_i, w)$，标准差为b的高斯分布（独立同分布）</p>
-$$y_j \sim N(f(x_i, w),b^2)$$
-<p>有</p>
-$$P(y|x, w)=\prod_i^NP(y_i|x_i, w) = \prod_i^N\frac{1}{b \sqrt{2 \pi}}exp(-\frac{(y-f(x_i, w))^2}{2b^2})$$
-<h2 id="最大化后验估计"><a href="#最大化后验估计" class="headerlink" title="最大化后验估计"></a>最大化后验估计</h2>$$\begin{aligned}
-\max_w P(w|x,y) &= \max \frac{P(y|x,w)P(w)}{\sum_wP(y|x,w)P(w)} = \max P(y|x,w)P(w) \\
-&= \max \prod_i^N\frac{1}{b \sqrt{2 \pi}}exp(-\frac{(y-f(x_i, w))^2}{2b^2}) \cdot \prod_j^K\frac{1}{a \sqrt{2 \pi}}exp(-\frac{w_j^2}{2a^2}) \\
-&= \max \sum_i^N \ln \bigg( \frac{1}{b \sqrt{2 \pi}}exp(-\frac{(y-f(x_i, w))^2}{2b^2})\bigg) + \sum_j^K \ln \bigg( \frac{1}{a \sqrt{2 \pi}}exp(-\frac{w_j^2}{2a^2}) \bigg) \\
-&= \max \sum_i^N \Bigg\{ \ln \bigg( \frac{1}{b \sqrt{2 \pi}}\bigg)-\frac{(y-f(x_i, w))^2}{2b^2} \Bigg\} + \sum_j^K \Bigg\{ \ln \bigg( \frac{1}{a \sqrt{2 \pi}} \bigg) -\frac{w_j^2}{2a^2} \Bigg\} \\
-&= \max \sum_i^N \Bigg\{ -\frac{(y-f(x_i, w))^2}{2b^2} \Bigg\} + \sum_j^K \Bigg\{  -\frac{w_j^2}{2a^2} \Bigg\} \\
-&= \max -\frac{1}{2b^2}\sum_i^N (y-f(x_i, w))^2 - \frac{1}{2a^2}\sum_j^K w_j^2 \\ 
-&= \max - \sum_i^N (y-f(x_i, w))^2 - \frac{b^2}{a^2} \sum_j^K w_j^2 \\
-&= \min \sum_i^N (y-f(x_i, w))^2 + \lambda \sum_j^K w_j^2
-\end{aligned}$$
-<p>其中第一行用到了贝叶斯公式，且贝叶斯公式的分母是定值，在最大化中被舍去；第二行引入了约定中的两个独立高斯假设；第五行舍去了两个常量$\ln \big( \frac{1}{b \sqrt{2 \pi}}\big)$和$\ln \big( \frac{1}{a \sqrt{2 \pi}}\big)$；倒数第三行给目标函数乘上常量$2b^2$；最后一行去掉负号改为最小化，并令</p>
-$$\lambda = \frac{b^2}{a^2}$$
-<p>最终，可见<strong>高斯噪声假设和高斯先验假设的最大化后验概率，等价于带L2正则项的最小化平方损失</strong>。</p>
-<h2 id="补充：拉普拉斯先验"><a href="#补充：拉普拉斯先验" class="headerlink" title="补充：拉普拉斯先验"></a>补充：拉普拉斯先验</h2><p>L1正则也是常用的正则化形式，为此我们将上面约定中对参数先验的假设改为<a href="https://zh.wikipedia.org/wiki/%E6%8B%89%E6%99%AE%E6%8B%89%E6%96%AF%E5%88%86%E5%B8%83" title="拉布拉斯分布" target="_blank" rel="external">拉布拉斯分布</a>，如</p>
-$$w_j \sim L(0,a), (a>0)$$
-<p>有</p>
-$$P(w) = \prod_j^K\frac{1}{2a}exp(-\frac{|w_j|}{a}), (a>0)$$
-<p>则最大化后验概率的过程为</p>
-$$\begin{aligned}
-\max_w P(w|x,y) &= \max \frac{P(y|x,w)P(w)}{\sum_wP(y|x,w)P(w)} = \max P(y|x,w)P(w) \\
-&= \max \prod_i^N\frac{1}{b \sqrt{2 \pi}}exp(-\frac{(y-f(x_i, w))^2}{2b^2}) \cdot \prod_j^K\frac{1}{2a}exp(-\frac{|w_j|}{a}) \\
-&= \max \sum_i^N \Bigg\{ \ln \bigg( \frac{1}{b \sqrt{2 \pi}}\bigg)-\frac{(y-f(x_i, w))^2}{2b^2} \Bigg\} + \sum_j^K \Bigg\{ \ln \bigg( \frac{1}{2a} \bigg) -\frac{|w_j|}{a} \Bigg\} \\
-&= \max -\frac{1}{2b^2}\sum_i^N (y-f(x_i, w))^2 - \frac{1}{a}\sum_j^K |w_j| \\ 
-&= \max - \sum_i^N (y-f(x_i, w))^2 - \frac{2b^2}{a} \sum_j^K |w_j| \\
-&= \min \sum_i^N (y-f(x_i, w))^2 + \lambda \sum_j^K |w_j|
-\end{aligned}$$
-<p>这里最后一行，令</p>
-$$\lambda = \frac{2b^2}{a}, (a>0)$$
-<h1 id="模型复杂度"><a href="#模型复杂度" class="headerlink" title="模型复杂度"></a>模型复杂度</h1><p>模型复杂度可以理解为模型假设空间的大小。高维模型，多节点的树模型，这些模型可表达的函数更多，假设空间更大，通俗地说法就是模型复杂度高。</p>
-<p>把正则项引入优化目标函数里来，是为了限制在优化损失时模型的表达能力，不要把过于细节的东西学习进来，减少过拟合。<br>看l2这个例子，我们不能说$y=3x$比$y=2x$更复杂，也不能说$y=100x$比$y=2x^2+2x$复杂；但是我们能说 $y=ax^2+bx$比$y=bx$复杂。还能说$y=wx,w^2<20$比$y=wx,w^2<2$复杂，因为$w^2<20$的假设空间比$w^2<2$更大。< p="">
-<p>在正则化中，L2正则即假设模型参数服从高斯分布，如带正态先验的一维线性模型</p>
-$$y=wx, w \sim N(0,20^2)$$
-<p>这个模型的参数w的95%置信区间是(-39.2, 39.2)，有95%的概率，w的取值被限制在(-39.2, 39.2)，如此一来，模型的假设空间就被限制住，学习能力就低了。</p>
-<p>对于另一个例子，$y=wx, w \sim N(0,2^2)$，虽然这两个模型的参数空间都是R, 但是后者模型的参数大概率出现在范围更小的空间内, 其参数w的95%置信区间是(-3.92, 3.92)，在同样的置信水平下，$y=wx, w \sim N(0,2^2)$的假设空间更小，复杂度更小，学习能力更低，更加不容易学习数据中的细节，如噪声。</p>
-<p>为什么要使学习能力变低呢？简单地说，增强学习能力，降低学习能力，（增强模型复杂度，降低模型复杂度）这只是一种调节手段，当我们模型维度低时，我们只能学习数据中50%的知识。增加模型的维度后我们能学习数据中95%的知识，可是数据中只有80%的知识是有价值的，剩下20%是糟粕。因此我们有需要适当降一降模型复杂度，降一降学习能力，使我们能尽量只学习数据中有用的80%。</p>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ol>
-<li>给损失函数加入正则项进行优化等价于给模型参数引入先验；</li>
-<li>这种先验限制了模型假设空间；</li>
-<li>模型假设空间小了，表达能力削弱后不容易学习到噪声，因此不容易出现过拟合，泛化能力得到增强。</li>
-</ol>
-<p><div id="container"></div></p>
-<p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
-<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
-<script>
-var gitment = new Gitment({
-  id: 'regularization',
-  title: '正则化对假设空间的影响',
-  owner: 'yiyang186',
-  repo: 'blog_comment',
-  oauth: {
-    client_id: '2786ddc8538588bfc0c8',
-    client_secret: '83713f049f4b7296d27fe579a30cdfe9e2e45215',
-  },
-})
-gitment.render('container')
-</script></20$比$y=wx,w^2<2$复杂，因为$w^2<20$的假设空间比$w^2<2$更大。<></p>
-          
+          正则项的引入可以降低模型的复杂度，增强模型的泛化能力，对于这一点我的理解比较模糊，直到学习到了正则项的贝叶斯解释才逐渐清晰。最终的推理逻辑是：
+
+给优化目标加入正则项等价于给模型参数引入先验；
+这种先验限制模型参数的置信空间，达到了限制模型假设空间的作用；
+模型假设空间小了，表达能力削弱后不容易学习
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/10/13/正则化对假设空间的影响/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -581,76 +521,15 @@ gitment.render('container')
       
         
           
-            <h2 id="梯度提升-Gradient-boosting"><a href="#梯度提升-Gradient-boosting" class="headerlink" title="梯度提升(Gradient boosting)"></a>梯度提升(Gradient boosting)</h2><p>对于任意的可微的损失函数，我们可以在迭代的过程中求出梯度，再以弱学习器去拟合负梯度来完成梯度提升算法。在<a href="/2017/08/06/boosting与平方损失/" title="boosting与平方损失">boosting与平方损失</a>中，我们发现前向分步拟合算法每次迭代中，当前的残差就是经验损失相对于当前预测函数值的负梯度。需要注意:对于其他非平方损失的可微损失函数，负梯度不等于残差，而是残差的近似，因此在梯度提升算法中负梯度也被称为伪残差(pseudo-residuals)。<br>再次提一下：<strong>当使用平方损失时，伪残差就是真残差，直接计算真残差就好了！但是梯度提升的适用范围更为广阔，所以我们没有提及用那种损失函数时，还是得说“伪残差”！！</strong><br>
-$$r_{m}\approx -\bigg[\frac{\partial L(y, f(x))}{\partial f(x)}\bigg]_{f(x)=f_{m}(x)} \tag{11}$$
-<br>这与<a href="/2017/08/06/boosting与平方损失/" title="boosting与平方损失">boosting与平方损失</a>中的梯度提升算法相比，我们仍然是拟合真实的梯度，仍然是在拟合的梯度方向上下降。不同点是我们得到了一个好处：可以使用任意的可微的损失函数。此外，负梯度方向是当前迭代中的最速下降方向，弱学习器拟合负梯度(伪残差)能获得更快的收敛速度，在前向分步拟合的迭代中，弱学习器拟合残差是贪婪的，拟合梯度也是贪婪的，都是近似解，何不要收敛更快的方法？</p>
-<blockquote>
-<p>梯度提升算法</p>
-<ol>
-<li>初始化$f_0(x)$为常量 <br>$$\gamma_0=\arg\min_{\gamma}L(y, b(x;\gamma))$$ $$f_0(x)=b(x;\gamma_0)$$</li>
-<li>对于m=1到M:<br>(a)计算伪残差，即负梯度<br>$$r_{m-1}=-\bigg[\frac{\partial L(y, f(x))}{\partial f(x)}\bigg]_{f(x)=f_{m-1}(x)}$$ 若梯度接近与0，可提前结束迭代<br> (b)以$b(x;\gamma_m)$拟合伪残差,估计模型参数$\gamma_m$<br>(c)估计最优步长 <bt>$$\beta_m = \arg\min_{\beta}L(r_{m-1}, \beta b(x;\gamma_m)) = \arg\min_{\beta}L(y, f_{m-1}(x)+\beta b(x;\gamma_m)) $$ (d)更新模型<br>$$f_m(x)=f_{m-1}(x)+\beta_m b(x; \gamma_m)$$</bt></li>
-</ol>
-</blockquote>
-<p><br></p>
-<blockquote>
-<p><strong>注意</strong>：这里的初始化与以往的前向分步拟合算法的初始化不同，其实只是把第二步中的第一次迭代放到初始化里来。此外，第一个弱学习器的权重为1。大家都有权重，其中一个权重设为1，相当于所有权重同乘以一个因子，对结果并没有影响。</p>
-</blockquote>
-<p>直到这里一直都没说用什么弱学习器$b(x;\gamma)$来拟合梯度（ $-r_m$ ）,下面用决策树来拟合梯度，导出GBDT（Gradient Boosting Decision Tree,也叫 MART, Multiple Additive Regression Tree）算法。</p>
-<h1 id="GBDT"><a href="#GBDT" class="headerlink" title="GBDT"></a>GBDT</h1><p>从名字“梯度提升决策树”Gradient Boosting Decision Tree里可以看出，GBDT就是在梯度提升算法中用上决策树来做弱学习器$b(x;\gamma)$，下面我们用T代替b来表示决策树<br> $$T(x;\gamma')=\sum_{j=1}^J\theta_jI(x\in R_j)$$ <br>其中参数J为子空间的数量（即叶子节点）， $\gamma'=\{R_j, \theta_j\}_1^J$ ,  $R_j$ 为一个子特征空间， $\theta_j$ 为该空间上的常数预测值。</p>
-<blockquote>
-<p>回顾一下决策树：<br>决策树通过Gini系数或者信息增益求出每个特征维度的分裂点，再通过分裂点把特征空间分割成一个一个的矩形的子特征空间，在每个子空间内应用简单的分类或回归手段，如多数类、平均数，作为该子空间的预测值。<br> $$x \in R_j \Rightarrow T(x)=\theta_j$$ </p>
-</blockquote>
-<p>提升树模型是这样的树加权和
-$$\begin{aligned}
-f(x) &=\sum_{m=1}^M\beta_m'T(x;\gamma_m')\\
-&=\sum_{m=1}^M\beta_m'\sum_{j=1}^{J_m}\theta_{mj}I(x\in R_{mj})\\
-&=\sum_{m=1}^M\sum_{j=1}^{J_m}\beta_m'\theta_{mj}I(x\in R_{mj})\\
-&=\sum_{m=1}^M\sum_{j=1}^{J_m}\beta_{mj}I(x\in R_{mj})
-\end{aligned} \tag2$$
-<br>这里令 $\beta_{mj}=\beta_m'\theta_{mj}$ ，这样相当于把树内的子空间当做弱学习器，预测值为样本是否在该子空间内 $I(x\in R_{mj})$ ，而权重为子空间的预测值 $\theta_{mj}$ 与该树权重 $\beta_m'$ 的乘积 $\beta_{mj}=\beta_m'\theta_{mj}$ 。更简单地，令 $\gamma_m=\{R_{mj}, \beta_{mj}\}_{j=1}^{J_m}$ ，式(2)也相当于学习不带权重参数的M棵树：<br> $$f(x) =\sum_{m=1}^M\sum_{j=1}^{J_m}\beta_{mj}I(x\in R_{mj})=\sum_{m=1}^MT(x;\gamma_m)$$ <br>这里每棵树内每个子空间的预测值就已经包含了该树在最终委员会模型中的权重信息，可以减少要学习的参数，加快学习速度。那么，GBDT每一步迭代的优化就成了
-$$\begin{aligned}\gamma_m
-&=\arg\min_{\gamma}\sum_{i=1}^ML\bigg(y_i, f_{m-1}(x_i)+T(x_i;\gamma_m)\bigg)\\
-&=\arg\min_{\beta, R}\sum_{i=1}^ML\bigg(y_i, f_{m-1}(x_i)+\sum_{j=1}^{J_m}\beta_{mj}I(x\in R_{mj})\bigg)\\
-\end{aligned}\tag3$$
-<br>根据<a href="/2017/08/06/boosting与平方损失/" title="boosting与平方损失">boosting与平方损失</a>中介绍的对任意可微损失函数的梯度提升算法，我们只需用 $T(x;\gamma_m)$ 去拟合当前迭代中的伪残差即可
-$$(\beta_m, R_m)=\arg\min_{\beta, R}\sum_{i=1}^ML(-\bigg[\frac{\partial L(y, f(x))}{\partial f(x)}\bigg]_{f(x)=f_{m-1}(x)}, \sum_{j=1}^{J_m}\beta_{mj}I(x\in R_{mj}))\tag4$$
-</p>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>从<a href="/2017/08/01/boosting与指数损失/" title="boosting与指数损失——Adaboost">boosting与指数损失——Adaboost</a>到<a href="/2017/08/06/boosting与平方损失/" title="boosting与平方损失">boosting与平方损失</a>，再到这篇博客，大致总结一下GBDT的由来：</p>
-<ol>
-<li>想把多个弱学习器组通过加权求和组成“不平等的委员会”，是一种基于学习器的加法模型
-$$f(x) = \sum_{m=1}^M \beta_m b(x; \gamma_m)$$ </li>
-<li>使用贪心的前向分步拟合算法，迭代地求解弱学习器，求解新的弱学习器时不改变已经求解好的弱学习器
-$$(\beta_m, \gamma_m)=\arg\min_{\beta, \gamma}\sum_{i=1}^NL\bigg(y_i, f_{m-1}(x_i)+\beta b(x_i;\gamma)\bigg)$$ 
-</li>
-<li>迭代中，由于加法模型的性质，求解新的弱学习器实际上是拟合当前残差
-$$\begin{aligned}
-&\min L\bigg(y, f_{m-1}(x)+\beta_m b(x;\gamma_m)\bigg) \\
-= &\min L\bigg(y-f_{m-1}(x), f_{m-1}(x)+\beta_m b(x;\gamma_m)-f_{m-1}(x)\bigg) \\
-= &\min L\bigg(r_{m-1}, \beta_m b(x;\gamma_m)\bigg)
-\end{aligned}$$ 
-</li>
-<li>梯度提升算法是在前向分步拟合的每次迭代中，找到经验损失相对于预测函数值的最速下降方向（负梯度方向），用弱学习器拟合负梯度，最终使梯度减少到接近0。当取平方经验损失时，当前残差就是当前负梯度。梯度提升算法还适用于别的损失函数，当前负梯度可以看做当前残差的近似，称为伪残差。而且负梯度方向是当前迭代中的最速下降方向，弱学习器拟合负梯度(伪残差)能获得更快的收敛速度。
-$$r_{m-1} \approx-\bigg[\frac{\partial L(y, f(x))}{\partial f(x)}\bigg]_{f(x)=f_{m-1}(x)}$$
-</li>
-<li>使用决策树作为弱学习的梯度提升算法是GBDT</li>
-</ol>
-<p><div id="container"></div></p>
-<p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
-<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
-<script>
-var gitment = new Gitment({
-  id: 'gredient_boosting_gbdt',
-  title: '从梯度提升到GBDT',
-  owner: 'yiyang186',
-  repo: 'blog_comment',
-  oauth: {
-    client_id: '2786ddc8538588bfc0c8',
-    client_secret: '83713f049f4b7296d27fe579a30cdfe9e2e45215',
-  },
-})
-gitment.render('container')
-</script>
-          
+          梯度提升(Gradient boosting)对于任意的可微的损失函数，我们可以在迭代的过程中求出梯度，再以弱学习器去拟合负梯度来完成梯度提升算法。在boosting与平方损失中，我们发现前向分步拟合算法每次迭代中，当前的残差就是经验损失相对于当前预测函数值的负梯度。需要注意:对于其他非平方损失的可
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/08/10/从梯度提升到GBDT/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -782,98 +661,17 @@ gitment.render('container')
       
         
           
-            <h1 id="Boosting"><a href="#Boosting" class="headerlink" title="Boosting"></a>Boosting</h1><p>在另一篇博客中(<a href="/2017/08/01/boosting与指数损失/" title="boosting与指数损失">boosting与指数损失</a>)介绍了关于Boosting的一些简单内容。</p>
-<ul>
-<li>boosting的过程是不断地修改数据集，在此之上应用弱学习器，由此产生一个弱学习器序列$b(x;\gamma_m), m = 1, 2, ..., M$。最后通过加权的多数表决来合并每个弱学习器的预测结果。</li>
-<li>Boosting是一种建立在弱学习器集合上的加法模型。</li>
-<li>通过前向分步拟合的方法来拟合Boosting，相继添加新的弱学习器到Boosting“委员会”里，而不调整已添加的弱学习器的模型参数及其在委员会中的权重系数，这是一种贪心的方法，一次只拟合一个最优的弱学习器。</li>
-<li><p>前向分步拟合方法使用指数损失拟合Boosting分类模型，等价于Adaboost</p>
-</li>
-<li><blockquote>
-<p>前向分步拟合算法</p>
-<ol>
-<li>初始化$f_0(x)=0$</li>
-<li>对于m=1到M:<br>(a)计算 <bt>$$(\beta_m, \gamma_m)=\arg\min_{\beta, \gamma}\sum_{i=1}^NL\bigg(y_i, f_{m-1}(x_i)+\beta b(x_i;\gamma)\bigg)$$ (b)更新$f_m(x)=f_{m-1}(x)+\beta_m b(x; \gamma_m)$</bt></li>
-</ol>
-</blockquote>
-</li>
-</ul>
-<h1 id="平方损失-前向分步拟合-梯度提升-Gradient-boosting"><a href="#平方损失-前向分步拟合-梯度提升-Gradient-boosting" class="headerlink" title="平方损失+前向分步拟合=梯度提升(Gradient boosting)"></a>平方损失+前向分步拟合=梯度提升(Gradient boosting)</h1><h2 id="平方经验损失的梯度"><a href="#平方经验损失的梯度" class="headerlink" title="平方经验损失的梯度"></a>平方经验损失的梯度</h2><p>令f为所求的boosting模型<br>
-{% raw %}$$f(x) = \sum_{m=1}^M \beta_m b(x; \gamma_m) \tag 1$${% endraw %}<br></p>
-<p>面对回归问题，通常使用平方损失：<br>
-$$L(y, f(x))=(y-f(x))^2\tag 2$$
-<br>令$y=(y_1,...,y_N)^T, f(x)=(f(x_1),...,f(x_N))^T$为boosting模型的预测值，那么最小化平方经验损失的过程可以等价于<br>
-$$
-\min_fL(y, f(x))=\min_f(y-f(x))^T(y-f(x))=\min_f\frac{1}{2}(y-f(x))^T(y-f(x))
-\tag 3$$
-</p>
-<p>显然这是凸优化，其负梯度方向为<br>
-$$\begin{aligned}
-- \frac{\partial}{\partial f(x)} \bigg(\frac{1}{2}(y-f(x))^T(y-f(x))\bigg)
-&= - \frac{1}{2} \cdot 2 \cdot \Big(\frac{\partial}{\partial f(x)} (y-f(x))^T\Big) \cdot (y-f(x)) \\
-&= - \Big(\frac{\partial y^T}{\partial f(x)} - \frac{\partial f^T(x)}{\partial f(x)}\Big) \cdot (y-f(x)) \\
-&= -(0-I)\cdot (y-f(x)) \\
-&= y-f(x)
-\end{aligned} \tag4$$
-<br>我们发现，模型残差就是平方经验损失相对于模型预测值的负梯度方向。不过在模型$f$没有求出来之前，我们没法计算梯度。</p>
-<blockquote>
-<p><strong>注意</strong>： 这和我们平时所见的梯度不同，一般梯度下降法里的梯度是经验损失相对于模型参数的梯度，而这里的梯度是经验损失相对于模型预测值的梯度。</p>
-</blockquote>
-<h2 id="前向分步拟合最小化平方经验损失"><a href="#前向分步拟合最小化平方经验损失" class="headerlink" title="前向分步拟合最小化平方经验损失"></a>前向分步拟合最小化平方经验损失</h2><p>在前向分步拟合算法中，第m次迭代的模型为<br>
-{% raw %}$$f_m(x) = \sum_{i=1}^m \beta_i b(x; \gamma_i)=f_{m-1}+\beta_m b(x;\gamma_m)\tag 5$${% endraw %}<br><br>每次迭代，最小化平方经验损失的过程为<br>
-$$\begin{aligned}
-\min_{f_m}L(y, f_m(x))
-&= \min_{f_m}(y-f_m(x))^T(y-f_m(x)) \\
-&= \min_{f_m}\|y-f_m(x)\|^2\\
-&= \min_{\beta, \gamma}\|y-f_{m-1}(x)-\beta_mb(x;\gamma_m)\|^2\\
-&= \min_{\beta, \gamma}\|r_{m-1} - \beta_m b(x;\gamma)\|^2
-\end{aligned}
-\tag{6}$$
-<br>令$r_{m}=(r_{m1},...,r_{mN})^T, r_{mi}=y_i - f_m(x_i)$，当然$r_{m-1}$就是是当前模型(第m-1次迭代所产生的模型)的残差。这样，对于平方损失，每一次迭代都是把对当前模型残差拟合的最好的弱分类器及其系数$\beta_mb(x;\gamma_m)$加到新模型$f_m(x)$里。将这个目标函数带入到前向分布拟合算法中来</p>
-<blockquote>
-<p>平方损失的前向分步拟合算法</p>
-<ol>
-<li>初始化$f_0(x)=0$</li>
-<li>对于m=1到M:<br>(a)计算残差<br>$$r_{m-1}=y - f_{m-1}(x)$$ (b)估计模型参数，拟合残差 <bt>$$(\beta_m, \gamma_m)=\min_{\beta, \gamma}\|r_{m-1} - \beta b(x;\gamma)\|^2 \tag 7$$ (c)更新$f_m(x)=f_{m-1}(x)+\beta_m b(x; \gamma_m)$</bt></li>
-</ol>
-</blockquote>
-<p>式(7)中$\beta, \gamma$的优化不存在相互依赖，可以分开优化，式(7)等价于<br>
-$$\bigg\{ \begin{matrix}
-\gamma_m = \arg\min_{\gamma}\|r_{m-1} - b(x;\gamma)\|^2 \\
-\beta_m = \arg\min_{\beta}\|r_{m-1} - \beta b(x;\gamma)\|^2
-\end{matrix}
-\tag{8}$$
-</p>
-<h1 id="平方损失下的梯度提升"><a href="#平方损失下的梯度提升" class="headerlink" title="平方损失下的梯度提升"></a>平方损失下的梯度提升</h1><p>由上一小节我们知道$r_{m-1}$就是平方经验损失相对于当前模型预测值的负梯度方向，那么这里的$b(x;\gamma_m)$就是对当前模型预测值的负梯度方向最优的拟合。而一维实数$\beta_m$可以看做是梯度下降时的步长。上述算法等价于</p>
-<blockquote>
-<p>平方损失下的梯度提升</p>
-<ol>
-<li>初始化$f_0(x)=0$</li>
-<li>对于m=1到M:<br>(a)计算残差<br>$$r_{m-1}=y - f_{m-1}(x)$$ 则梯度为$-r_{m-1}$, 若梯度非常接近0可提前结束迭代<br> (b)估计模型参数，拟合残差 <bt>$$\gamma_m = \arg\min_{\gamma}\|r_{m-1} - b(x;\gamma)\|^2 \tag 9$$(c)估计最优步长 <bt>$$\beta_m = \arg\min_{\beta}\|r_{m-1} - \beta b(x;\gamma_m)\|^2 \tag{10}$$ (d)更新模型，梯度下降<br>$$f_m(x)=f_{m-1}(x)+\beta_m b(x; \gamma_m)=f_{m-1}(x)-\beta_m (-b(x; \gamma_m))$$</bt></bt></li>
-</ol>
-</blockquote>
-<p>上述算法是梯度提升算法在平方损失情形下的特例。每次迭代，梯度提升算法拟合经验损失在预测函数（值）上的梯度，然后在拟合的预测函数梯度减小最快的方向boost（我觉得翻译成“推进”更好），是对梯度下降的一种近似。</p>
-<p>考虑实际的梯度下降算法</p>
-<blockquote>
-<p>在梯度下降算法中，每次迭代需要求当前搜索位置的梯度，然后沿着负梯度方向搜索，直到找到0梯度位置为止。<br>与梯度下降算法比较，平方损失下的梯度提升算法，相当于以模型预测值$f(x)$为参数做梯度下降。这里的残差为真实的负梯度，我们以弱学习器去拟合真实的负梯度，再沿着拟合的负梯度方向搜索。实际上并不是在真实的梯度方向下降，而是在拟合的梯度方向下降。</p>
-</blockquote>
-<p><div id="container"></div></p>
-<p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
-<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
-<script>
-var gitment = new Gitment({
-  id: 'boosting_square_loss',
-  title: 'boosting与平方损失——梯度提升',
-  owner: 'yiyang186',
-  repo: 'blog_comment',
-  oauth: {
-    client_id: '2786ddc8538588bfc0c8',
-    client_secret: '83713f049f4b7296d27fe579a30cdfe9e2e45215',
-  },
-})
-gitment.render('container')
-</script>
-          
+          Boosting在另一篇博客中(boosting与指数损失)介绍了关于Boosting的一些简单内容。
+
+boosting的过程是不断地修改数据集，在此之上应用弱学习器，由此产生一个弱学习器序列$b(x;\gamma_m), m = 1, 2, ..., M$。最后通过加权的多数表决来合并每个弱学习
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/08/06/boosting与平方损失/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1005,112 +803,16 @@ gitment.render('container')
       
         
           
-            <h1 id="boosting-不平等的委员会"><a href="#boosting-不平等的委员会" class="headerlink" title="boosting-不平等的委员会"></a>boosting-不平等的委员会</h1><p>boosting提升方法的动机是合并许多“弱”学习器输出以产生有效的“委员会”。从这一角度看，boosting与同为ensamble集成方法的bagging袋装方法非常相似。其实这种相似是非常表面的，boosting与bagging有着本质的区别。</p>
-<p>boosting的过程就是不断地修改数据集，在此之上应用弱学习器，由此产生一个弱学习器序列$b(x;\gamma_m), m = 1, 2, ..., M$。最后通过加权的多数表决来合并每个弱学习器的预测结果。总的学习器可以写成：<br>
-$$f(x) = \sum_{m=1}^M \beta_m b(x; \gamma_m) \tag 1$$
-<br>其中，$\beta_m > 0$为若学习器$b(x;\gamma_m)$的权重，$\gamma_m$为$b_m(x)$的模型参数。显然，Boosting是加权表决，和Bagging的平均表决有着本质区别：前者的委员会是不平等的，后者的委员会是一人一票的。这也导致二者修改数据集的方式不相同。从这里开始，Boosting和Bagging彻底不同了。</p>
-<h1 id="Boosting与加法模型"><a href="#Boosting与加法模型" class="headerlink" title="Boosting与加法模型"></a>Boosting与加法模型</h1><p>观测式(1),可以发现Boosting是一种建立在弱学习器集合上的加法模型。<br>
-$$f(x) = \sum_{m=1}^M \beta_m b(x; \gamma_m)$$
-</p>
-<blockquote>
-<ul>
-<li>在单隐藏层神经网络中，$b(x;w_m,b_m)=\sigma(w_m^Tx+b_m)$，其中$\gamma_m=(w_m,b_m)$是偏置和连接上的权重<br></li>
-<li>在小波变换里，$b(x;j_m,k_m)=2^{j_m/2}\phi(2^{j_m}x-k_m)$, 其中$\gamma_m=(j_m,k_m)$是对母小波$\phi$(如Haar，symmlet)的缩放和位移</li>
-<li>在MARS多元自适应回归样条里,$b_m(x;t_m)=b_i(x)(x-t_m)_+ + b_i(x)(t_m-x)_+, i \leq m$, 其中$\gamma_m=t_m$是分段函数的扭结</li>
-<li>对于树，$b(x;R_{mj},\theta_m)=\sum_{j=1}^J\theta_{mj}I(x \in R_{mj})$，其中$\gamma_m=(R_{mj},\theta_{mj})$是树的矩形子空间划分和每个子空间上的均值(回归)或多数类(分类)</li>
-</ul>
-</blockquote>
-<p>模型求解策略一般都是最小化经验损失，如<br>
-$$\min_{\beta_m, \gamma_m}\sum_{i=1}^NL\bigg(y_i, \sum_{m=1}^M\beta_m b(x_i;\gamma_m)\bigg)\tag 2$$
-<br>但是数值求解boosting“委员会”时，“委员会”中还有多个弱学习器，所有弱学习器一同求解是比较困难的(当时是90年代)，但是贪心地，迭代地，一次只拟合一个弱学习器则是可行且快速的解决方案。</p>
-<h1 id="前向分步拟合Boosting"><a href="#前向分步拟合Boosting" class="headerlink" title="前向分步拟合Boosting"></a>前向分步拟合Boosting</h1><p>通过相继添加新的弱学习器到“委员会”（总的模型）里，而不调整已添加的弱学习器的模型参数及其在委员会中的权重系数，来逼近式(2)的解。算法如下</p>
-<blockquote>
-<p>前向分步拟合算法</p>
-<ol>
-<li>初始化$f_0(x)=0$</li>
-<li>对于m=1到M:<br>(a)计算 <bt>$$(\beta_m, \gamma_m)=\arg\min_{\beta, \gamma}\sum_{i=1}^NL\bigg(y_i, f_{m-1}(x_i)+\beta b(x_i;\gamma)\bigg) \tag 3$$ <br>(b)更新$f_m(x)=f_{m-1}(x)+\beta_m b(x; \gamma_m)$</bt></li>
-</ol>
-</blockquote>
-<p>算法的要点是：在第m次迭代中，求解最优的弱学习器$b(x;\gamma_m)$和响应的系数$\beta_m$,并将其添加到当前的“委员会”$f_{m-1}(x)$中，由此产生新的“委员会”$f_{m}(x)$。之前添加的项并不会改变，每次都添加最优的弱学习器，这包含着<strong>贪心</strong>的思想。</p>
-<h1 id="前向分步拟合-指数损失-Adaboost"><a href="#前向分步拟合-指数损失-Adaboost" class="headerlink" title="前向分步拟合+指数损失=Adaboost"></a>前向分步拟合+指数损失=Adaboost</h1><h2 id="指数经验损失"><a href="#指数经验损失" class="headerlink" title="指数经验损失"></a>指数经验损失</h2><p>考虑一个2分类问题，数据集为$\{x_i, y_i\}_{i=1}^N$，其中 $y_i \in \{ -1, 1\}$。面对分类问题，有时我们会使用指数损失：<br>$$L(y,f(x))=\exp(-yf(x))$$<br>对式(3)我们使用指数损失：</p>
-
-$$\begin{aligned}(\beta_m, \gamma_m) 
-    &= \arg\min_{\beta, \gamma}\sum_{i=1}^N \exp[-y_i(f_{m-1}(x_i)+\beta b(x_i;\gamma))] \\
-    &= \arg\min_{\beta, \gamma}\sum_{i=1}^N \exp(-y_if_{m-1}(x_i))\exp(-y_i\beta b(x_i;\gamma)) \\
-    &= \arg\min_{\beta, \gamma}\sum_{i=1}^N w_i^{(m)}\exp(-y_i\beta b(x_i;\gamma))
-\end{aligned}\tag 4 $$
-
-<p>由于$\exp(-y_if_{m-1}(x_i))$和$\beta, \gamma$无关，可以看做数值优化求解过程中的常数，但它与i,m有关，即和样本、迭代次数有关，令<br>$$w_i^{(m)}=\exp(-y_if_{m-1}(x_i)) \tag 5$$<br>把它看做第m次迭代时，样本i的损失权重，样本权重根据迭代而改变。</p>
-<h2 id="求解弱学习器参数"><a href="#求解弱学习器参数" class="headerlink" title="求解弱学习器参数"></a>求解弱学习器参数</h2>$\beta$与$\gamma$不存在相互依赖的关系，可以分开优化，对于任意的$\beta > 0$与样本无关,因此<br><br>
-$$\begin{aligned}
-\gamma_m & = \arg\min_{\gamma}\sum_{i=1}^N w_i^{(m)}\exp(-y_i\beta b(x_i;\gamma)) \\
-& = \arg\min_{\gamma}\exp(\beta)\sum_{i=1}^N w_i^{(m)}\exp(-y_i b(x_i;\gamma)) \\
-& = \arg\min_{\gamma}\sum_{i=1}^N w_i^{(m)}\exp(-y_i b(x_i;\gamma)) \\
-& = \arg\min_{\gamma}\sum_{i=1}^N w_i^{(m)}I(y_i \neq b(x_i;\gamma))
-\end{aligned} \tag 6 $$
-
-<blockquote>
-<p>注意$y_i$的取值为{+1，-1}，当$y_i=b(x;\gamma)$时，$\exp(-y_i b(x_i;\gamma))$和$I(y_i \neq b(x_i;\gamma))$都取到各自的最小值;当$y_i \neq b(x;\gamma)$时，$\exp(-y_i b(x_i;\gamma))$和$I(y_i \neq b(x_i;\gamma))$都取到各自的最大值。</p>
-</blockquote>
-<h2 id="求解弱学习器在boosting中的系数"><a href="#求解弱学习器在boosting中的系数" class="headerlink" title="求解弱学习器在boosting中的系数"></a>求解弱学习器在boosting中的系数</h2><p>对$\gamma$的优化变成了对单弱学习器参数的求解，得到$\gamma_m$。下面优化系数$\beta_m$。</p>
-
-$$\begin{aligned}
-\beta_m & = \arg\min_{\beta}\sum_{i=1}^N w_i^{(m)}\exp(-y_i\beta b(x_i;\gamma_m)) \\
-& = \arg\min_{\beta}\sum_{i=1}^N \bigg\{ \begin{matrix}w_i^{(m)}\exp(-\beta) & y_i = b(x; \gamma_m) \\ w_i^{(m)}\exp(\beta) & y_i \neq b(x; \gamma_m)\end{matrix} \\
-& = \arg\min_{\beta}\sum_{y_i = b(x; \gamma_m)} w_i^{(m)}e^{-\beta} + \sum_{y_i \neq b(x; \gamma_m)} w_i^{(m)}e^{\beta}\\
-& = \arg\min_{\beta} \bigg(e^{-\beta}\sum_{y_i = b(x; \gamma_m)} w_i^{(m)} + e^{\beta}\sum_{y_i \neq b(x; \gamma_m)} w_i^{(m)}\bigg) \\
-& = \arg\min_{\beta} \bigg(e^{-\beta}\sum_{y_i = b(x; \gamma_m)} w_i^{(m)} + e^{-\beta}\sum_{y_i \neq b(x; \gamma_m)} w_i^{(m)} - e^{-\beta}\sum_{y_i \neq b(x; \gamma_m)} w_i^{(m)} + e^{\beta}\sum_{y_i \neq b(x; \gamma_m)} w_i^{(m)}\bigg) \\
-& = \arg\min_{\beta} \bigg(e^{-\beta}\sum_{i=1}^N w_i^{(m)} + (e^{\beta}-e^{-\beta})\sum_{y_i \neq b(x; \gamma_m)} w_i^{(m)} \bigg)\\
-& = \arg\min_{\beta} \bigg(e^{-\beta}\sum_{i=1}^N w_i^{(m)} + (e^{\beta}-e^{-\beta})\sum_{i=1}^N w_i^{(m)}I(y_i \neq b(x; \gamma_m))\bigg)
-\end{aligned}\tag 7$$
-
-<p>式(7)可以看做是$\beta$的一元函数优化问题，由于$e^{-\beta}$与$e^{\beta}$都是凸函数，它们的组合也是凸函数，因此0梯度点是全局最优解。令目标函数导数为0</p>
-
-$$\begin{aligned}
-& \frac{\partial}{\partial \beta} \bigg(e^{-\beta}\sum_{i=1}^N w_i^{(m)} + (e^{\beta}-e^{-\beta})\sum_{i=1}^N w_i^{(m)}I(y_i \neq b(x; \gamma_m))\bigg) \\
-& = -e^{\beta}\sum_{i=1}^N w_i^{(m)} + 2e^{-\beta}\sum_{i=1}^N w_i^{(m)}I(y_i \neq b(x; \gamma_m)) = 0
-\end{aligned} \tag 8$$
-
-<p>解式(8)得<br>$$\beta_m=\frac{1}{2}\log\frac{1-err_m}{err_m} \tag 9$$<br>其中<br>$$err_m=\frac{\sum_{i=1}^Nw_i^{(m)}I(y_i \neq b(x; \gamma_m))}{\sum_{i=1}^Nw_i^{(m)}} \tag{10}$$<br>是最小化的、当前迭代中的、单个弱学习器的、带权的误差率。这样我们可以更新“委员会”了：<br>$$f_m(x)=f_{m-1}(x)+\beta_m b(x; \gamma_m)$$<br>别忘了前面定义的样本损失权重式(5),它与迭代次数m有关，每次迭代都需要更新</p>
-
-$$\begin{aligned}
-w_i^{(m+1)} & = \exp(-y_if_m(x_i)) \\
-& = \exp \Big(-y_i(f_{m-1}(x_i)+\beta_m b(x_i; \gamma_m))\Big) \\
-& = \exp(-y_if_{m-1}(x_i)) \cdot \exp(-y_i\beta_m b(x_i; \gamma_m)) \\
-& = w_i^{(m)} \cdot \exp(-\beta_m y_i b(x_i; \gamma_m)) \\
-& = w_i^{(m)} \cdot \exp \Big(\beta_m \cdot (2I(y_i \neq b(x_i; \gamma_m))-1)\Big) \\
-& = w_i^{(m)} \cdot \exp \Big(2\beta_m I(y_i \neq b(x_i; \gamma_m))-\beta_m \Big) \\
-& = w_i^{(m)} \cdot \exp \Big(2\beta_m I(y_i \neq b(x_i; \gamma_m))\Big)e^{-\beta_m}
-\end{aligned}  \tag{11}$$
-
-<h2 id="导出与adaboost的等价性"><a href="#导出与adaboost的等价性" class="headerlink" title="导出与adaboost的等价性"></a>导出与adaboost的等价性</h2><p>因为每个样本的权重都乘以因子$e^{-\beta_m}$,所以乘不乘都没关系，令<br>$$\alpha_m = 2\beta_m = \log\frac{1-err_m}{err_m} \tag{12}$$<br>有<br>$$w_i^{(m+1)} = w_i^{(m)} \cdot \exp \Big(\alpha_m I(y_i \neq b(x_i; \gamma_m))\Big) \tag{13}$$<br>最后，每个弱学习器的系数都乘以2，学习器间的权重分布未变，总模型“委员会”为<br>$$f(x)=sign\Big( \sum_{m=1}^M \alpha_m b_m(x)\Big)$$</p>
-<p>我们把上面的过程简化，写成算法的形式：</p>
-<blockquote>
-<ol>
-<li>初始化样本权重$w_i=1/N,i=1,2,...,N$<br></li>
-<li>对于m=1,…,M:<br><br>(a)在样本权重为$w_i$的训练集上拟合一个弱学习器$b(x;\gamma_m)$<br>(b)计算<br>$$err_m=\frac{\sum_{i=1}^Nw_i^{(m)}I(y_i \neq b(x; \gamma_m))}{\sum_{i=1}^Nw_i^{(m)}}$$ (c)计算<br> $$\alpha_m = \log\frac{1-err_m}{err_m}$$ (d)更新样本权重$w_i^{(m+1)} = w_i^{(m)} \cdot \exp \Big(\alpha_m I(y_i \neq b(x_i; \gamma_m))\Big),i=1,2,...,N$</li>
-<li>输出最终模型$f(x)=sign\Big( \sum_{m=1}^M \alpha_m b_m(x)\Big)$</li>
-</ol>
-</blockquote>
-<p>我们惊奇地发现，这个算法和Adaboost一模一样。</p>
-<p><div id="container"></div></p>
-<p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
-<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
-<script>
-var gitment = new Gitment({
-  id: 'boosting_exponential_loss',
-  title: 'boosting与指数损失——Adaboost',
-  owner: 'yiyang186',
-  repo: 'blog_comment',
-  oauth: {
-    client_id: '2786ddc8538588bfc0c8',
-    client_secret: '83713f049f4b7296d27fe579a30cdfe9e2e45215',
-  },
-})
-gitment.render('container')
-</script>
-
-          
+          boosting-不平等的委员会boosting提升方法的动机是合并许多“弱”学习器输出以产生有效的“委员会”。从这一角度看，boosting与同为ensamble集成方法的bagging袋装方法非常相似。其实这种相似是非常表面的，boosting与bagging有着本质的区别。
+boosting的
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/08/01/boosting与指数损失/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1242,38 +944,18 @@ gitment.render('container')
       
         
           
-            <p>因为太简单太常见，加法模型往往容易被忽略，但它却蕴含着非常根本的建模思想。针对于某个案例，如果世间存在一个真实模型f(x),加法模型可以看做是它的一阶泰勒近似。</p>
-<blockquote>
-<ol>
-<li>在时间序列分析里，时间序列通过加法分解为季节分量，趋势和误差项：$Y_t=S_t+T_t+\varepsilon$。其中$Y_t$为季节分量，$T_t$为趋势项，$\varepsilon$为误差项。</li>
-<li>在线性回归里，使用预测子($x \in R^p$)的线性组合对响应变量(y)建模：$y=x^T\beta+\varepsilon$，其中$\beta \in R^p$</li>
-<li>在逻辑回归里，使用预测子($X \in R^p$)的线性组合对类后验概率的log-odd建模：$\log(\frac{Pr(y=1|x)}{1-Pr(y=1|x)})=x^T\beta+\varepsilon$</li>
-</ol>
-</blockquote>
-<p>它随处可见，且极具拓展性。</p>
-<ol>
-<li><strong>基展开</strong>：引入基函数h(x)代替x，拓展输入空间，引入非线性，增强输入的表达能力，$y=\phi^T(x)\beta+\varepsilon$。统计学习中广泛使用的基函数有多项式基，log，sqrt，范数，指示函数，样条基，小波基等。<br><br><strong>此外，使用正定核$K(x,z)=\phi^T(x)\phi(z)$也是隐式地引入基展开。</strong></li>
-<li><strong>核方法</strong>：最小化经验损失时引入加权核$K_\lambda(x_0,x)$, 根据x到$x_0$的距离赋予x一个权值，可以突出x附近样本的在模型中的地位，为模型引入了局部性。$\min \sum_{i=1}^N K_\lambda(x,x_i)[y_i-\alpha-x_i^T\beta ]$。常用的加权核有高斯核，三次方核，Epanechnikov核，k近邻核。</li>
-<li><strong>多层嵌套</strong>：引入激活函数后，多层嵌套加法模型可以得到神经网络的雏形。$f(x)=\sigma(\sum_{i=1}^M\sigma(x^Tw_i))$中的x也可用$\sigma(x^T\beta)$代替。</li>
-</ol>
-<hr>
-<p><div id="container"></div></p>
-<p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
-<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
-<script>
-var gitment = new Gitment({
-  id: 'additive_model',
-  title: '加法模型',
-  owner: 'yiyang186',
-  repo: 'blog_comment',
-  oauth: {
-    client_id: '2786ddc8538588bfc0c8',
-    client_secret: '83713f049f4b7296d27fe579a30cdfe9e2e45215',
-  },
-})
-gitment.render('container')
-</script>
-          
+          因为太简单太常见，加法模型往往容易被忽略，但它却蕴含着非常根本的建模思想。针对于某个案例，如果世间存在一个真实模型f(x),加法模型可以看做是它的一阶泰勒近似。
+
+
+在时间序列分析里，时间序列通过加法分解为季节分量，趋势和误差项：$Y_t=S_t+T_t+\varepsilon$。其中$Y_t$为季
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/07/30/加法模型/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1405,49 +1087,22 @@ gitment.render('container')
       
         
           
-            <h1 id="交互逻辑"><a href="#交互逻辑" class="headerlink" title="交互逻辑"></a>交互逻辑</h1><ol>
-<li>点击页面的“提交”button，向后台发送数据处理请求；</li>
-<li>后台处理数据；</li>
-<li>前端根据后台的处理进度实时更新进度条。</li>
-</ol>
-<p><strong>个人愚见</strong>：能在前端估计出进度的尽量在前端做伪实时的进度条(像发送文件那种)，这才是上策；实在没法估计后台计算时间，又实在是等的久的让人难熬的才这么干，这是下下策。</p>
-<hr>
-<h1 id="功能实现"><a href="#功能实现" class="headerlink" title="功能实现"></a>功能实现</h1><h2 id="前端"><a href="#前端" class="headerlink" title="前端"></a>前端</h2><h3 id="HTML"><a href="#HTML" class="headerlink" title="HTML"></a>HTML</h3><ol>
-<li>Html页面用boostrap的进度条,  进度条由2个div嵌套而成，修改内层div的width可以更新进度，外层div (id=”prog_out”) , 内层div (id=”prog_in”)；</li>
-<li>给button绑定一个onclick方法”submit_query()”。<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"prog_out"</span> <span class="attr">class</span>=<span class="string">"progress progress-striped active"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"prog_in"</span> <span class="attr">class</span>=<span class="string">"progress-bar progress-bar-success"</span> <span class="attr">role</span>=<span class="string">"progressbar"</span> <span class="attr">aria-valuenow</span>=<span class="string">"0"</span> <span class="attr">aria-valuemin</span>=<span class="string">"0"</span> <span class="attr">aria-valuemax</span>=<span class="string">"100"</span> <span class="attr">style</span>=<span class="string">"width: 0%;"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">"button"</span> <span class="attr">class</span>=<span class="string">"btn btn-default"</span> <span class="attr">onclick</span>=<span class="string">"submit_query()"</span>&gt;</span>提交<span class="tag">&lt;/<span class="name">button</span>&gt;</span></div></pre></td></tr></table></figure>
-</li>
-</ol>
-<h3 id="javascript"><a href="#javascript" class="headerlink" title="javascript"></a>javascript</h3><ol>
-<li>在onclick方法中设置一个setInterval函数，用于持续请求后台进度，不断更新进度条；</li>
-<li>向后台发送数据处理请求，当该请求成功返回后结束setInterval函数，并更改进度条样式。</li>
-<li>由于setInterval和getJSON的回调函数都是异步执行，这里就相当于做了个登记，将任务加入队列。因此submit_query不必等待他俩就可以顺利结束。<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">submit_query</span>(<span class="params">btn</span>)</span>&#123;</div><div class="line">    <span class="keyword">var</span> sitv = setInterval(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">	    <span class="keyword">var</span> prog_url = ...                   <span class="comment">// prog_url指请求进度的url，后面会在django中设置</span></div><div class="line">	    $.getJSON(prog_url, <span class="function"><span class="keyword">function</span>(<span class="params">res</span>)</span>&#123; </div><div class="line">	        $(<span class="string">'#prog_in'</span>).width(res + <span class="string">'%'</span>);     <span class="comment">// 改变进度条进度，注意这里是内层的div， res是后台返回的进度</span></div><div class="line">	    &#125;);</div><div class="line">    &#125;, <span class="number">1000</span>);                                 <span class="comment">// 每1秒查询一次后台进度</span></div><div class="line">    </div><div class="line">    <span class="keyword">var</span> this_url = ...                        <span class="comment">// 指当前页面的url</span></div><div class="line">    <span class="keyword">var</span> yourjson = ...</div><div class="line">    $.getJSON(thisurl, yourjson, <span class="function"><span class="keyword">function</span>(<span class="params">res</span>)</span>&#123; </div><div class="line">	    <span class="comment">// ...</span></div><div class="line">        clearInterval(sitv);                   <span class="comment">// 此时请求成功返回结果了，结束对后台进度的查询</span></div><div class="line">        $(<span class="string">'#prog_out'</span>).attr(<span class="string">"class"</span>, <span class="string">"progress progress-bar-success"</span>); <span class="comment">// 修改进度条外层div的class, 改为完成形态</span></div><div class="line">    &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-</ol>
-<h2 id="后端"><a href="#后端" class="headerlink" title="后端"></a>后端</h2><p>我这里使用的后端为<strong>Django</strong>, 使用别的后端思路相当。<br>2.2.1. 设置两个url, 一个指向处理数据的的函数，另一个指向请求进度的函数</p>
-<h3 id="urls-py"><a href="#urls-py" class="headerlink" title="urls.py"></a>urls.py</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">url(<span class="string">r'^thisiurl$'</span>, views.process_data, name=<span class="string">'process'</span>), <span class="comment"># 处理数据的url, 当前页面的地址</span></div><div class="line">url(<span class="string">r'^progressurl$'</span>, views.show_progress, name=<span class="string">'progress'</span>), <span class="comment"># 查询进度的url, 不需要html页面</span></div><div class="line"><span class="comment"># thisiurl和progressurl用自己的url</span></div></pre></td></tr></table></figure>
-<h3 id="views-py"><a href="#views-py" class="headerlink" title="views.py"></a>views.py</h3><p>用全局变量记录处理进度，process_data函数负责具体任务，同时更新后台进度值，show_progress负责将当前进度值返回给前端。当全局变量不被识别的时候使用global关键字。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">num_progress = <span class="number">0</span> <span class="comment"># 当前的后台进度值（不喜欢全局变量也可以很轻易地换成别的方法代替）</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">process_data</span><span class="params">(request)</span>:</span></div><div class="line">    <span class="comment"># ...</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">12345</span>):</div><div class="line">	    <span class="comment"># ... 数据处理业务</span></div><div class="line">	    num_progress = i * <span class="number">100</span> / <span class="number">12345</span>; <span class="comment"># 更新后台进度值，因为想返回百分数所以乘100</span></div><div class="line">    <span class="keyword">return</span> JsonResponse(res, safe=<span class="keyword">False</span>)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">show_progress</span><span class="params">(request)</span>:</span></div><div class="line">    <span class="keyword">return</span> JsonResponse(num_progress, safe=<span class="keyword">False</span>)</div></pre></td></tr></table></figure></p>
-<hr>
-<h1 id="实现效果"><a href="#实现效果" class="headerlink" title="实现效果"></a>实现效果</h1><p>未完成形态<br><img src="http://img.blog.csdn.net/20170524194815680?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcTF3MmUzcjQ0NzA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"></p>
-<p>完成形态<br><img src="http://img.blog.csdn.net/20170524194715913?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcTF3MmUzcjQ0NzA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"></p>
-<hr>
-<p><div id="container"></div></p>
-<p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
-<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
-<script>
-var gitment = new Gitment({
-  id: 'backend_progress',
-  title: '前端实时更新后端处理进度',
-  owner: 'yiyang186',
-  repo: 'blog_comment',
-  oauth: {
-    client_id: '2786ddc8538588bfc0c8',
-    client_secret: '83713f049f4b7296d27fe579a30cdfe9e2e45215',
-  },
-})
-gitment.render('container')
-</script>
+          交互逻辑
+点击页面的“提交”button，向后台发送数据处理请求；
+后台处理数据；
+前端根据后台的处理进度实时更新进度条。
 
-          
+个人愚见：能在前端估计出进度的尽量在前端做伪实时的进度条(像发送文件那种)，这才是上策；实在没法估计后台计算时间，又实在是等的久的让人难熬的才这么干，这是下下策。
+
+功能实现
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/05/24/前端实时更新后端处理进度/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1579,61 +1234,20 @@ gitment.render('container')
       
         
           
-            <h1 id="原问题和对偶问题"><a href="#原问题和对偶问题" class="headerlink" title="原问题和对偶问题"></a>原问题和对偶问题</h1><h2 id="原问题"><a href="#原问题" class="headerlink" title="原问题"></a>原问题</h2>
+          原问题和对偶问题原问题
 $$\begin{aligned} \min \quad & f(x) \\
 s.t. \quad & g_i(x) \leq 0 \qquad i=1,...,m\\
 & h_j(x)=0 \qquad j=1,...,l \\
 & x \in X
-\end{aligned}$$
-
-<h2 id="对偶问题"><a href="#对偶问题" class="headerlink" title="对偶问题"></a>对偶问题</h2>
-$$\begin{aligned} \max \ &\inf\ \bigg \{ f(x)+\sum_{i=1}^m\mu_ig_i(x)+\sum_{j=1}^l\xi_ih_j(x)\bigg\} \\
-s.t. \quad &\mu_i \geq 0 \qquad i=1,...,m
-\end{aligned}$$
-
-<h2 id="问题简化"><a href="#问题简化" class="headerlink" title="问题简化"></a>问题简化</h2><p>为了便于用几何描述原问题和对偶问题的关系，把问题简化</p>
-<h3 id="简化后的原问题"><a href="#简化后的原问题" class="headerlink" title="简化后的原问题"></a>简化后的原问题</h3>
-$$\begin{aligned} \min \quad & f(x) \\
-s.t. \quad & g(x) \leq 0\\
-& h(x)=0\\
-& x \in X
-\end{aligned}$$
-
-<h3 id="简化后的对偶问题"><a href="#简化后的对偶问题" class="headerlink" title="简化后的对偶问题"></a>简化后的对偶问题</h3>
-$$\begin{aligned} \max \ &\inf\ \bigg \{ f(x)+\mu g(x)+\xi h(x)\bigg\} \\
-s.t. \quad &\mu \geq 0
-\end{aligned}$$
-
-<h1 id="几何解释"><a href="#几何解释" class="headerlink" title="几何解释"></a>几何解释</h1><h2 id="强对偶"><a href="#强对偶" class="headerlink" title="强对偶"></a>强对偶</h2><p>对偶问题的优化目标是最大化$f(x),h(x),g(x)$的线性组合的最小值，而这如何等价于在限制下最小化$f(x)$，需要观察$f(x),h(x),g(x)$的线性组合<br>将X集合中的所有元素x都通过变换投影到集合G中:<br>$$G={[h(x),g(x),f(x)], x \in X}$$<br>显然，G在$f(x),h(x),g(x)$的张成空间内。<br>为了在图形中表达对偶问题的优化过程，鉴于原问题的限制中有$h(x)=0$，再简化一下问题，只考虑对偶问题的G中位于$h(x)=0$薄片内的元素。如下图所示，因为最小值必须是G中最低的位置，又受到$g(x)\leq 0$的限制，所以原问题的最小值$f(x)_{min}$位于图中的红点位置。</p>
-<p><img src="http://i4.bvimg.com/602416/fc59be77496f59d6.png" alt=""></p>
-<p>对偶问题的目标函数是$f(x)+ug(x)$，我们令$a=f(x)+\mu g(x)$，它可以看作是[g(x),f(x)]平面内的直线$-\mu g(x)+a=f(x)$, 其中$-\mu$为斜率，a为截距。注意对偶问题中要求$\mu \leq 0$，因此我们只考虑斜率为负的情形。而直线的截距则是对偶问题的目标。</p>
-<p>原问题中要求$x \in X$，那么对偶问题中$[h(x),g(x),f(x)]$必须在G内，$a=f(x)+\mu g(x)$的中的f(x)和g(x)必须在G以内，也就是说直线$a=f(x)+\mu g(x)$必须经过G。<br>固定$\mu$不变，为了取到下界$\inf{f(x)+\mu g(x)}$，必须保证直线$a=f(x)+\mu g(x)$与G的下边缘相切。只有相切才能让$a=f(x)+\mu g(x)$取到下界，而x不超出G的范围。</p>
-<p><img src="http://i4.bvimg.com/602416/0d65e16e0e62793e.png" alt=""></p>
-<p>保持直线$a=f(x)+\mu g(x)$与G下边缘相切，调节斜率$-\mu$使截取a最大化。最大化的的结果就是截距所在位置与f(x)的最小值重合
-$$a=f(x)_{min}$$
-<br>此时，原问题的解与对偶问题的解等价，这种情形称为强对偶。</p>
-<p><img src="http://i4.bvimg.com/602416/9b4a6cabbb52688d.png" alt=""></p>
-<h2 id="弱对偶"><a href="#弱对偶" class="headerlink" title="弱对偶"></a>弱对偶</h2><p>如果G的形状不凑巧如下图所示，那么对偶问题的解就会和原问题的解存在间隙，这种情况称为弱对偶。</p>
-<p><img src="http://i4.bvimg.com/602416/29433fad9f170e1e.png" alt=""></p>
-<hr>
-<p>参考自<a href="http://www.eng.newcastle.edu.au/eecs/cdsc/books/cce/Slides/Duality.pdf" target="_blank" rel="external">Lagrangian Duality</a></p>
-<p><div id="container"></div></p>
-<p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
-<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
-<script>
-var gitment = new Gitment({
-  id: 'duality',
-  title: ' 对偶问题的简化几何解释',
-  owner: 'yiyang186',
-  repo: 'blog_comment',
-  oauth: {
-    client_id: '2786ddc8538588bfc0c8',
-    client_secret: '83713f049f4b7296d27fe579a30cdfe9e2e45215',
-  },
-})
-gitment.render('container')
-</script>
-          
+\end{aligned
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/05/20/对偶问题的简化几何解释/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1765,98 +1379,15 @@ gitment.render('container')
       
         
           
-            <p>介绍EM算法的材料里，我目前看过且觉得比较好的就是NG老师的CS229讲义和李航老师的统计学习方法。<br>我也提不出什么新东西，就结合混合高斯分布，在这两位牛人的基础上，谈一点自己觉得看待EM算法很重要的2个必须弄清楚的问题：为什么要有EM算法，为什么叫E步和M步，还解释了一些介绍EM算法时免不了要提到的公式。如果不把这些问题和公式解释清楚真的能理解em吗？我想可能不能</p>
-<h1 id="为什么要有EM算法"><a href="#为什么要有EM算法" class="headerlink" title="为什么要有EM算法"></a>为什么要有EM算法</h1><p>我把EM算法当做最大似然估计的拓展，解决难以给出解析解的最大似然估计（MLE）问题。<br>考虑高斯分布，它的最大似然估计是这样的：</p>
-$$\begin{aligned} \theta^*=\arg\max_\theta \sum_X \log L(\theta|X) \end{aligned}{\tag 1}$$
-<p>其中，$\theta =(\mu, \sigma), \theta^* =(\mu^*, \sigma^*), \log L(\theta|X) = \log P(X; \theta)$是对数似然函数，分号左边是随机变量，右边是模型参数。$P(X;\theta)$表示X的概率值函数，它是一个以$\theta$为参数的函数（很多人看不懂EM算法就是因为符号问题）。这里对$\theta$求导很容易解出$\theta^*$。</p>
-<p>但如果这是个含有隐量Y的模型比如混合高斯模型，<br>$$P(X;\theta)=\sum_{k=1}^K\pi_kN(x; \mu_k, \sigma_k)=\sum_YP(Y;\pi)P(X|Y;\mu,\sigma){\tag 2}$$</p>
-<p>上面假设共有K个高斯模型混合.每个高斯模型的参数为$\theta_k=(\mu_k, \sigma_k)$,每个高斯模型占总模型的比重为$\pi_k$。隐变量$Y \in {y_1,y_2,…,y_K}$表示样本$x_i$来自于哪一个高斯分布。分布列为：</p>
-<table>
-<thead>
-<tr>
-<th>Y</th>
-<th>$y_1$</th>
-<th>$y_2$</th>
-<th>$y_3$</th>
-<th>…</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>$p(y)$</td>
-<td>$\pi_1$</td>
-<td>$\pi_2$</td>
-<td>$\pi_3$</td>
-<td>…</td>
-</tr>
-</tbody>
-</table>
-<p>可以认为，混合高斯分布的观测值是这样产生的：先以概率$\pi_k$抽取一个高斯分布$y_k$，再以该高斯分布$N(x;\mu_k, \sigma_k)$去生成观测x。其实这里的$\pi_k$ 就是Y的先验分布$P(Y;\pi)$ (这里特地加上； $\pi$ 表示P(Y)的参数是 $\pi$ ,你需要求出 $\pi$ 才能表示这个先验分布),而 $N(x; \mu_k, \sigma_k)$ 就是给定Y下的条件概率 $P(X|Y;\mu,\sigma)$<br>这时，令$\theta =(\mu, \sigma, \pi), \theta^* =(\mu^*, \sigma^*, \pi^*)$, 最大似然估计成了</p>
-
-$$\begin{aligned} 
-\theta^* &= \arg\max_\theta \sum_X \log P(X;\theta) \\
-&=\arg\max_\theta \sum_X \log  \sum_YP(Y;\pi)P(X|Y;\mu,\sigma) \\
-&=\arg\max_\theta \sum_X \log  \sum_YP(X,Y;\theta)
-\end{aligned}\tag 3$$
-
-<p>据群众反映，求和、取对数、再求和，这种形式求偏导较为费劲（到底有多费劲。。。其实放在混合高斯这里也不是那么费劲，有的情形远比混合高斯复杂）要是能把\log 拿到求和的最里层就好了，直接对最里层的式子求偏导岂不快哉？于是就有了EM算法</p>
-<h1 id="为什么要分E步和M步"><a href="#为什么要分E步和M步" class="headerlink" title="为什么要分E步和M步"></a>为什么要分E步和M步</h1><p>为了解决这个问题，有人想到了Jensen（琴生）不等式. $\log$ 是个凹函数，以隐变量Y的任一函数$f(Y)$举个例子：<br>$$\log E[f(Y)]=\log \sum_Y P(Y)f(Y) \geq \sum_Y P(Y)\log f(Y)=E[\log f(Y)]\tag 4$$<br>根据琴生不等式的性质，当随机变量函数 f(Y) 为常数时，不等式取等号。上式中的期望换成条件期望，分布 P(Y) 换成条件分布也是一样的。</p>
-<p>注意(3)中的联合分布$P(X,Y;\theta)$在执行$\sum_Y$时可以把X看做是定值，此时我们可以把这个联合分布当做Y的随机变量函数（它除以P(Y)当然还是Y的随机变量函数）来考虑，并且引入一个关于Y的分布Q(Y)，具体是啥分布还不清楚,可能是给定某某的条件分布，只知道它是一个关于$\theta$的函数：</p>
-
-$$\begin{aligned}
-max &=\max_\theta \sum_X \log  \sum_YP(X,Y;\theta) \\
-&=\max_\theta \sum_X \log  \sum_Y Q(Y;\theta) \cdot \frac{P(X,Y;\theta)}{Q(Y;\theta)} \\
-&=\max_\theta \sum_X \log  E_Q[\frac{P(X,Y;\theta)}{P(Y;\theta)}] \\
-&\geq \max_\theta \sum_X E_Q[\log  \frac{P(X,Y;\theta)}{Q(Y;\theta)}] \\
-&= \max_\theta \sum_X \sum_Y Q(Y;\theta) \log  \frac{P(X,Y;\theta)}{Q(Y;\theta)}
-\end{aligned}\tag 5$$
-
-<p>只有当<br>$$\frac{P(X,Y;\theta)}{Q(Y;\theta)}=c\tag 6$$<br>式(5)才能取等号，注意到Q是Y的某一分布，有$\sum_Y Q(Y;\theta)=1$这个性质，因此<br>
-$$\begin{aligned}
-Q(Y;\theta) &= \frac{P(X,Y;\theta)}{c} = \frac{P(X,Y;\theta)}{c \cdot \sum_Y Q(Y;\theta)} \\
-&= \frac{P(X,Y;\theta)}{\sum_Y c \cdot Q(Y;\theta)} = \frac{P(X,Y;\theta)}{\sum_Y P(X,Y;\theta)} \\
-&= \frac{P(X,Y;\theta)}{P(X;\theta)} = P(Y|X;\theta)
-\end{aligned}\tag 7$$
-<br>所以只需要把Q取为给定X下，Y的后验分布，就能使式(5)取等号，下一步只需要最大化就行了.这时(5)为<br>$$\theta^* = \arg\max_\theta \sum_X \sum_Y P(Y|X;\theta) \log  \frac{P(X,Y;\theta)}{P(Y|X;\theta)}\tag 8$$</p>
-<p>其中：<br>$$P(X,Y;\theta) = P(Y;\pi)P(X|Y;\mu,\sigma)= \pi_kN(x_i; \mu_k, \sigma_k)\tag 9$$<br>$$P(Y|X;\theta) = \frac{P(X,Y;\theta)}{\sum_Y P(X,Y;\theta)}= \frac{\pi_kN(x_i; \mu_k, \sigma_k)}{\sum_{k=1}^K \pi_kN(x_i; \mu_k, \sigma_k)}\tag{10}$$<br>好吧，直接对$(\mu, \sigma, \pi)$求导还是很麻烦，不过已经可以用迭代来最大化啦。</p>
-<p>1）先根据式(10)，由$(\mu^{(j)}, \sigma^{(j)}, \pi^{(j)})$求后验概率<br>$$Q^{(j)}=P(Y|X;\theta^{(j)})$$</p>
-<p>2）再把$Q^{(j)}$带入(8)中，</p>
-
-$$\begin{aligned}
-\theta^{(j+1)} &= \arg\max_\theta \sum_X \sum_Y Q^{(j)} \log  \frac{P(X,Y;\theta)}{Q^{(j)}} \\
-&= \arg\max_\theta \sum_X \sum_Y (Q^{(j)} \log  P(X,Y;\theta)-Q^{(j)} \log  Q^{(j)}) \\
-&= \arg\max_\theta \sum_X \sum_Y Q^{(j)} \log  P(X,Y;\theta)
-\end{aligned}\tag{11}$$
-
-<p>就只需要最大化联合分布$P(X,Y;\theta)$了，最大化求出$(\mu^{(j+1)}, \sigma^{(j+1)}, \pi^{(j+1)})$后重复这2步。</p>
-<p>M步很显然，就是最大化那一步，E步又从何谈起呢？式(11)可以写成</p>
-
-$$\begin{aligned}
-\theta^{(j+1)} &= \arg\max_\theta \sum_X \sum_Y Q^{(j)} \log  P(X,Y;\theta) \\
-&= \arg\max_\theta \sum_X E_{Q^{(j)}} [\log  P(X,Y;\theta)] \\
-&= \arg\max_\theta \sum_X E_{Y|X;\theta^{(j)}} [\log  P(X,Y;\theta)] \\
-&= \arg\max_\theta \sum_X E_Y [\log  P(X,Y;\theta)|X;\theta^{(j)}]
-\end{aligned}\tag{12}$$
-
-<p>其实，E步就是求给定X下的条件期望，也就是后验期望，使得式(5)的琴生不等式能够取等号，是对琴声不等式中,小的那一端进行放大，使其等于大的那一端，这是一次放大；M步最大化联合分布，通过0梯度，拉格朗日法等方法求极值点，又是一次放大。只要似然函数是有界的，只要M步中的0梯度点是极大值点，一直放大下去就能找到最终所求。</p>
-<p><a href="https://www.yhihu.com/question/27976634/answer/163164402" target="_blank" rel="external">我的知乎回答</a></p>
-<p><div id="container"></div></p>
-<p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
-<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
-<script>
-var gitment = new Gitment({
-  id: 'understanding_em',
-  title: '如何理解EM算法',
-  owner: 'yiyang186',
-  repo: 'blog_comment',
-  oauth: {
-    client_id: '2786ddc8538588bfc0c8',
-    client_secret: '83713f049f4b7296d27fe579a30cdfe9e2e45215',
-  },
-})
-gitment.render('container')
-</script>
-          
+          介绍EM算法的材料里，我目前看过且觉得比较好的就是NG老师的CS229讲义和李航老师的统计学习方法。我也提不出什么新东西，就结合混合高斯分布，在这两位牛人的基础上，谈一点自己觉得看待EM算法很重要的2个必须弄清楚的问题：为什么要有EM算法，为什么叫E步和M步，还解释了一些介绍EM算法时免不了要提到的
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/05/06/如何理解EM算法/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1988,87 +1519,16 @@ gitment.render('container')
       
         
           
-            <h1 id="锲子"><a href="#锲子" class="headerlink" title="锲子"></a>锲子</h1><p>最近在看《An Introduction to optimization》，颇有收获，因此想以二维空间$R^2$举例，从简单的无约束的优化（0梯度条件），到等式约束优化(拉格朗日条件)，再到不等式约束优化（KKT条件），写点对于优化问题自己能写的理解。</p>
-<h1 id="无约束的优化问题"><a href="#无约束的优化问题" class="headerlink" title="无约束的优化问题"></a>无约束的优化问题</h1><p>$$\min f(x)$$<br>其中，$x=(x_1, x_2)$. 注意我在下图里画了等高线。此时 f(x) 在局部极小值点 $x^*=(x_1^*,x_2^*)$ 处的梯度必然为0，比较容易理解。这个梯度为零的条件是局部极小值点的必要条件。这样，优化问题的求解变成了对该必要条件解方程组。<br><img src="http://i2.bvimg.com/602416/41658556bdd425c0.png" alt="img"></p>
-<h1 id="带等式约束的优化问题"><a href="#带等式约束的优化问题" class="headerlink" title="带等式约束的优化问题"></a>带等式约束的优化问题</h1>
-$$\begin{aligned}
-\min f(x) \\ 
-s.t. \quad h(x) = 0
-\end{aligned}$$
-
-<p>与无约束的问题不同。我们所要求的极小值点被限制在曲线 $h(x) = 0$ 上，我们将 $\{x|h(x) = 0\}$ 称为可行域, 解只能在这个可行域里取。如下图所示，曲线 $h(x) = 0$ （黑色实曲线）经过无约束极小值点（黑点）附近。那么满足约束的极小值点应该与黑点尽可能近。我们将 $f(x)$ 的等高线不断放大，直到与曲线 $h(x) = 0$ 相切，切点即为所求。相切是关键，是极小值点的必要条件。<br><img src="http://i2.bvimg.com/602416/7a778c30cca1631c.png" alt="img"><br>把 $h(x) = 0$ 沿着曲线方向参数化为 $x(t)$ , $x^*=x(t^*)$ 。必有 $f(x)$ 在红点 $x^*$ 的梯度方向与 $x(t)$ 的切线方向垂直，即<br>
-$$\nabla f(x^*) \cdot \dot x(t^*) = 0$$
-<br>另外，由于 $h(x) = 0$ 为常数，那么也有复合函数  $h(x(t)) = 0$ , 因此 $h(x(t))$ 在 t 的导数必为0，根据链式法则有<br>$$\nabla h(x) \cdot \dot x(t) = 0$$<br> （内积为0，说明 $\nabla h(x^*)$ 与 $\dot x(t^*)$ 垂直）<br>因为 $\nabla f(x^*)$ 垂直于 $\dot{x}(t^*)$ ， $\nabla h(x^*)$ 垂直于 $\dot{x}(t^*)$ ，所以 $\nabla f(x^*)$ 与 $\nabla h(x^*)$ 共线，因此有<br>
-$$\nabla f(x^*)+\lambda \nabla h(x^*) = 0$$
-<br>$x^*$ 若为最小值点就必须满足上式和问题中的约束 $h(x^*) = 0$ ,这个必要条件就叫作拉格朗日条件，可以定义一个拉格朗日函数<br>$$L(x, \lambda)=f(x)+\lambda h(x)$$<br>令其偏导为0，正好就得到拉格朗日条件。如此，带等式约束的优化问题转化为了无约束的优化问题，只需要对拉格朗日条件解方程组即可。这里$\lambda$就是拉格朗日乘子，有多少个等式约束就有多少个拉格朗日乘子。</p>
-<h1 id="带不等式约束的优化问题"><a href="#带不等式约束的优化问题" class="headerlink" title="带不等式约束的优化问题"></a>带不等式约束的优化问题</h1><h2 id="只有一个不等式起作用"><a href="#只有一个不等式起作用" class="headerlink" title="只有一个不等式起作用"></a>只有一个不等式起作用</h2>
-$$\begin{aligned}
-\min f(x) \\ 
-s.t. \quad h(x) \leq0
-\end{aligned}$$
-
-<p>当只有一个不等式起作用时, 如我们把问题2里的等式约束 $h(x) = 0$ 改为 $h(x) \leq 0$ ，如下图所示，可行域变成了阴影部分，最小值点还是切点，情况和问题2完全一样，只需要把不等号当做等号去求解即可。<br><img src="http://i2.bvimg.com/602416/e822b79b9d121aba.png" alt="img"></p>
-<h2 id="多于一个不等式起作用"><a href="#多于一个不等式起作用" class="headerlink" title="多于一个不等式起作用"></a>多于一个不等式起作用</h2><p>但是当两个不等式起作用时，那么问题就来了。<br>
-$$\begin{aligned}
-\min f(x) \\ 
-s.t. \quad g_1(x) \leq 0 \\
-\quad g_2(x) \leq 0
-\end{aligned}$$
-<br>如下图，当 $f(x)$ 的等高线慢慢扩大时，等高线与可行域(阴影部分)第一次相遇的点是个顶点，2个不等式同时起作用了。满足约束的最小值点从原来的黑点位置(切点)移动到了红点位置，现在跟哪条约束函数曲线都不相切。这时候就需要用到kkt条件了。这里的“条件”是指：某一个点它如果是最小值点的话，就必须满足这个条件（在含不等式约束的优化问题里）。这是个必要条件，前面说的也全部是必要条件。<br><img src="http://i2.bvimg.com/602416/1e53adc055f4fd55.png" alt="img"><br>这个问题的解 $x^*$ 应满足的KKT（卡罗需-库恩-塔克）条件为：</p>
-<ol>
-<li>$\mu_1 \geq 0 , \mu_2 \geq 0$ ;   </li>
-<li>$\nabla f(x^*)+\mu_1\nabla g_1(x^*)+\mu_2\nabla g_2(x^*) = 0$ ;  </li>
-<li>$\mu_1g_1(x^*)+\mu_2g_2(x^*) = 0$ .</li>
-</ol>
-<p>其中，$\mu$叫KKT乘子，有多少个不等式约束就有多少个KKT乘子。加上问题3中的约束部分，就是完整版的KKT条件。对于有等式的情况，你把其中一个不等式约束换成等式，可行域变成了半条曲线，最小值点还是那个红点，和下面这种情况是一样的。<br>下面看看KKT条件是怎么来的。在问题2中我们知道了约束曲线的梯度方向与曲线垂直，我在上图画出了两条约束曲线的负梯度方向（绿色箭头，注意$-\nabla g(x)$ 方向一定指向 $g(x)$ 减小的方向，即 $g(x)<0$ 的那一边）和等高线的梯度方向（红色箭头$\nabla$$f(x^*)$）。如果这个顶点是满足约束的最小值点，那么该点处（红点），红色箭头一定在两个绿色箭头之间。也就是$\nabla$$f(x^*)$能被$-\nabla$$g_1(x^*)$和$-\nabla$$g_2(x^*)$线性表出<br="">
-$$\nabla f(x^*)= -\mu_1\nabla g_1(x^*) -\mu_2\nabla g_2(x^*)$$
-<br>且系数必非负 $\mu_1 \geq 0 , \mu_2 \geq 0$ 。也就是kkt条件中的1和2。</0$></p>
-<ol>
-<li>$\mu_1 \geq 0 , \mu_2 \geq 0$ ;</li>
-<li>$\nabla f(x^*)+\mu_1\nabla g_1(x^*)+\mu_2\nabla g_2(x^*) = 0$ ;</li>
-</ol>
-<h2 id="存在不起作用的不等式"><a href="#存在不起作用的不等式" class="headerlink" title="存在不起作用的不等式"></a>存在不起作用的不等式</h2><p>有时候，有的不等式约束实际上不起作用，如下面这个优化问题<br>
-$$\begin{aligned}
-\min f(x) \\ 
-s.t. \quad g_1(x) \leq 0 \\
-\quad g_2(x) \leq 0 \\
-\quad g_3(x) \leq 0
-\end{aligned}$$
-<br>如下图的 $g_3(x_1,x_2) \leq 0$ 是不起作用的<br><img src="http://i2.bvimg.com/602416/91f14864fc993d38.png" alt="img"></p>
-<p>对于最小值点 $x^*$ ,三个不等式约束的不同在于<br>$g_1(x^*) = 0$ （起作用）<br>$g_2(x^*) = 0$ （起作用）<br>$g_3(x^*)<0$ （不起作用,="" 最小值点不在="" $g_3(x)="0$" 上）<br="">这时，这个问题的KKT条件1，2成了：</0$></p>
-<ol>
-<li>$\mu_1 \geq 0 , \mu_2 \geq 0 , \mu_3 \geq 0$ ; </li>
-<li>$\nabla f(x^*)+\mu_1\nabla g_1(x^*)+\mu_2\nabla g_2(x^*)+\mu_3\nabla g_3(x^*) = 0$ . </li>
-</ol>
-<p>条件2中的 $\mu_3\nabla g_3(x^*)$  这一项让我们很苦恼啊， $g_3(x^*)$  的绿色箭头跟我们的红色箭头没关系。要是能令 $\mu_3 = 0$ 就好了。加上条件3：</p>
-$$\mu_1g_1(x^*)+\mu_2g_2(x^*)+\mu_3g_3(x^*) = 0$$
-<p>恰好能使 $\mu_3 = 0$ 。由于 $g_1(x^*) = 0$ ， $g_2(x^*) = 0$ ，所以前两项等于0，第三项$g_3(x^*) < 0$， 在条件3的作用下使得$\mu_3 = 0$。 正好满足需求。如果再多几项不起作用的不等式约束，比如$g_4(x) \leq 0$。要使</p>
-$$\mu_1g_1(x^*)+\mu_2g_2(x^*)+\mu_3g_3(x^*)+\mu_4g_4(x^*) = 0$$
-<p>就只能有 $\mu_3g_3(x^*)+\mu_4g_4(x^*) = 0$</p>
-<p>同样地， $g_3(x^*) < 0$ , $g_4(x^*) < 0$ , 只能出现 $\mu_3 = \mu_4 = 0$ 或者 $\mu_3$ 和 $\mu_4$ 异号的情况。但注意条件1限制了 $\mu_3 \geq 0, \mu_4 \geq 0$ ，所以只能有 $\mu_3 = \mu_4 = 0$ 。因此不管加了几个不起作用的不等式约束，条件2都能完美实现：目标函数 $f(x)$ 的梯度 $\nabla f(x)$ 被起作用的不等式约束函数 $g(x)$ 的负梯度 $-\nabla g(x)$ 线性表出且系数 $\mu$ 全部非负（红色箭头被绿色箭头夹在中间）。这样，优化问题的求解就变成对所有KKT条件解方程组。</p>
-<p>如果再定义一个函数<br>
-$$L(x, \mu)=f(x)+\mu_1 g_1(x)+\mu_2 g_2(x)+...$$
-<br>令它对x的偏导为0，就是KKT条件中的条件2了。</p>
-<h1 id="尾声"><a href="#尾声" class="headerlink" title="尾声"></a>尾声</h1><p>顺带一提，以前读李航老师的《统计学习方法》时，当读到SVM部分的KKT条件一段时，觉得摸不着头脑，现在总结一番后清楚了不少。如《统计学习方法》第一版105页式(7.27)中的第1，2行就是这里的KKT条件2（我这里把偏置b算在x里了），第3行是KKT条件3，第4行是问题中的不等式约束，第5行是KKT条件1。</p>
-<p>最后说明一下，以上所有都是局部极小值点的必要条件。据此求得的解不一定是局部极小值点（更别提全局了），原因是上图中我所画的等高线也许根本就不闭合，也就是说我们一直想要靠近的等高线中间的黑点压根就是个鞍点或者近似鞍点！</p>
-<p><a href="https://www.zhihu.com/question/58584814/answer/159863739" target="_blank" rel="external">我在知乎上的回答</a></p>
-<p><div id="container"></div></p>
-<p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
-<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
-<script>
-var gitment = new Gitment({
-  id: 'optimization_elements',
-  title: '优化基础问题',
-  owner: 'yiyang186',
-  repo: 'blog_comment',
-  oauth: {
-    client_id: '2786ddc8538588bfc0c8',
-    client_secret: '83713f049f4b7296d27fe579a30cdfe9e2e45215',
-  },
-})
-gitment.render('container')
-</script>
-          
+          锲子最近在看《An Introduction to optimization》，颇有收获，因此想以二维空间$R^2$举例，从简单的无约束的优化（0梯度条件），到等式约束优化(拉格朗日条件)，再到不等式约束优化（KKT条件），写点对于优化问题自己能写的理解。
+无约束的优化问题$$\min f(x)$$
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/05/03/优化基础问题/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -2200,154 +1660,15 @@ gitment.render('container')
       
         
           
-            <h1 id="逻辑回归的建模"><a href="#逻辑回归的建模" class="headerlink" title="逻辑回归的建模"></a>逻辑回归的建模</h1><h2 id="sigmoid函数"><a href="#sigmoid函数" class="headerlink" title="sigmoid函数"></a>sigmoid函数</h2><p>说道建模，总有一些粗暴的地方，即强行给真实模型$f$指定某种形式$\hat f$，像线性回归里就强行指定了$\hat f(x)=\beta^T x, x \in R^p, \beta \in  R^{p+1}$这种形式，然后依靠所找到的最优的$\beta$使$\hat f$尽量接近$f$。<br>分类问题与回归的问题的不同在于y的值域不同，对于分类问题，我们想把样本x分到$y\in \{a,b,c,d,...\}$的类别中。这样，我们希望拟合y在给定x下的条件概率$P(y=a,b,...|x)$。概率的值域为[0,1]。由于我们不能保证内积的结果在[0,1]之内，所以线性回归的那种内积的形式就不适用了，我们就不能以这种形式的模型去拟合真实模型。<br>人们找到一种叫sigmoid(s型)的函数<br><img src="http://img.blog.csdn.net/20170621150508657?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcTF3MmUzcjQ0NzA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"><br>$$y=g(x)=\frac{1}{1+e^{-x}}, x\in R, y\in(0,1)\tag 1$$<br>它可以把范围在$(-\infty, +\infty)$的值映射到$(0,1)$里去，由于它是单调递增函数，因此可以保持输入值的单调性、奇偶性、周期型。把$\hat f(x)=\beta^T x$带入其中得到
-$$h_\beta(x)=g(\beta^Tx)=\frac{1}{1+e^{-\beta^T x}}\tag 2$$
-</p>
-<h2 id="二分类"><a href="#二分类" class="headerlink" title="二分类"></a>二分类</h2><p>对于二分类问题$y\in \{0,1\}$，我们<strong>假设</strong>
-$$\begin{aligned}
-\left\{
-\begin{array}{c}
-P(y=1|x; \beta) &=& h_\beta(x)=\frac{1}{1+e^{-\beta^T x}}\\
-P(y=0|x; \beta) &=& 1 - h_\beta(x)=\frac{e^{-\beta^T x}}{1+e^{-\beta^T x}}\\
-\end{array}
-\right.
-\end{aligned}
-x \in R^p, \beta \in  R^{p+1}
-\tag 3$$
-可能因为这种模型的结果是在0, 1之间，且保持了线性回归模型的内积形式，因此它被称作logistic regression，即逻辑回归，或逻辑斯蒂回归。</p>
-<h2 id="逻辑回归的特质"><a href="#逻辑回归的特质" class="headerlink" title="逻辑回归的特质"></a>逻辑回归的特质</h2><p>将(3)中的2个等式取对数相比（log-odd）得
-$$\log{{P(y=1|x)}\over {P(y=0|x)}}=\beta ^Tx \tag4$$
-可以发现以下特质，<strong>考虑任意样本$x_0$</strong>：</p>
-<ol>
-<li>当$P(y=1|x_0)>P(y=0|x_0)$时，$x_0$被分类到$\beta^Tx=0$的&gt;0的一边;</li>
-<li>当$P(y=1|x_0)$ < $P(y=0|x_0)$时，$x_0$被分类到$\beta^Tx=0$的&lt;0的一边;</li>
-<li>当$P(y=1|x_0)=P(y=0|x_0)$时，$x_0$在平面$\beta^Tx=0$上.</li>
-</ol>
-<p>可见Logistic Regression仍然是一种线性方法，即用平面($\beta ^Tx=0$)来分类。在二分类问题中，样本在超平面的一边就属于一类, 这个平面就是类与类之间的边界。<br>可以认为逻辑回归实际上式以(4)建模的。它认为一个样本属于类1的概率P(y=1|x)大的话，它应当在分类平面$\beta^Tx=0$的一边，即满足$\beta^Tx>0$；当这个样本属于0类概率 P(y=0|x)大时，它应当在分类平面$\beta^Tx=0$的另一边，即满足$\beta^Tx<0$ 。并且，它严格地假设了两类条件概率的对数比是线性的，可以被输入x线性表出。我们知道由于类密度高斯假设和公共协方差假设，lda(线性判别分析)的log-odd是x的线性函数，与(4)形式一样。<strong="">而Logistic绕过了这2个假设以式(4)建模。逻辑回归不要求样本满足类密度高斯假设和公共协方差假，更具一般性。</0$></p>
-<p>其实，我们忘掉sigmoid函数，直接拿(4)来建模，粗暴地假设类对数比率(log-odd)是关于x的线性函数，又由于样本属于两类的概率之和为1
-$$P(y=1|x)+P(y=0|x)=1\tag5$$
-联立(4)(5)，解未知数为P(Y=1|x)和P(Y=-1|x)的方程还是可以得到式(3)，同样含有sigmoid函数。</p>
-<h2 id="多分类"><a href="#多分类" class="headerlink" title="多分类"></a>多分类</h2><p>对于K分类问题，如$y\in \{1,2,...,K\}$，我们希望模型拟合的是y的后验分布$P(y=i|x), i=1,2,...,K$。像二分类一样，如法炮制，假设两两类的条件概率对数比(log-odd)是关于x的线性函数，这样我们能列$\binom{K}{2}=\frac{K(K-1)}{2}$个方程。可是我们只有K个未知数，只需要列K个方程就行了，不妨取1,2,…,K-1类分别与K类的对数比来列方程，并限制样本属于K个类的概率的和为1，则
-$$\begin{aligned}
-   \left\{
-   \begin{array}{c}
-   \log{{P(y=1|x)}\over {P(y=K|x)}} &=&\beta_1 ^Tx\\
-   \log{{P(y=2|x)}\over {P(y=K|x)}} &=&\beta_2 ^Tx\\
-   ...\\
-   \log{{P(y=K-1|x)}\over {P(y=K|x)}} &=&\beta_{K-1} ^Tx\\
-   \sum_{i=1}^KP(y=i|x) &=& 1
-   \end{array}
-  \right.
-\end{aligned}
-x \in R^p, \beta_k \in  R^{p+1}, k=1,2,...,K-1
-\tag 6$$
-解方程组得到多分类的模型
-$$\begin{aligned}
-  \left\{
-   \begin{array}{c}
-   P(y=k|x; \beta) &=& \frac{e^{-\beta_k^T x}}{1+\sum_{i=1}^{K-1}e^{-\beta_i^T x}}\\
-   P(y=K|x; \beta) &=& \frac{1}{1+\sum_{i=1}^{K-1}e^{-\beta_i^T x}}\\
-   \end{array}
-  \right.
-\end{aligned}
-\tag 7$$
-其中，$x \in R^p, \beta_k \in  R^{p+1}, k=1,2,...,K-1$。<br>这很像<strong>softmax回归</strong>，把(7)中的“1”替换成“$e^{-\beta_K^T x}$”就成了softmax回归。
-$$P(y=k|x; \beta) = \frac{e^{-\beta_k^T x}}{\sum_{i=1}^Ke^{-\beta_i^T x}}, k=1,2,...,K \tag 8$$
-softmax回归可以看做是logistic的推广。当然softmax回归并不是这么推倒出来的，它的建模过程有它自己的考虑，像logistic一样出于某种需求被逐步构建出，就像你做deep learning搭积木一样，是一种建模过程。你能根据模型的某种数学特点把他们归类在一起，比如GLM, tree。模型与模型间确定的推导关系是很难给出的, 至少我在写这个博客时还做不到。或者我该以另一种形式开头，如“人们找到一种叫做softmax的函数，它有这样那样的特点。。。”再写一篇博客。</p>
-<h1 id="逻辑回归的求解"><a href="#逻辑回归的求解" class="headerlink" title="逻辑回归的求解"></a>逻辑回归的求解</h1><p>用最大似然估计法估计$\beta$, 令
-$$p_i=P(y_i=1|x_i)=1-sigmoid(\beta^Tx_i)$$
-则
-$$P(y_i=0|x_i)=1-p_i=sigmoid(\beta^Tx_i)$$
-那么似然函数为：
-$$l(\beta)=\prod_{i=1}^np_i^{y_i}(1-p_i)^{1-y_i}$$
-对数似然为：
-$$L(\beta)=\log l(\beta)=\sum_{i=1}^ny_i\log p_i+(1-y_i)\log(1-p_i)\tag8$$
-最大化$L(\beta)$即最小化$-L(\beta)$
-$$-L(\beta)=-\log l(\beta)=\sum_{i=1}^n-y_i\log p_i-(1-y_i)\log(1-p_i)\tag9$$
-(9)等号右边每一项为交叉熵（cross entropy）,因此对逻辑回归使用最大似然估计等价于最小化交叉熵，因此在神经网络中以交叉熵为损失函数求解二分类问题与最大似然估计是等价的。<br>这里只介绍一般逻辑回归的求解，回到(8), 将(6)(7)带入(8)得
-$$L(\beta)=\sum_{i=1}^ny_i\beta^Tx_i-\log(1+exp(\beta^Tx_i))$$
-令其梯度为0有
-$$\frac{\partial L(\beta)}{\partial \beta}=\sum_{i=1}^nx_i(y_i-\frac{exp(\beta^Tx_i)}{1+exp(\beta^Tx_i)})=\sum_{i=1}^nx_i(y_i-p_i)=0\tag{10}$$
-(10)是非线性方程组，难以求得$\beta$的解析解，可使用Newton-Raphson算法（牛顿迭代法）求解(10)的零点，Newton-Raphson算法需要(10)的导数，也就是$L(\beta)$的Hessian矩阵（二阶导数）
-$$\frac{\partial L^2(\beta)}{\partial \beta \partial \beta^T}=-\sum_{i=1}^nx_ix_i^Tp_i(1-p_i)$$
-因此Newton-Raphson算法每一步的迭代公式为：
-$$\beta^{new}=\beta^{old}-\bigg(\frac{\partial L^2(\beta)}{\partial \beta \partial \beta^T}\Bigg|_{\beta^{old}}\bigg)^{-1}\frac{\partial L(\beta)}{\partial \beta}\Bigg|_{\beta^{old}}\tag{11}$$
-可根据(11)迭代即可求解出(10)的零点$\beta$，同时也是(8)的极值点。</p>
-<h1 id="最小化交叉熵损失与最大化似然函数"><a href="#最小化交叉熵损失与最大化似然函数" class="headerlink" title="最小化交叉熵损失与最大化似然函数"></a>最小化交叉熵损失与最大化似然函数</h1><p>最大化似然估计是显而易见的：
-$$\max_{p_i} \sum_{i=1}^n y_i\log p_i+(1-y_i)\log(1-p_i)$$
-</p>
-<p>那么，<strong>如何理解最小化交叉熵(互熵)损失</strong>?<br><br>假设给定x，有y真实的分布服从0-1分布，假设y的真实条件分布为p(y|x)，有$y|x \sim p(y|x)$，因为这个分布时来自训练集的，所以也是经验条件分布。我们所估计的条件分布为$\hat p(y|x)$。如果这两个分布很接近的话，他们的KL散度应该尽量小，那么可以最小化KL散度为目标，找到最接近$p(y|x)$的$\hat p(y|x)$：
-$$\begin{aligned}\min_{\hat p} D_{KL}(p \|\hat p)
-  &= \min_{\hat p} E_p \log \frac{p(y|x)}{\hat p(y|x)} \\
-  &= \min_{\hat p} \{E_p \log p(y|x) - E_p\log \hat p(y|x)\} \\
-  &= \min_{\hat p} \{E_p \log p(y|x)\} + \min_{\hat p} \{- E_p\log \hat p(y|x)\} \\
-  &= \min_{\hat p} \{-E_p\log \hat p(y|x)\} \\
-\end{aligned} \tag{12}$$
-由于$E_p \log p(y|x)$与$\hat p$无关，所以式(12)的最后一个等号成立。其实根据交叉熵的定义，这是显而易见的:
-$$H(p,\hat p)=H(p)+D_{KL}(p \| \hat p) \tag{13}$$
-其中, $H(p,\hat p)$是分布p与分布$\hat p$的交叉熵，H(p)是分布p的信息熵。由于p由数据集确定，H(p)是一个定值，所以最小化KL散度$D_{KL}(p \| \hat p)$等价于最小化交叉熵$H(p,\hat p)$.<br><br>把交叉熵展开，可得到最小化交叉熵与最大化似然函数等价：
-$$\begin{aligned}\min_{\hat p} \{-E_p\log \hat p(y|x)\}
-  &= \min_{\hat p} \{-E_{y|x}\log \hat p(y|x)\} \\
-  &= \min_{\hat p} -\frac{1}{n} \sum_{i=1}^n \log \hat p(y_i|x_i) \\
-  &= \min_{\hat p} -\sum_{i=1}^n \log \hat p(y_i|x_i) \\
-  &= \max_{\hat p} \sum_{i=1}^n \log \hat p(y_i|x_i) \\
-  &= \max_{p_i} \Bigg( \sum_{y_i=1|x_i}\log p_i + \sum_{y_i=0|x_i}\log (1-p_i) \Bigg) \\
-  &= \max_{p_i} \sum_{i=1}^n y_i\log p_i +(1-y_i)\log (1-p_i) \\
-\end{aligned} \tag{14}$$
-</p>
-<blockquote>
-<p><strong>注意：</strong></p>
-<ol>
-<li>p为数据集中的经验分布(真实分布);</li>
-<li>前面模型设计中定义了后验概率$\hat p(y|x)$的估计： $p_i=P(y_i=1|x_i)=1-sigmoid(\beta^Tx_i)$,$1-p_i=sigmoid(\beta^Tx_i)$$$ ;</li>
-<li>式(14)的第一个等号表示估计分布在经验分布上的期望等于估计分布在训练集上的期望</li>
-</ol>
-</blockquote>
-<h1 id="以建模的遐想"><a href="#以建模的遐想" class="headerlink" title="以建模的遐想"></a>以$\log{{P(y=1|x)}\over {P(y=0|x)}}=\beta^Tx$建模的遐想</h1><p><strong>考虑任意样本$x_0$</strong>：</p>
-<ul>
-<li>若$x_0$属于1类的概率大于属于0类的概率，它应当在分类平面$\beta^Tx=0$的某一边，不妨设$\beta^Tx_0>0$；</li>
-<li>若$x_0$属于0类的概率大于属于1类的概率，它应当在分类平面$\beta^Tx=0$的另一边，即$\beta^Tx_0 < 0$。</li>
-</ul>
-<p>换成数学的语言就是：</p>
-<table>
-<thead>
-<tr>
-<th>如果</th>
-<th>那么</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>$$\log{{P(y=1|x_0)}\over {P(y=0|x_0)}}>0$$</td>
-<td>$$\beta^Tx_0>0$$</td>
-</tr>
-<tr>
-<td>$$\log{{P(y=1|x_0)}\over {P(y=0|x_0)}} < 0$$</td>
-<td>$$\beta^Tx_0 < 0$$</td>
-</tr>
-</tbody>
-</table>
-<p>只要$\log{{P(y=1|x_0)}\over {P(y=0|x_0)}}$和$\beta^Tx_0$同号就是我们想要的模型。<strong>Logistic直接以$\log{{P(y=1|x)}\over {P(y=0|x)}}=\beta^Tx$建模</strong>保证了这种同号的要求，但是这样建模多了一个副产品，就是“绝对值相等”——<br>$$|\log{{P(y=1|x_0)}\over {P(y=0|x_0)}}|=|\beta^Tx_0|\tag{15}$$<br>容易理解，$|\beta^Tx_0|$是$x_0$到分类平面$\beta^Tx=0$的距离，而$|\log{{P(y=1|x_0)}\over {P(y=0|x_0)}}|$是样本$x_0$属于于0，1类概率的对数比率（log-odd）。二者相等吗？<strong>样本到分类平面的距离与样本属于各类概率的对数比率大小相等</strong>吗？有可能碰到正好满足的样本，但是绝大多数情况下不相等。这是逻辑回归建模稍稍强加于实际模型的假设。</p>
-<p>这些想法由ESL和<a href="https://www.zhihu.com/question/35322351/answer/141562541" target="_blank" rel="external">我在知乎中关于逻辑回归的回答</a>引申而来，我也没见过相关的文献，要是有相关的文献作为以上臆想的佐证或者驳斥，烦请通知我。</p>
-<h1 id="Newton-Raphson算法-牛顿迭代法"><a href="#Newton-Raphson算法-牛顿迭代法" class="headerlink" title="Newton-Raphson算法(牛顿迭代法)"></a>Newton-Raphson算法(牛顿迭代法)</h1><p><img src="https://upload.wikimedia.org/wikipedia/commons/e/e0/NewtonIteration_Ani.gif" alt="牛顿迭代法"></p>
-<p><div id="container"></div></p>
-<p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
-<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
-<script>
-var gitment = new Gitment({
-  id: 'logistic_regression',
-  title: 'logistic回归',
-  owner: 'yiyang186',
-  repo: 'blog_comment',
-  oauth: {
-    client_id: '2786ddc8538588bfc0c8',
-    client_secret: '83713f049f4b7296d27fe579a30cdfe9e2e45215',
-  },
-})
-gitment.render('container')
-</script>
-
-          
+          逻辑回归的建模sigmoid函数说道建模，总有一些粗暴的地方，即强行给真实模型$f$指定某种形式$\hat f$，像线性回归里就强行指定了$\hat f(x)=\beta^T x, x \in R^p, \beta \in  R^{p+1}$这种形式，然后依靠所找到的最优的$\beta$使$\hat
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/05/01/Logistic回归/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
