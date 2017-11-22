@@ -101,7 +101,7 @@
 <meta property="og:site_name" content="小学之路">
 <meta property="og:description" content="问题在机器学习中，设计合理、有效的目标函数是为人所津津乐道的技能（本小学生尚无此功力）。倘若设计出来的目标函数连自己都不会求解(优化)那就很尴尬了。像我这种小学生瞎鼓捣出来的目标函数,想知道究竟能不能work,不求解一下写成代码在数据集上跑一跑又如何知晓？ 纵观求解方法，有贪心的，动态规划的，蒙特卡洛的，期望最大的，梯度的等等（小学生无责任乱分）。前途无限的深度学习其求解方法全都依赖于梯度，在可以">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-11-22T05:49:19.487Z">
+<meta property="og:updated_time" content="2017-11-22T05:55:36.981Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="梯度求解学习小结1">
 <meta name="twitter:description" content="问题在机器学习中，设计合理、有效的目标函数是为人所津津乐道的技能（本小学生尚无此功力）。倘若设计出来的目标函数连自己都不会求解(优化)那就很尴尬了。像我这种小学生瞎鼓捣出来的目标函数,想知道究竟能不能work,不求解一下写成代码在数据集上跑一跑又如何知晓？ 纵观求解方法，有贪心的，动态规划的，蒙特卡洛的，期望最大的，梯度的等等（小学生无责任乱分）。前途无限的深度学习其求解方法全都依赖于梯度，在可以">
@@ -449,7 +449,7 @@ $$\frac{\partial L}{\partial W}=\sum_{j=1}^K\frac{\partial L}{\partial s_j}\cdot
 $$\begin{aligned}L &= \sum_{m \neq y}^K \max(0, s_m-s_y+1)\\
 &=\sum_{m \neq y}^K1\{s_m-s_y+1 \geq 0\}(s_j-s_y+1) \\
 &=\sum_{m \neq y}^K q_{m,y} (s_m-s_y+1)
-\end{aligned}$$<br>其中$q_{m,y}=1\{s_m-s_y+1 \geq 0\}$, 则上面$\big(\frac{\partial L}{\partial s_1}, ...,\frac{\partial L}{\partial s_K}\big)$中的分量为<br>
+\end{aligned}$$<br>其中$q_{m,y}=1\{s_m-s_y+1 \geq 0\}$, 则<br>
 
 $$\begin{aligned}
 \frac{\partial L}{\partial s_j} &= \frac{\partial}{\partial s_j}\sum_{m \neq y} q_{m,y}(s_m-s_y+1)\\
@@ -482,7 +482,7 @@ $$\begin{aligned}\frac{\partial L}{\partial W}
 &=x \cdot \bigg(\frac{\partial L}{\partial s}\bigg)^T
 \end{aligned}$$<br>其中($\partial L/\partial s)^T$是与$s^T$形状相同的行向量($1 \times K$)。又x本身是列向量($D \times 1$)，所以二者点积为矩阵($D \times K$)，与W形状相同。($\partial L/\partial s)^T$的分量$\partial L/\partial s_j$前面已经求过，即已经求出单样本损失对W的梯度。</p>
 <blockquote>
-<p><strong>注意</strong></p>
+<p><strong>注意</strong>：上式倒数第二步</p>
 $$\left(\begin{matrix} 1 \cdot \left(\begin{matrix} 3 \\ 4 \end{matrix}\right), & 2\cdot \left(\begin{matrix} 3 \\ 4 \end{matrix}\right) \end{matrix}\right) = \left(\begin{matrix} 3 \\ 4 \end{matrix}\right) \cdot (1 ,2)$$
 </blockquote>
 <h3 id="求平均损失对W的梯度"><a href="#求平均损失对W的梯度" class="headerlink" title="求平均损失对W的梯度"></a>求平均损失对W的梯度</h3><p>我们所谓的损失指的都是期望损失，也就是平均损失。若第i条样本的损失为$L^{(i)}$，则N条样本的平均损失为<br>
@@ -547,7 +547,7 @@ $$\begin{aligned}\frac{\partial L}{\partial s_j}
 &= p_j - 1\{j=y\}
 \end{aligned}$$</p>
 <blockquote>
-<p><strong>注意：</strong> <br><br>上式最后一步用了一个很简单的或运算</p>
+<p><strong>注意：</strong> 上式最后一步用了一个很简单的或运算</p>
 $$1\{j \neq y\}p_j + 1\{j=y\}p_j = 1\{j \neq y \lor j=y\}p_j=p_j$$
 </blockquote>
 <h3 id="求dW"><a href="#求dW" class="headerlink" title="求dW"></a>求dW</h3>
