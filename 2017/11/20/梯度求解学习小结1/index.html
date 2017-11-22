@@ -101,7 +101,7 @@
 <meta property="og:site_name" content="小学之路">
 <meta property="og:description" content="问题在机器学习中，设计合理、有效的目标函数是为人所津津乐道的技能（本小学生尚无此功力）。倘若设计出来的目标函数连自己都不会求解(优化)那就很尴尬了。像我这种小学生瞎鼓捣出来的目标函数,想知道究竟能不能work,不求解一下写成代码在数据集上跑一跑又如何知晓？ 纵观求解方法，有贪心的，动态规划的，蒙特卡洛的，期望最大的，梯度的等等（小学生无责任乱分）。前途无限的深度学习其求解方法全都依赖于梯度，在可以">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-11-22T06:57:11.263Z">
+<meta property="og:updated_time" content="2017-11-22T07:02:06.294Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="梯度求解学习小结1">
 <meta name="twitter:description" content="问题在机器学习中，设计合理、有效的目标函数是为人所津津乐道的技能（本小学生尚无此功力）。倘若设计出来的目标函数连自己都不会求解(优化)那就很尴尬了。像我这种小学生瞎鼓捣出来的目标函数,想知道究竟能不能work,不求解一下写成代码在数据集上跑一跑又如何知晓？ 纵观求解方法，有贪心的，动态规划的，蒙特卡洛的，期望最大的，梯度的等等（小学生无责任乱分）。前途无限的深度学习其求解方法全都依赖于梯度，在可以">
@@ -569,7 +569,22 @@ $$\begin{aligned}(dS)_{ij} &= \frac{\partial L^{(i)}}{\partial s_j^{(i)}} \\
 $$\begin{aligned}dW
 &= \frac{1}{N}X^T \cdot dS
 \end{aligned}$$<br>其中矩阵dS中元素需要根据loss推导，为了便于推导，本小学生总结了一些逻辑运算的技巧，用起来感觉方便了许多。</p>
-
+<p><div id="container"></div></p>
+<p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+var gitment = new Gitment({
+  id: 'gredient_solving_summary_1',
+  title: '梯度求解学习小结1',
+  owner: 'yiyang186',
+  repo: 'blog_comment',
+  oauth: {
+    client_id: '2786ddc8538588bfc0c8',
+    client_secret: '83713f049f4b7296d27fe579a30cdfe9e2e45215',
+  },
+})
+gitment.render('container')
+</script>
       
     </div>
 
