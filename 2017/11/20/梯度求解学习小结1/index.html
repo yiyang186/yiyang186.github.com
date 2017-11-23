@@ -101,7 +101,7 @@
 <meta property="og:site_name" content="小学之路">
 <meta property="og:description" content="问题在机器学习中，设计合理、有效的目标函数是为人所津津乐道的技能（本小学生尚无此功力）。倘若设计出来的目标函数连自己都不会求解(优化)那就很尴尬了。像我这种小学生瞎鼓捣出来的目标函数,想知道究竟能不能work,不求解一下写成代码在数据集上跑一跑又如何知晓？ 纵观求解方法，有贪心的，动态规划的，蒙特卡洛的，期望最大的，梯度的等等（小学生无责任乱分）。前途无限的深度学习其求解方法全都依赖于梯度，在可以">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-11-22T07:08:02.422Z">
+<meta property="og:updated_time" content="2017-11-23T13:15:31.241Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="梯度求解学习小结1">
 <meta name="twitter:description" content="问题在机器学习中，设计合理、有效的目标函数是为人所津津乐道的技能（本小学生尚无此功力）。倘若设计出来的目标函数连自己都不会求解(优化)那就很尴尬了。像我这种小学生瞎鼓捣出来的目标函数,想知道究竟能不能work,不求解一下写成代码在数据集上跑一跑又如何知晓？ 纵观求解方法，有贪心的，动态规划的，蒙特卡洛的，期望最大的，梯度的等等（小学生无责任乱分）。前途无限的深度学习其求解方法全都依赖于梯度，在可以">
@@ -443,7 +443,9 @@ $$L=\sum_{k\neq y}^K\max(0, s_k-s_y+1)$$
 <h3 id="使用链式法则"><a href="#使用链式法则" class="headerlink" title="使用链式法则"></a>使用链式法则</h3><p>根据链式法则，有<br>
 
 $$\frac{\partial L}{\partial W}=\sum_{j=1}^K\frac{\partial L}{\partial s_j}\cdot\frac{\partial s_j}{\partial W}$$</p>
-<p>L为实数函数，$s_j$为实数，因此$\partial L/\partial s_j$也为实数, 而$\partial s_j/\partial W$为与W形状相同的矩阵。</p>
+<p>L为实数函数，$s_j$为实数，因此$\partial L/\partial s_j$也为实数, 而$\partial s_j/\partial W$为与W形状相同的矩阵。<br>同样地，有
+
+$$\frac{\partial L}{\partial x}=\sum_{j=1}^K\frac{\partial L}{\partial s_j}\cdot\frac{\partial s_j}{\partial x}$$</p>
 <h3 id="求"><a href="#求" class="headerlink" title="求"></a>求$\partial L/\partial s_j$</h3><p>对于上面链式法则求和式中的第一部分偏导$\partial L/\partial s_j$，把L中的二值选择用逻辑判断代替<br>
 
 $$\begin{aligned}L &= \sum_{m \neq y}^K \max(0, s_m-s_y+1)\\
@@ -463,9 +465,10 @@ $$\begin{aligned}
 $$\sum_m q_{m,y}1\{m=j\}=q_{j,y}$$
 <p>因为有$j \neq y$的保证，为$\sum$加上$m \neq y$的限制不会有任何影响</p>
 </blockquote>
-<h3 id="求-1"><a href="#求-1" class="headerlink" title="求"></a>求$\partial s_j/\partial W$</h3><p>对于上面链式法则求和式中的第二部分偏导$\partial s_j/\partial W$，因为<br>
+<h3 id="求和"><a href="#求和" class="headerlink" title="求和"></a>求$\partial s_j/\partial W$和$\partial s_j/\partial x$</h3><p>对于上面链式法则求和式中的第二部分偏导$\partial s_j/\partial W$，因为<br>
 
 $$s_j=x^T \cdot W_{\cdot j}$$
+$$\frac{\partial s_j}{\partial x}=W_{\cdot j}$$
 $$\frac{\partial s_j}{\partial W_{\cdot j}}=x$$<br>注意这里把x当做<strong>列向量</strong>对待，$W_{\cdot j}$表示矩阵W的第j列，所以：<br>
 
 $$\begin{aligned}\frac{\partial s_j}{\partial W} &=\bigg(\frac{\partial s_j}{\partial W_{\cdot 1}}, ..., \frac{\partial s_j}{\partial W_{\cdot j}}, ..., \frac{\partial s_j}{\partial W_{\cdot K}}\bigg) \\
@@ -485,9 +488,18 @@ $$\begin{aligned}\frac{\partial L}{\partial W}
 <p><strong>注意</strong>：上式倒数第二步</p>
 $$\left(\begin{matrix} 1 \cdot \left(\begin{matrix} 3 \\ 4 \end{matrix}\right), & 2\cdot \left(\begin{matrix} 3 \\ 4 \end{matrix}\right) \end{matrix}\right) = \left(\begin{matrix} 3 \\ 4 \end{matrix}\right) \cdot (1 ,2)$$
 </blockquote>
-<h3 id="求平均损失对W的梯度"><a href="#求平均损失对W的梯度" class="headerlink" title="求平均损失对W的梯度"></a>求平均损失对W的梯度</h3><p>我们所谓的损失指的都是期望损失，也就是平均损失。若第i条样本的损失为$L^{(i)}$，则N条样本的平均损失为<br>
+<p>同样地，
 
-$$Loss= \frac{1}{N}\sum_{i=1}^N L^{(i)}$$<br>因此平均损失对W的梯度为<br>
+$$\begin{aligned}\frac{\partial L}{\partial x}
+&= \sum_{j=1}^K\frac{\partial L}{\partial s_j}\cdot\frac{\partial s_j}{\partial x} \\
+&= \sum_{j=1}^K\frac{\partial L}{\partial s_j} \cdot W_{\cdot j} \\
+&= \sum_{j=1}^K W_{\cdot j} \cdot \frac{\partial L}{\partial s_j} \\
+&= \bigg(W_{\cdot 1}, ...,W_{\cdot K}\bigg) \cdot \left(\begin{matrix} \frac{\partial L}{\partial s_1} \\ \vdots \\ \frac{\partial L}{\partial s_K}\end{matrix}\right)\\
+&= W \cdot \frac{\partial L}{\partial s}
+\end{aligned}$$</p>
+<h3 id="求平均损失的梯度"><a href="#求平均损失的梯度" class="headerlink" title="求平均损失的梯度"></a>求平均损失的梯度</h3><p>我们所谓的损失指的都是期望损失，也就是平均损失。若第i条样本的损失为$L^{(i)}$，则N条样本的平均损失为<br>
+
+$$Loss= \frac{1}{N}\sum_{i=1}^N L^{(i)}$$<br>因此平均损失对W的梯度为
 
 $$\begin{aligned}dW
 &= \frac{1}{N}\sum_{i=1}^N \frac{\partial L^{(i)}}{\partial W} \\
@@ -499,7 +511,16 @@ $$\begin{aligned}dW
 $$\begin{aligned}(dS)_{ij} &= \frac{\partial L^{(i)}}{\partial s_j^{(i)}} \\
 &= 1\{j \neq y^{(i)}\}q_{j,y^{(i)}}- 1\{j=y^{(i)}\}\sum_{m \neq y^{(i)}}^K q_{m,y^{(i)}}
 \end{aligned}$$<br>而$X^T$是D行N列的矩阵，是输入矩阵X的转置。</p>
-<h3 id="编码实现"><a href="#编码实现" class="headerlink" title="编码实现"></a>编码实现</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">svm_loss</span><span class="params">(W, X, y, reg)</span>:</span></div><div class="line">  <span class="string">"""</span></div><div class="line">  Inputs:</div><div class="line">    - W: A numpy array of shape (D, K) containing weights.</div><div class="line">    - X: A numpy array of shape (N, D) containing a minibatch of data.</div><div class="line">    - y: A numpy array of shape (N,) containing training labels; </div><div class="line">         y[i] = k means that X[i] has label k, where 0 &lt;= k &lt; K.</div><div class="line">  """</div><div class="line">  N = X.shape[<span class="number">0</span>]</div><div class="line">  s = X.dot(W)</div><div class="line"></div><div class="line">  <span class="comment"># 求dS</span></div><div class="line">  i = np.arange(N)</div><div class="line">  dS = (s - s[i, y][:, np.newaxis] + <span class="number">1</span> &gt;= <span class="number">0</span>).astype(<span class="string">'int'</span>)</div><div class="line">  dS[i, y] = <span class="number">0</span></div><div class="line">  dS[i, y] = -dS.sum(axis=<span class="number">-1</span>)</div><div class="line"></div><div class="line">  dW = X.T.dot(dS) / N</div><div class="line">  dW += reg * <span class="number">2</span> * W <span class="comment"># 正则项的梯度</span></div><div class="line">  <span class="keyword">return</span> dW</div></pre></td></tr></table></figure>
+<p>类似地，平均损失对X的梯度为
+
+$$\begin{aligned}dX
+&= \frac{1}{N}\sum_{i=1}^N \frac{\partial L^{(i)}}{\partial X} \\
+&= \frac{1}{N}\sum_{i=1}^N \left(\begin{matrix} \frac{\partial L^{(i)}}{\partial X_{1 \cdot}} \\ \vdots \\ \frac{\partial L^{(i)}}{\partial X_{N \cdot}}\end{matrix}\right) = \frac{1}{N}\sum_{i=1}^N \left(\begin{matrix} \vdots \\ \frac{\partial L^{(i)}}{\partial X_{i \cdot}} \\ \vdots \end{matrix}\right) = \frac{1}{N}\left(\begin{matrix} \frac{\partial L^{(1)}}{\partial X_{1 \cdot}} \\ \vdots \\ \frac{\partial L^{(N)}}{\partial X_{N \cdot}}\end{matrix}\right)\\
+&= \frac{1}{N}\left(\begin{matrix} \big(\frac{\partial L^{(1)}}{\partial x^{(1)}}\big)^T \\ \vdots \\ \big(\frac{\partial L^{(N)}}{\partial x^{(N)}}\big)^T\end{matrix}\right) = \frac{1}{N}\left(\begin{matrix} \big(W \cdot \frac{\partial L^{(1)}}{\partial s^{(1)}}\big)^T \\ \vdots \\ \big(W \cdot \frac{\partial L^{(N)}}{\partial s^{(N)}}\big)^T\end{matrix}\right) = \frac{1}{N}\left(\begin{matrix} \big(\frac{\partial L^{(1)}}{\partial s^{(1)}}\big)^T \\ \vdots \\ \big(\frac{\partial L^{(N)}}{\partial s^{(N)}}\big)^T\end{matrix}\right) \cdot W^T\\
+&= \frac{1}{N} \left(\begin{matrix}\frac{\partial L^{(1)}}{\partial s^{(1)}_1} & \cdots & \frac{\partial L^{(1)}}{\partial s^{(1)}_K} \\ \vdots & \ddots & \vdots \\ \frac{\partial L^{(N)}}{\partial s^{(N)}_1} & \cdots & \frac{\partial L^{(N)}}{\partial s^{(N)}_K}\end{matrix}\right) \cdot W^T \\
+&= \frac{1}{N}dS \cdot W^T
+\end{aligned}$$</p>
+<h3 id="编码实现"><a href="#编码实现" class="headerlink" title="编码实现"></a>编码实现</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">svm_loss</span><span class="params">(W, X, y, reg)</span>:</span></div><div class="line">  <span class="string">"""</span></div><div class="line">  Inputs:</div><div class="line">    - W: A numpy array of shape (D, K) containing weights.</div><div class="line">    - X: A numpy array of shape (N, D) containing a minibatch of data.</div><div class="line">    - y: A numpy array of shape (N,) containing training labels; </div><div class="line">         y[i] = k means that X[i] has label k, where 0 &lt;= k &lt; K.</div><div class="line">  """</div><div class="line">  N = X.shape[<span class="number">0</span>]</div><div class="line">  s = X.dot(W)</div><div class="line"></div><div class="line">  <span class="comment"># 求dS</span></div><div class="line">  i = np.arange(N)</div><div class="line">  dS = (s - s[i, y][:, np.newaxis] + <span class="number">1</span> &gt;= <span class="number">0</span>).astype(<span class="string">'int'</span>)</div><div class="line">  dS[i, y] = <span class="number">0</span></div><div class="line">  dS[i, y] = -dS.sum(axis=<span class="number">-1</span>)</div><div class="line"></div><div class="line">  <span class="comment"># 求dW</span></div><div class="line">  dW = X.T.dot(dS) / N</div><div class="line">  dW += reg * <span class="number">2</span> * W <span class="comment"># 正则项的梯度</span></div><div class="line"></div><div class="line">  <span class="comment"># 求dX</span></div><div class="line">  dX = dS.dot(W.T) / N</div><div class="line">  <span class="keyword">return</span> dW, dX</div></pre></td></tr></table></figure>
 <h2 id="Softmax-loss"><a href="#Softmax-loss" class="headerlink" title="Softmax loss"></a>Softmax loss</h2>
 
 $$L=-\log\bigg(\frac{e^{s_y}}{\sum_me^{s_m}}\bigg)$$
@@ -550,10 +571,14 @@ $$\begin{aligned}\frac{\partial L}{\partial s_j}
 <p><strong>注意：</strong> 上式最后一步用了一个很简单的或运算</p>
 $$1\{j \neq y\}p_j + 1\{j=y\}p_j = 1\{j \neq y \lor j=y\}p_j=p_j$$
 </blockquote>
-<h3 id="求dW"><a href="#求dW" class="headerlink" title="求dW"></a>求dW</h3>
+<h3 id="求梯度"><a href="#求梯度" class="headerlink" title="求梯度"></a>求梯度</h3>
 
 $$\begin{aligned}dW
 &= \frac{1}{N}X^T \cdot dS
+\end{aligned}$$
+
+$$\begin{aligned}dX
+&= \frac{1}{N}dS \cdot W^T  
 \end{aligned}$$
 <p>其中矩阵dS中的元素为<br>
 
@@ -564,10 +589,46 @@ $$\begin{aligned}(dS)_{ij} &= \frac{\partial L^{(i)}}{\partial s_j^{(i)}} \\
 <blockquote>
 <p><strong>注意：</strong> 避免数值问题<br>$$\begin{aligned}\frac{e^{s_j-s_{max}}}{\sum_m e^{s_m-s_{max}}}&= \frac{e^{s_j}/e^{s_{max}}}{\sum_m (e^{s_m}/e^{s_{max}})} \\&= \frac{e^{s_j}/e^{s_{max}}}{(\sum_m e^{s_m})/e^{s_{max}}} \\&= \frac{e^{s_j}}{\sum_m e^{s_m}}\end{aligned}$$<br>这么做的好处是避免指数运算出现特别大的数而产生溢出</p>
 </blockquote>
+<h2 id="偏置项的梯度"><a href="#偏置项的梯度" class="headerlink" title="偏置项的梯度"></a>偏置项的梯度</h2><p>若模型中带有偏置，如b是长度为K的向量，长度与类别的数目相等</p>
+<p>$$s^T=f(x; W, b) = x^T \cdot W + b^T$$<br>它与</p>
+<p>$$s=f(x; W, b) = W \cdot x + b$$<br>是一个意思， 前面加上装置是希望直观上与数据相符，便于想象，如$X$为输入数据，$x^T$是$X$中的一行。因此，
+
+$$s_j= x^T \cdot W_{\cdot j}+ b_j$$
+
+$$\frac{\partial s_j}{\partial b_j}=1$$
+
+$$\begin{aligned}\frac{\partial s_j}{\partial b} &=\bigg(\frac{\partial s_j}{\partial b_1}, ..., \frac{\partial s_j}{\partial b_j}, ..., \frac{\partial s_j}{\partial b_K}\bigg)^T \\
+& = \bigg(0, ..., \frac{\partial s_j}{\partial b_j}, ..., 0\bigg)^T
+\end{aligned}$$
+<br>根据链式法则有，
+
+$$\begin{aligned}\frac{\partial L}{\partial b}
+&= \sum_{j=1}^K\frac{\partial L}{\partial s_j}\cdot\frac{\partial s_j}{\partial b} \\
+&= \sum_{j=1}^K\frac{\partial L}{\partial s_j} \cdot \bigg(0, ..., \frac{\partial s_j}{\partial b_j}, ..., 0\bigg)^T\\
+&= \sum_{j=1}^K\frac{\partial L}{\partial s_j} \cdot \bigg(0, ..., 1, ..., 0\bigg)^T \\
+&= \bigg(\frac{\partial L}{\partial s_1}, ...,\frac{\partial L}{\partial s_K}\bigg)^T \\
+&= \frac{\partial L}{\partial s}
+\end{aligned}$$</p>
+<p>平均损失对b的梯度为，
+
+$$\begin{aligned}db
+&= \frac{1}{N}\sum_{i=1}^N \frac{\partial L^{(i)}}{\partial b} \\
+&= \frac{1}{N}\sum_{i=1}^N \bigg(\frac{\partial L^{(i)}}{\partial s^{(i)}_1}, ...,\frac{\partial L^{(i)}}{\partial s^{(i)}_K}\bigg)^T \\
+&= \frac{1}{N}\sum_{i=1}^N \Big( (dS)_{i1}, ...,(dS)_{iK} \Big)^T \\
+&= \frac{1}{N} \sum_{i=1}^N (dS)_{i \cdot}^T
+\end{aligned}$$<br>可见，平均损失对偏置的梯度db为<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db = dS.sum(axis=<span class="number">0</span>)</div></pre></td></tr></table></figure></p>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>通过上面两个例子，求一层全连接神经网络的梯度计算基本理清楚了，不带正则项部分的计算被限制在这种形式下<br>
 
 $$\begin{aligned}dW
 &= \frac{1}{N}X^T \cdot dS
+\end{aligned}$$
+
+$$\begin{aligned}dX
+&= \frac{1}{N}dS \cdot W^T  
+\end{aligned}$$
+
+$$\begin{aligned}db
+&= \frac{1}{N} \sum_{i=1}^N (dS)_{i \cdot}^T 
 \end{aligned}$$<br>其中矩阵dS中元素需要根据loss推导，为了便于推导，本小学生总结了一些逻辑运算的技巧，用起来感觉方便了许多。</p>
 <p><div id="container"></div></p>
 <p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
@@ -786,7 +847,7 @@ gitment.render('container')
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#问题"><span class="nav-number">1.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#梯度推导过程中的trick"><span class="nav-number">2.</span> <span class="nav-text">梯度推导过程中的trick</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#逻辑判断"><span class="nav-number">2.1.</span> <span class="nav-text">逻辑判断</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#二值选择"><span class="nav-number">2.1.1.</span> <span class="nav-text">二值选择</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多值选择"><span class="nav-number">2.1.2.</span> <span class="nav-text">多值选择</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分组讨论："><span class="nav-number">2.1.3.</span> <span class="nav-text">分组讨论：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#逻辑运算"><span class="nav-number">2.1.4.</span> <span class="nav-text">逻辑运算</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#链式法则"><span class="nav-number">2.2.</span> <span class="nav-text">链式法则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#矩阵求导"><span class="nav-number">2.3.</span> <span class="nav-text">矩阵求导</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实际中的例子"><span class="nav-number">3.</span> <span class="nav-text">实际中的例子</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Multiclass-SVM-loss"><span class="nav-number">3.1.</span> <span class="nav-text">Multiclass SVM loss</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用链式法则"><span class="nav-number">3.1.1.</span> <span class="nav-text">使用链式法则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#求"><span class="nav-number">3.1.2.</span> <span class="nav-text">求$\partial L/\partial s_j$</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#求-1"><span class="nav-number">3.1.3.</span> <span class="nav-text">求$\partial s_j/\partial W$</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#求单样本损失对W的梯度"><span class="nav-number">3.1.4.</span> <span class="nav-text">求单样本损失对W的梯度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#求平均损失对W的梯度"><span class="nav-number">3.1.5.</span> <span class="nav-text">求平均损失对W的梯度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编码实现"><span class="nav-number">3.1.6.</span> <span class="nav-text">编码实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Softmax-loss"><span class="nav-number">3.2.</span> <span class="nav-text">Softmax loss</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#求-方法1"><span class="nav-number">3.2.1.</span> <span class="nav-text">求$\partial L/\partial s_j$(方法1)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#求-方法2"><span class="nav-number">3.2.2.</span> <span class="nav-text">求$\partial L/\partial s_j$(方法2)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#求dW"><span class="nav-number">3.2.3.</span> <span class="nav-text">求dW</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编码实现-1"><span class="nav-number">3.2.4.</span> <span class="nav-text">编码实现</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#问题"><span class="nav-number">1.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#梯度推导过程中的trick"><span class="nav-number">2.</span> <span class="nav-text">梯度推导过程中的trick</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#逻辑判断"><span class="nav-number">2.1.</span> <span class="nav-text">逻辑判断</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#二值选择"><span class="nav-number">2.1.1.</span> <span class="nav-text">二值选择</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多值选择"><span class="nav-number">2.1.2.</span> <span class="nav-text">多值选择</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分组讨论："><span class="nav-number">2.1.3.</span> <span class="nav-text">分组讨论：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#逻辑运算"><span class="nav-number">2.1.4.</span> <span class="nav-text">逻辑运算</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#链式法则"><span class="nav-number">2.2.</span> <span class="nav-text">链式法则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#矩阵求导"><span class="nav-number">2.3.</span> <span class="nav-text">矩阵求导</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实际中的例子"><span class="nav-number">3.</span> <span class="nav-text">实际中的例子</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Multiclass-SVM-loss"><span class="nav-number">3.1.</span> <span class="nav-text">Multiclass SVM loss</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用链式法则"><span class="nav-number">3.1.1.</span> <span class="nav-text">使用链式法则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#求"><span class="nav-number">3.1.2.</span> <span class="nav-text">求$\partial L/\partial s_j$</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#求和"><span class="nav-number">3.1.3.</span> <span class="nav-text">求$\partial s_j/\partial W$和$\partial s_j/\partial x$</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#求单样本损失对W的梯度"><span class="nav-number">3.1.4.</span> <span class="nav-text">求单样本损失对W的梯度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#求平均损失的梯度"><span class="nav-number">3.1.5.</span> <span class="nav-text">求平均损失的梯度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编码实现"><span class="nav-number">3.1.6.</span> <span class="nav-text">编码实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Softmax-loss"><span class="nav-number">3.2.</span> <span class="nav-text">Softmax loss</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#求-方法1"><span class="nav-number">3.2.1.</span> <span class="nav-text">求$\partial L/\partial s_j$(方法1)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#求-方法2"><span class="nav-number">3.2.2.</span> <span class="nav-text">求$\partial L/\partial s_j$(方法2)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#求梯度"><span class="nav-number">3.2.3.</span> <span class="nav-text">求梯度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编码实现-1"><span class="nav-number">3.2.4.</span> <span class="nav-text">编码实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#偏置项的梯度"><span class="nav-number">3.3.</span> <span class="nav-text">偏置项的梯度</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
             
 
           </div>
