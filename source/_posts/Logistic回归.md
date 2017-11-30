@@ -156,21 +156,3 @@ $$\begin{aligned}\min_{\hat p} \{-E_p\log \hat p(y|x)\}
 
 # Newton-Raphson算法(牛顿迭代法)
 ![牛顿迭代法](https://upload.wikimedia.org/wikipedia/commons/e/e0/NewtonIteration_Ani.gif)
-
-
-<div id="container"></div>
-<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
-<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
-<script>
-var gitment = new Gitment({
-  id: 'logistic_regression',
-  title: 'logistic回归',
-  owner: 'yiyang186',
-  repo: 'blog_comment',
-  oauth: {
-    client_id: '2786ddc8538588bfc0c8',
-    client_secret: '83713f049f4b7296d27fe579a30cdfe9e2e45215',
-  },
-})
-gitment.render('container')
-</script>

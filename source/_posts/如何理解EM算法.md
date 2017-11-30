@@ -108,20 +108,3 @@ $$\begin{aligned}
 其实，E步就是求给定X下的条件期望，也就是后验期望，使得式(5)的琴生不等式能够取等号，是对琴声不等式中,小的那一端进行放大，使其等于大的那一端，这是一次放大；M步最大化联合分布，通过0梯度，拉格朗日法等方法求极值点，又是一次放大。只要似然函数是有界的，只要M步中的0梯度点是极大值点，一直放大下去就能找到最终所求。
 
 [我的知乎回答](https://www.yhihu.com/question/27976634/answer/163164402)
-
-<div id="container"></div>
-<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
-<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
-<script>
-var gitment = new Gitment({
-  id: 'understanding_em',
-  title: '如何理解EM算法',
-  owner: 'yiyang186',
-  repo: 'blog_comment',
-  oauth: {
-    client_id: '2786ddc8538588bfc0c8',
-    client_secret: '83713f049f4b7296d27fe579a30cdfe9e2e45215',
-  },
-})
-gitment.render('container')
-</script>
