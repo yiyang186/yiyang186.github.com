@@ -181,20 +181,3 @@ array([[170, 130],
 1. 只有当两个数组的尾部维度兼容时才会触发广播；
 2. 两个维度的长度是相等的或者有一方长度为1则称这两个维度兼容；
 3. 广播机制可以提高代码执行效率并简化代码，但当广播后得到的中间结果所占空间大于空闲物理内存时，效率变得非常低，当中间结果所需空间大于可用虚拟内存时，内存溢出，引发`Memory Error`。
-
-<div id="container"></div>
-<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
-<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
-<script>
-var gitment = new Gitment({
-  id: 'numpy_broadcasting',
-  title: 'Numpy广播机制小结',
-  owner: 'yiyang186',
-  repo: 'blog_comment',
-  oauth: {
-    client_id: '2786ddc8538588bfc0c8',
-    client_secret: '83713f049f4b7296d27fe579a30cdfe9e2e45215',
-  },
-})
-gitment.render('container')
-</script>

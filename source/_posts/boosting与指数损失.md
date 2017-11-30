@@ -137,20 +137,3 @@ w_i^{(m+1)} & = \exp(-y_if_m(x_i)) \\
 > 3. 输出最终模型{% raw %}$f(x)=sign\Big( \sum_{m=1}^M \alpha_m b_m(x)\Big)${% endraw %}
 
 我们惊奇地发现，这个算法和Adaboost一模一样。
-
-<div id="container"></div>
-<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
-<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
-<script>
-var gitment = new Gitment({
-  id: 'boosting_exponential_loss',
-  title: 'boosting与指数损失——Adaboost',
-  owner: 'yiyang186',
-  repo: 'blog_comment',
-  oauth: {
-    client_id: '2786ddc8538588bfc0c8',
-    client_secret: '83713f049f4b7296d27fe579a30cdfe9e2e45215',
-  },
-})
-gitment.render('container')
-</script>
