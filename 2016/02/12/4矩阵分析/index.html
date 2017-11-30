@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="矩阵," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="向量范数概念向量x属于空间V，若有一种实值函数f(x)能将向量x映射为一个实数，记作f(x)=||x||，只要这个实值函数||x||满足1）正定性：           ||x|| ≥ 02）齐次性：            ||kx|| = |k|||x||（$k \in N$）3）三角不等式：    ||x+y|| ">
+<meta name="keywords" content="矩阵">
+<meta property="og:type" content="article">
+<meta property="og:title" content="矩阵的范数与导数">
+<meta property="og:url" content="http://yoursite.com/2016/02/12/4矩阵分析/index.html">
+<meta property="og:site_name" content="小学之路">
+<meta property="og:description" content="向量范数概念向量x属于空间V，若有一种实值函数f(x)能将向量x映射为一个实数，记作f(x)=||x||，只要这个实值函数||x||满足1）正定性：           ||x|| ≥ 02）齐次性：            ||kx|| = |k|||x||（$k \in N$）3）三角不等式：    ||x+y|| ≤ ||x||+||y|| ( x,y均为V空间的向量)那么这个函数||x||就">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://img.blog.csdn.net/20160211144645736">
+<meta property="og:image" content="http://img.blog.csdn.net/20160211151215293">
+<meta property="og:image" content="http://img.blog.csdn.net/20160211152030968">
+<meta property="og:image" content="http://img.blog.csdn.net/20160211153159811">
+<meta property="og:image" content="http://img.blog.csdn.net/20160212165402569">
+<meta property="og:image" content="http://img.blog.csdn.net/20160212165451757">
+<meta property="og:image" content="http://img.blog.csdn.net/20160212165526790">
+<meta property="og:image" content="http://img.blog.csdn.net/20160212165614369">
+<meta property="og:image" content="http://img.blog.csdn.net/20160212215141519">
+<meta property="og:image" content="http://img.blog.csdn.net/20160212215644947">
+<meta property="og:updated_time" content="2017-11-19T05:25:38.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="矩阵的范数与导数">
+<meta name="twitter:description" content="向量范数概念向量x属于空间V，若有一种实值函数f(x)能将向量x映射为一个实数，记作f(x)=||x||，只要这个实值函数||x||满足1）正定性：           ||x|| ≥ 02）齐次性：            ||kx|| = |k|||x||（$k \in N$）3）三角不等式：    ||x+y|| ≤ ||x||+||y|| ( x,y均为V空间的向量)那么这个函数||x||就">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20160211144645736">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/02/12/4矩阵分析/"/>
+
+
+
+
+
+  <title>矩阵的范数与导数 | 小学之路</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3b9de7582df94dad7be13b2e75675386";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">小学之路</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/02/12/4矩阵分析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Yiyang Peng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/7233064.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小学之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">矩阵的范数与导数</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-02-12T22:10:00+08:00">
+                2016-02-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数学/" itemprop="url" rel="index">
+                    <span itemprop="name">数学</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/02/12/4矩阵分析/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2016/02/12/4矩阵分析/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="向量范数"><a href="#向量范数" class="headerlink" title="向量范数"></a>向量范数</h1><h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p>向量x属于空间V，若有一种实值函数f(x)能将向量x映射为一个实数，记作f(x)=||x||，只要这个实值函数||x||满足<br>1）正定性：           ||x|| ≥ 0<br>2）齐次性：            ||kx|| = |k|||x||（$k \in N$）<br>3）三角不等式：    ||x+y|| ≤ ||x||+||y|| ( x,y均为V空间的向量)<br>那么这个函数||x||就可以用来表征向量x的大小，叫做向量x的范数。凡是满足这三个条件的的实值函数都能当做向量范数。这个有了范数的空间V也叫做赋范线性空间。</p>
+<h2 id="常用的向量范数"><a href="#常用的向量范数" class="headerlink" title="常用的向量范数"></a>常用的向量范数</h2><p>p-范数<br>向量$x=(x_1,x_2,...x_n)$, 定义向量x的p-范数为<br>$$||x||_p=(\sum_{i=1}^n|x_i|^p)^{1/p}, 1 \leq p \leq + \infty $$</p>
+<table>
+<thead>
+<tr>
+<th>常用的向量范数</th>
+<th>求法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$||x||_1$</td>
+<td>向量中所有元素的模的和</td>
+</tr>
+<tr>
+<td>$||x||_2$</td>
+<td>向量中所有元素的模的平方和，再求和的平方根</td>
+</tr>
+<tr>
+<td>$||x||_p$</td>
+<td>向量中所有元素的模的p次幂的和，再对和开p次方</td>
+</tr>
+<tr>
+<td>$||x||_\infty$</td>
+<td>向量中所有元素的模的最大值</td>
+</tr>
+</tbody>
+</table>
+<h1 id="矩阵范数"><a href="#矩阵范数" class="headerlink" title="矩阵范数"></a>矩阵范数</h1><h2 id="概念-1"><a href="#概念-1" class="headerlink" title="概念"></a>概念</h2><p>定于矩阵A的一个实函数，记作f(A)=||A||，只要这个函数||A||满足<br>1）正定性：            || A || ≥ 0<br>2）齐次性：            ||k A || = |k||| A ||<br>3）三角不等式：    || A +B|| ≤ || A ||+||B||<br>4)  相容性：            ||AB|| ≤ ||A||||B||    （乘积不等式）<br>此时称||A||是矩阵A的范数，如果只满足前3个条件，那只是广义矩阵范数。</p>
+<h2 id="几种常见的矩阵范数"><a href="#几种常见的矩阵范数" class="headerlink" title="几种常见的矩阵范数"></a>几种常见的矩阵范数</h2><p><img src="http://img.blog.csdn.net/20160211144645736" alt="这里写图片描述"></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">常用的矩阵范数</th>
+<th style="text-align:left">名称</th>
+<th style="text-align:left">求法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">$||A||_1$</td>
+<td style="text-align:left">列和范数/列范数</td>
+<td style="text-align:left">对每一列求各个元素的模的和，有n列就有n个和，再取这些和的最大值</td>
+</tr>
+<tr>
+<td style="text-align:left">$||A||_∞$</td>
+<td style="text-align:left">行和范数/行范数</td>
+<td style="text-align:left">对每一行求各个元素的模的和，有n行就有n个和，再后取这些和的最大值</td>
+</tr>
+<tr>
+<td style="text-align:left">$||A||_2$</td>
+<td style="text-align:left">谱范数</td>
+<td style="text-align:left">$A^HA$的所有特征值中的最大值的平方根</td>
+</tr>
+</tbody>
+</table>
+<h1 id="特征值估计"><a href="#特征值估计" class="headerlink" title="特征值估计"></a>特征值估计</h1><h2 id="盖尔圆"><a href="#盖尔圆" class="headerlink" title="盖尔圆"></a>盖尔圆</h2><p>方阵的盖尔圆所在的平面为复平面，x轴为实数，y轴为虚数，方阵的特征值只会出现在盖尔圆内。N阶方阵$A(a_{ij})$共有n个盖尔圆，它的第i个盖尔圆以$a_{ii}$为圆心,以<br>$$R_i = |a_{i1}| + |a_{i2}| + … + |a_{in}| - |a_{ii}|$$<br>为半径，即第i个盖尔圆的半径以矩阵第i行，除去对角元素的，其他所有元素的模的和。<br>第i个盖尔圆$G_i$的表示为<br>$$G_i = \{ Z |  |Z-a_{ii}| \leq Ri \}, Z \in C$$<br>有k个孤立的盖尔圆内则至少有k个相异的特征值，相交的盖尔圆内可能有重根。</p>
+<h1 id="矩阵函数"><a href="#矩阵函数" class="headerlink" title="矩阵函数"></a>矩阵函数</h1><h2 id="概念-2"><a href="#概念-2" class="headerlink" title="概念"></a>概念</h2><ul>
+<li><p>矩阵函数<br>如果矩阵A中的每个元素$a_{ij}(t)$都是变量t的函数，则称A(t)为矩阵函数。如果矩阵的每个元素都有极限，则这个矩阵函数也有极限。</p>
+</li>
+<li><p>矩阵序列<br>矩阵序列$A(k)_{m \times n}, k  \in N$, 共有$m \times n$个元素，那么就有$m \times n$组数列， 当每个数列$\{a_{ij}(k)\}$均分别收敛于相应的极限$a_{ij}$时，则矩阵序列{A(t)}收敛于A, 其中A由$a_{ij}$组成。</p>
+</li>
+<li><p>谱半径<br>矩阵A所有特征值的模的最大值</p>
+</li>
+<li><p>单纯矩阵与矩阵函数<br>对于可对角化的单纯矩阵而言，f(A)的特征值就是f(λ)，可用来求f(A)的谱分解和谱半径</p>
+</li>
+</ul>
+<h2 id="判断矩阵幂级数敛散性"><a href="#判断矩阵幂级数敛散性" class="headerlink" title="判断矩阵幂级数敛散性"></a>判断矩阵幂级数敛散性</h2><ol>
+<li>考虑矩阵幂级数$\sum A(k)$, 先把矩阵A换成未知数x，计算这个数项幂级数$\sum x(k)$的收敛半径R</li>
+<li>求矩阵A的特征值，并计算其谱半径$\rho (λ)$  (特征值模的最大值)</li>
+<li>若$\rho (\lambda)<r$,则矩阵幂级数绝对收敛;<br>若$\rho (\lambda)>R$,则发散.</r$,则矩阵幂级数绝对收敛;<br></li>
+<li>若$\rho (λ)=R$，上述方法失效，可计算A(k)的Jordan形，$A(n)=P^{-1}J(k)P$，通过证明J(k)的敛散来证明A(k)的敛散，进而证明$\sum A(k)$的敛散。</li>
+<li>J(k)的每个元素都是关于n的级数，看看当n-&gt;∞时，所有元素是不是都收敛，有一个不收敛就是发散，都收敛时，A的矩阵幂级数才收敛<br><img src="http://img.blog.csdn.net/20160211151215293" alt="这里写图片描述"></li>
+</ol>
+<h2 id="矩阵函数的计算方法"><a href="#矩阵函数的计算方法" class="headerlink" title="矩阵函数的计算方法"></a>矩阵函数的计算方法</h2><ul>
+<li>Jordan标准型法（不推荐）<br>1）求m阶矩阵A的Jordan标准形J和可逆阵P, $P^{-1}$，使得$P^{-1}AP=J$<br>2）求f(J), $f(J)=diag(f(J_1), f(J_2), \dots f(J_m))$，其中$f(J_i)_{r \times r}$<br>3）$f(A)=Pf(J)P^{-1}$</li>
+</ul>
+<p><img src="http://img.blog.csdn.net/20160211152030968" alt="这里写图片描述"></p>
+<ul>
+<li>待定系数法(推荐)<br>1）求A的最小式，得到最小次的总次数degmA(λ)=k<br>2）令$p(λ)=b_0+b_1λ+b_2λ^2+…+b_{k-1}λ^{k-1}$， k是几就有几个b, $b_0 \dots b_{k-1}$<br>3）列方程组$p(λ_i)= f(λ_i)$
+若$λ_i$是2重根，则再设$p’(λ_i)= f’(λ_i)$<br>如f(A)=sinA, $m_{A(λ)}=( λ-2)^2( λ-1)$，令$p(λ)= b_0+b_1λ+b_2λ^2$,要满足的方程组为</li>
+</ul>
+
+$$
+\left\{
+\begin{array}{c}
+P(1)=sin1 \\
+P(2)=sin2 \\
+P’(2)=cos2
+\end{array}
+\right.
+$$
+    
+<p>即</p>
+
+$$
+\left\{
+\begin{array}{c}
+b0+b1+b2=sin1 \\
+b0+2b1+4b2=sin2 \\
+b1+4b2=cos2
+\end{array}
+\right.
+$$
+
+<p>4）解出$b_i$，即解出了p(λ), 把p(λ)换成A就是p(A), 最后f (A)= p(A)<br><img src="http://img.blog.csdn.net/20160211153159811" alt="这里写图片描述"></p>
+<h1 id="矩阵求导"><a href="#矩阵求导" class="headerlink" title="矩阵求导"></a>矩阵求导</h1><p>矩阵求导包括标量，行向量$x^T$, 列向量x，矩阵之间的求导。</p>
+<h2 id="矩阵Y-F-x-对标量x求导"><a href="#矩阵Y-F-x-对标量x求导" class="headerlink" title="矩阵Y=F(x)对标量x求导"></a>矩阵Y=F(x)对标量x求导</h2><p>相当于矩阵$Y_{m \times n}$中的每个元素对x求导，转化为$m \times n$次普通的求导<br><img src="http://img.blog.csdn.net/20160212165402569" alt="这里写图片描述"></p>
+<h2 id="标量y对列向量x求导"><a href="#标量y对列向量x求导" class="headerlink" title="标量y对列向量x求导"></a>标量y对列向量x求导</h2><p>相当于标量y对列向量x的每个分量求偏导，再组成一个新的列向量<br><img src="http://img.blog.csdn.net/20160212165451757" alt="这里写图片描述"></p>
+<h2 id="行向量-y-T-对列向量x求导"><a href="#行向量-y-T-对列向量x求导" class="headerlink" title="行向量$y^T$对列向量x求导"></a>行向量$y^T$对列向量x求导</h2><p>相当于行向量$y^T$的每一个分量作为标量对列向量x求导，转化为标量对列向量x求导的情况。考虑$y^T=(y_1, y_2, \dots y_n)^T, x=(x_1, x_2, \dots, x_m)$，则y的n个分量都对x的求导，得到n个维度为m的列向量，最后这n个列向量再组成m行n列的矩阵。<br><img src="http://img.blog.csdn.net/20160212165526790" alt="这里写图片描述"></p>
+<p>注意：</p>
+<ol>
+<li>$1 \times n$的行向量对$m \times 1$的列向量求导后是$m \times n$的矩阵。</li>
+<li>重要结论：<br>$${dx^T \over dx} = I$$$${d(Ax)^T \over dx} = A^T$$</li>
+</ol>
+<h2 id="列向量y对行向量-x-T-求导"><a href="#列向量y对行向量-x-T-求导" class="headerlink" title="列向量y对行向量$x^T$求导"></a>列向量y对行向量$x^T$求导</h2><p>转化为行向量$y^T$对列向量 x 的导数，然后转置。<br><img src="http://img.blog.csdn.net/20160212165614369" alt="这里写图片描述"><br>注意</p>
+<ol>
+<li>m×1 向量对 1×n 向量求导结果为 m×n 矩阵。</li>
+<li>重要结论：<br>$${dx \over dx^T} = ({dx^T \over dx})^T=I$$$${d(Ax) \over dx^T} =({d(Ax)^T \over dx})^T = (A^T)^T=A$$</li>
+</ol>
+<h2 id="向量积-u-Tv-对列向量x求导的运算法则"><a href="#向量积-u-Tv-对列向量x求导的运算法则" class="headerlink" title="向量积$u^Tv$对列向量x求导的运算法则"></a>向量积$u^Tv$对列向量x求导的运算法则</h2><p>$${d(u^Tv) \over dx}={d(u^T) \over dx} \cdot v+{d(v^T) \over dx} \cdot u$$<br>例如：$${d(x^Tx) \over dx}={d(x^T) \over dx} \cdot x+{d(x^T) \over dx} \cdot x=I \cdot x + I \cdot x =2x$$$${d(x^TAx) \over dx}={d(x^T) \over dx} \cdot Ax+{d(Ax)^T \over dx} \cdot x=I \cdot Ax + A^T \cdot x =(A+A^T)x$$</p>
+<h2 id="矩阵Y对列向量x求导"><a href="#矩阵Y对列向量x求导" class="headerlink" title="矩阵Y对列向量x求导"></a>矩阵Y对列向量x求导</h2><p>将Y对x的每一个分量求偏导，构成一个超列向量，超向量中的每个分量都是一个矩阵。转化为矩阵对标量求导的情况。<br><img src="http://img.blog.csdn.net/20160212215141519" alt="这里写图片描述"><br>注意：矩阵对列向量求导的结果是以矩阵作为分量的超向量。</p>
+<h2 id="矩阵Y对行向量-x-T-求导"><a href="#矩阵Y对行向量-x-T-求导" class="headerlink" title="矩阵Y对行向量$x^T$求导"></a>矩阵Y对行向量$x^T$求导</h2><p>相当于Y对$x^T$的每一个分量求偏导，结果是个超级行向量。<br>$$Y=F(x) \rightarrow {dY \over dx^T}=[{∂F \over ∂x_1} \ {∂F \over ∂x_2}\  \dots \ {∂F \over ∂x_n}] $$</p>
+<h2 id="标量y对矩阵X求导"><a href="#标量y对矩阵X求导" class="headerlink" title="标量y对矩阵X求导"></a>标量y对矩阵X求导</h2><p>相当于标量y对矩阵X中的每个元素求导，结果是个和矩阵X行列相等的矩阵<br><img src="http://img.blog.csdn.net/20160212215644947" alt="这里写图片描述"></p>
+<p>重要结论：$${d(u^TXv) \over dX} = u \cdot v^T$$$${d[(Xu)^TXu] \over dX} = 2Xu \cdot u^T$$$${d[(Xu-v)^T(Xu-v)] \over dX} = 2(Xu-v)u^T$$</p>
+<h2 id="矩阵Y对矩阵X求导"><a href="#矩阵Y对矩阵X求导" class="headerlink" title="矩阵Y对矩阵X求导"></a>矩阵Y对矩阵X求导</h2><p>将矩阵$Y_{m \times n}$的每个元素对矩阵X求导，转化为$m \times n$个标量对矩阵$X_{s \times r}$求导，最后排起来得到$m \times n$的超级矩阵，其中每个元素为$s \times r$的矩阵。<br>矩阵对矩阵求导的结果是以矩阵作为元素的超级矩阵。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/矩阵/" rel="tag"># 矩阵</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/02/01/3 广义逆矩阵/" rel="next" title="矩阵的广义逆">
+                <i class="fa fa-chevron-left"></i> 矩阵的广义逆
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/03/01/matplotlib cannot import name _thread on mac/" rel="prev" title="matplotlib cannot import name _thread on mac">
+                matplotlib cannot import name _thread on mac <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/7233064.jpg"
+               alt="Yiyang Peng" />
+          <p class="site-author-name" itemprop="name">Yiyang Peng</p>
+           
+              <p class="site-description motion-element" itemprop="description">小学生的学习之路</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">36</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">43</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/yiyang186" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/peng-yiyang-88" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  知乎
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#向量范数"><span class="nav-number">1.</span> <span class="nav-text">向量范数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#概念"><span class="nav-number">1.1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常用的向量范数"><span class="nav-number">1.2.</span> <span class="nav-text">常用的向量范数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#矩阵范数"><span class="nav-number">2.</span> <span class="nav-text">矩阵范数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#概念-1"><span class="nav-number">2.1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#几种常见的矩阵范数"><span class="nav-number">2.2.</span> <span class="nav-text">几种常见的矩阵范数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#特征值估计"><span class="nav-number">3.</span> <span class="nav-text">特征值估计</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#盖尔圆"><span class="nav-number">3.1.</span> <span class="nav-text">盖尔圆</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#矩阵函数"><span class="nav-number">4.</span> <span class="nav-text">矩阵函数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#概念-2"><span class="nav-number">4.1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#判断矩阵幂级数敛散性"><span class="nav-number">4.2.</span> <span class="nav-text">判断矩阵幂级数敛散性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#矩阵函数的计算方法"><span class="nav-number">4.3.</span> <span class="nav-text">矩阵函数的计算方法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#矩阵求导"><span class="nav-number">5.</span> <span class="nav-text">矩阵求导</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#矩阵Y-F-x-对标量x求导"><span class="nav-number">5.1.</span> <span class="nav-text">矩阵Y=F(x)对标量x求导</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#标量y对列向量x求导"><span class="nav-number">5.2.</span> <span class="nav-text">标量y对列向量x求导</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#行向量-y-T-对列向量x求导"><span class="nav-number">5.3.</span> <span class="nav-text">行向量$y^T$对列向量x求导</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#列向量y对行向量-x-T-求导"><span class="nav-number">5.4.</span> <span class="nav-text">列向量y对行向量$x^T$求导</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#向量积-u-Tv-对列向量x求导的运算法则"><span class="nav-number">5.5.</span> <span class="nav-text">向量积$u^Tv$对列向量x求导的运算法则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#矩阵Y对列向量x求导"><span class="nav-number">5.6.</span> <span class="nav-text">矩阵Y对列向量x求导</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#矩阵Y对行向量-x-T-求导"><span class="nav-number">5.7.</span> <span class="nav-text">矩阵Y对行向量$x^T$求导</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#标量y对矩阵X求导"><span class="nav-number">5.8.</span> <span class="nav-text">标量y对矩阵X求导</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#矩阵Y对矩阵X求导"><span class="nav-number">5.9.</span> <span class="nav-text">矩阵Y对矩阵X求导</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yiyang Peng</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://yiyang186.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2016/02/12/4矩阵分析/';
+          this.page.identifier = '2016/02/12/4矩阵分析/';
+          this.page.title = '矩阵的范数与导数';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://yiyang186.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

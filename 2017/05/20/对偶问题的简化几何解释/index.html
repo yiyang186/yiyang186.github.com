@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="优化,对偶问题," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="原问题和对偶问题原问题 $$\begin{aligned} \min \quad &amp; f(x) \\ s.t. \quad &amp; g_i(x) \leq 0 \qquad i=1,...,m\\ &amp; h_j(x)=0 \qquad j=1,...,l \\ &amp; x \in X \end{a">
+<meta name="keywords" content="优化,对偶问题">
+<meta property="og:type" content="article">
+<meta property="og:title" content="对偶问题的简化几何解释">
+<meta property="og:url" content="http://yoursite.com/2017/05/20/对偶问题的简化几何解释/index.html">
+<meta property="og:site_name" content="小学之路">
+<meta property="og:description" content="原问题和对偶问题原问题 $$\begin{aligned} \min \quad &amp; f(x) \\ s.t. \quad &amp; g_i(x) \leq 0 \qquad i=1,...,m\\ &amp; h_j(x)=0 \qquad j=1,...,l \\ &amp; x \in X \end{aligned}$$  对偶问题 $$\begin{aligned} \max \ &amp;\inf\ \bigg \{">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://i4.bvimg.com/602416/fc59be77496f59d6.png">
+<meta property="og:image" content="http://i4.bvimg.com/602416/0d65e16e0e62793e.png">
+<meta property="og:image" content="http://i4.bvimg.com/602416/9b4a6cabbb52688d.png">
+<meta property="og:image" content="http://i4.bvimg.com/602416/29433fad9f170e1e.png">
+<meta property="og:updated_time" content="2017-11-30T11:09:26.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="对偶问题的简化几何解释">
+<meta name="twitter:description" content="原问题和对偶问题原问题 $$\begin{aligned} \min \quad &amp; f(x) \\ s.t. \quad &amp; g_i(x) \leq 0 \qquad i=1,...,m\\ &amp; h_j(x)=0 \qquad j=1,...,l \\ &amp; x \in X \end{aligned}$$  对偶问题 $$\begin{aligned} \max \ &amp;\inf\ \bigg \{">
+<meta name="twitter:image" content="http://i4.bvimg.com/602416/fc59be77496f59d6.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/05/20/对偶问题的简化几何解释/"/>
+
+
+
+
+
+  <title>对偶问题的简化几何解释 | 小学之路</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3b9de7582df94dad7be13b2e75675386";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">小学之路</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/20/对偶问题的简化几何解释/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Yiyang Peng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/7233064.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小学之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">对偶问题的简化几何解释</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-20T11:35:00+08:00">
+                2017-05-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数学/" itemprop="url" rel="index">
+                    <span itemprop="name">数学</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/05/20/对偶问题的简化几何解释/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/05/20/对偶问题的简化几何解释/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="原问题和对偶问题"><a href="#原问题和对偶问题" class="headerlink" title="原问题和对偶问题"></a>原问题和对偶问题</h1><h2 id="原问题"><a href="#原问题" class="headerlink" title="原问题"></a>原问题</h2>
+$$\begin{aligned} \min \quad & f(x) \\
+s.t. \quad & g_i(x) \leq 0 \qquad i=1,...,m\\
+& h_j(x)=0 \qquad j=1,...,l \\
+& x \in X
+\end{aligned}$$
+
+<h2 id="对偶问题"><a href="#对偶问题" class="headerlink" title="对偶问题"></a>对偶问题</h2>
+$$\begin{aligned} \max \ &\inf\ \bigg \{ f(x)+\sum_{i=1}^m\mu_ig_i(x)+\sum_{j=1}^l\xi_ih_j(x)\bigg\} \\
+s.t. \quad &\mu_i \geq 0 \qquad i=1,...,m
+\end{aligned}$$
+
+<h2 id="问题简化"><a href="#问题简化" class="headerlink" title="问题简化"></a>问题简化</h2><p>为了便于用几何描述原问题和对偶问题的关系，把问题简化</p>
+<h3 id="简化后的原问题"><a href="#简化后的原问题" class="headerlink" title="简化后的原问题"></a>简化后的原问题</h3>
+$$\begin{aligned} \min \quad & f(x) \\
+s.t. \quad & g(x) \leq 0\\
+& h(x)=0\\
+& x \in X
+\end{aligned}$$
+
+<h3 id="简化后的对偶问题"><a href="#简化后的对偶问题" class="headerlink" title="简化后的对偶问题"></a>简化后的对偶问题</h3>
+$$\begin{aligned} \max \ &\inf\ \bigg \{ f(x)+\mu g(x)+\xi h(x)\bigg\} \\
+s.t. \quad &\mu \geq 0
+\end{aligned}$$
+
+<h1 id="几何解释"><a href="#几何解释" class="headerlink" title="几何解释"></a>几何解释</h1><h2 id="强对偶"><a href="#强对偶" class="headerlink" title="强对偶"></a>强对偶</h2><p>对偶问题的优化目标是最大化$f(x),h(x),g(x)$的线性组合的最小值，而这如何等价于在限制下最小化$f(x)$，需要观察$f(x),h(x),g(x)$的线性组合<br>将X集合中的所有元素x都通过变换投影到集合G中:<br>$$G={[h(x),g(x),f(x)], x \in X}$$<br>显然，G在$f(x),h(x),g(x)$的张成空间内。<br>为了在图形中表达对偶问题的优化过程，鉴于原问题的限制中有$h(x)=0$，再简化一下问题，只考虑对偶问题的G中位于$h(x)=0$薄片内的元素。如下图所示，因为最小值必须是G中最低的位置，又受到$g(x)\leq 0$的限制，所以原问题的最小值$f(x)_{min}$位于图中的红点位置。</p>
+<p><img src="http://i4.bvimg.com/602416/fc59be77496f59d6.png" alt=""></p>
+<p>对偶问题的目标函数是$f(x)+ug(x)$，我们令$a=f(x)+\mu g(x)$，它可以看作是[g(x),f(x)]平面内的直线$-\mu g(x)+a=f(x)$, 其中$-\mu$为斜率，a为截距。注意对偶问题中要求$\mu \leq 0$，因此我们只考虑斜率为负的情形。而直线的截距则是对偶问题的目标。</p>
+<p>原问题中要求$x \in X$，那么对偶问题中$[h(x),g(x),f(x)]$必须在G内，$a=f(x)+\mu g(x)$的中的f(x)和g(x)必须在G以内，也就是说直线$a=f(x)+\mu g(x)$必须经过G。<br>固定$\mu$不变，为了取到下界$\inf{f(x)+\mu g(x)}$，必须保证直线$a=f(x)+\mu g(x)$与G的下边缘相切。只有相切才能让$a=f(x)+\mu g(x)$取到下界，而x不超出G的范围。</p>
+<p><img src="http://i4.bvimg.com/602416/0d65e16e0e62793e.png" alt=""></p>
+<p>保持直线$a=f(x)+\mu g(x)$与G下边缘相切，调节斜率$-\mu$使截取a最大化。最大化的的结果就是截距所在位置与f(x)的最小值重合
+$$a=f(x)_{min}$$
+<br>此时，原问题的解与对偶问题的解等价，这种情形称为强对偶。</p>
+<p><img src="http://i4.bvimg.com/602416/9b4a6cabbb52688d.png" alt=""></p>
+<h2 id="弱对偶"><a href="#弱对偶" class="headerlink" title="弱对偶"></a>弱对偶</h2><p>如果G的形状不凑巧如下图所示，那么对偶问题的解就会和原问题的解存在间隙，这种情况称为弱对偶。</p>
+<p><img src="http://i4.bvimg.com/602416/29433fad9f170e1e.png" alt=""></p>
+<hr>
+<p>参考自<a href="http://www.eng.newcastle.edu.au/eecs/cdsc/books/cce/Slides/Duality.pdf" target="_blank" rel="external">Lagrangian Duality</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/优化/" rel="tag"># 优化</a>
+          
+            <a href="/tags/对偶问题/" rel="tag"># 对偶问题</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/05/06/如何理解EM算法/" rel="next" title="如何理解EM算法">
+                <i class="fa fa-chevron-left"></i> 如何理解EM算法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/05/24/前端实时更新后端处理进度/" rel="prev" title="前端实时更新后端处理进度">
+                前端实时更新后端处理进度 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/7233064.jpg"
+               alt="Yiyang Peng" />
+          <p class="site-author-name" itemprop="name">Yiyang Peng</p>
+           
+              <p class="site-description motion-element" itemprop="description">小学生的学习之路</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">36</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">43</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/yiyang186" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/peng-yiyang-88" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  知乎
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#原问题和对偶问题"><span class="nav-number">1.</span> <span class="nav-text">原问题和对偶问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#原问题"><span class="nav-number">1.1.</span> <span class="nav-text">原问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对偶问题"><span class="nav-number">1.2.</span> <span class="nav-text">对偶问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题简化"><span class="nav-number">1.3.</span> <span class="nav-text">问题简化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#简化后的原问题"><span class="nav-number">1.3.1.</span> <span class="nav-text">简化后的原问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#简化后的对偶问题"><span class="nav-number">1.3.2.</span> <span class="nav-text">简化后的对偶问题</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#几何解释"><span class="nav-number">2.</span> <span class="nav-text">几何解释</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#强对偶"><span class="nav-number">2.1.</span> <span class="nav-text">强对偶</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#弱对偶"><span class="nav-number">2.2.</span> <span class="nav-text">弱对偶</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yiyang Peng</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://yiyang186.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2017/05/20/对偶问题的简化几何解释/';
+          this.page.identifier = '2017/05/20/对偶问题的简化几何解释/';
+          this.page.title = '对偶问题的简化几何解释';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://yiyang186.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

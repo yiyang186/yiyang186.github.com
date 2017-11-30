@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="boosting,ensamble,梯度提升,GBDT,决策树," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="梯度提升(Gradient boosting)对于任意的可微的损失函数，我们可以在迭代的过程中求出梯度，再以弱学习器去拟合负梯度来完成梯度提升算法。在boosting与平方损失中，我们发现前向分步拟合算法每次迭代中，当前的残差就是经验损失相对于当前预测函数值的负梯度。需要注意:对于其他非平方损失的可微损失函数，负梯度不">
+<meta name="keywords" content="boosting,ensamble,梯度提升,GBDT,决策树">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从梯度提升到GBDT">
+<meta property="og:url" content="http://yoursite.com/2017/08/10/从梯度提升到GBDT/index.html">
+<meta property="og:site_name" content="小学之路">
+<meta property="og:description" content="梯度提升(Gradient boosting)对于任意的可微的损失函数，我们可以在迭代的过程中求出梯度，再以弱学习器去拟合负梯度来完成梯度提升算法。在boosting与平方损失中，我们发现前向分步拟合算法每次迭代中，当前的残差就是经验损失相对于当前预测函数值的负梯度。需要注意:对于其他非平方损失的可微损失函数，负梯度不等于残差，而是残差的近似，因此在梯度提升算法中负梯度也被称为伪残差(pseudo">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-11-30T11:08:00.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="从梯度提升到GBDT">
+<meta name="twitter:description" content="梯度提升(Gradient boosting)对于任意的可微的损失函数，我们可以在迭代的过程中求出梯度，再以弱学习器去拟合负梯度来完成梯度提升算法。在boosting与平方损失中，我们发现前向分步拟合算法每次迭代中，当前的残差就是经验损失相对于当前预测函数值的负梯度。需要注意:对于其他非平方损失的可微损失函数，负梯度不等于残差，而是残差的近似，因此在梯度提升算法中负梯度也被称为伪残差(pseudo">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/08/10/从梯度提升到GBDT/"/>
+
+
+
+
+
+  <title>从梯度提升到GBDT | 小学之路</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3b9de7582df94dad7be13b2e75675386";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">小学之路</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/08/10/从梯度提升到GBDT/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Yiyang Peng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/7233064.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小学之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">从梯度提升到GBDT</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-10T11:24:01+08:00">
+                2017-08-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/机器学习/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/08/10/从梯度提升到GBDT/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/08/10/从梯度提升到GBDT/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="梯度提升-Gradient-boosting"><a href="#梯度提升-Gradient-boosting" class="headerlink" title="梯度提升(Gradient boosting)"></a>梯度提升(Gradient boosting)</h2><p>对于任意的可微的损失函数，我们可以在迭代的过程中求出梯度，再以弱学习器去拟合负梯度来完成梯度提升算法。在<a href="/2017/08/06/boosting与平方损失/" title="boosting与平方损失">boosting与平方损失</a>中，我们发现前向分步拟合算法每次迭代中，当前的残差就是经验损失相对于当前预测函数值的负梯度。需要注意:对于其他非平方损失的可微损失函数，负梯度不等于残差，而是残差的近似，因此在梯度提升算法中负梯度也被称为伪残差(pseudo-residuals)。<br>再次提一下：<strong>当使用平方损失时，伪残差就是真残差，直接计算真残差就好了！但是梯度提升的适用范围更为广阔，所以我们没有提及用那种损失函数时，还是得说“伪残差”！！</strong><br>
+$$r_{m}\approx -\bigg[\frac{\partial L(y, f(x))}{\partial f(x)}\bigg]_{f(x)=f_{m}(x)} \tag{11}$$
+<br>这与<a href="/2017/08/06/boosting与平方损失/" title="boosting与平方损失">boosting与平方损失</a>中的梯度提升算法相比，我们仍然是拟合真实的梯度，仍然是在拟合的梯度方向上下降。不同点是我们得到了一个好处：可以使用任意的可微的损失函数。此外，负梯度方向是当前迭代中的最速下降方向，弱学习器拟合负梯度(伪残差)能获得更快的收敛速度，在前向分步拟合的迭代中，弱学习器拟合残差是贪婪的，拟合梯度也是贪婪的，都是近似解，何不要收敛更快的方法？</p>
+<blockquote>
+<p>梯度提升算法</p>
+<ol>
+<li>初始化$f_0(x)$为常量 <br>$$\gamma_0=\arg\min_{\gamma}L(y, b(x;\gamma))$$ $$f_0(x)=b(x;\gamma_0)$$</li>
+<li>对于m=1到M:<br>(a)计算伪残差，即负梯度<br>$$r_{m-1}=-\bigg[\frac{\partial L(y, f(x))}{\partial f(x)}\bigg]_{f(x)=f_{m-1}(x)}$$ 若梯度接近与0，可提前结束迭代<br> (b)以$b(x;\gamma_m)$拟合伪残差,估计模型参数$\gamma_m$<br>(c)估计最优步长 <bt>$$\beta_m = \arg\min_{\beta}L(r_{m-1}, \beta b(x;\gamma_m)) = \arg\min_{\beta}L(y, f_{m-1}(x)+\beta b(x;\gamma_m)) $$ (d)更新模型<br>$$f_m(x)=f_{m-1}(x)+\beta_m b(x; \gamma_m)$$</bt></li>
+</ol>
+</blockquote>
+<p><br></p>
+<blockquote>
+<p><strong>注意</strong>：这里的初始化与以往的前向分步拟合算法的初始化不同，其实只是把第二步中的第一次迭代放到初始化里来。此外，第一个弱学习器的权重为1。大家都有权重，其中一个权重设为1，相当于所有权重同乘以一个因子，对结果并没有影响。</p>
+</blockquote>
+<p>直到这里一直都没说用什么弱学习器$b(x;\gamma)$来拟合梯度（ $-r_m$ ）,下面用决策树来拟合梯度，导出GBDT（Gradient Boosting Decision Tree,也叫 MART, Multiple Additive Regression Tree）算法。</p>
+<h1 id="GBDT"><a href="#GBDT" class="headerlink" title="GBDT"></a>GBDT</h1><p>从名字“梯度提升决策树”Gradient Boosting Decision Tree里可以看出，GBDT就是在梯度提升算法中用上决策树来做弱学习器$b(x;\gamma)$，下面我们用T代替b来表示决策树<br> $$T(x;\gamma')=\sum_{j=1}^J\theta_jI(x\in R_j)$$ <br>其中参数J为子空间的数量（即叶子节点）， $\gamma'=\{R_j, \theta_j\}_1^J$ ,  $R_j$ 为一个子特征空间， $\theta_j$ 为该空间上的常数预测值。</p>
+<blockquote>
+<p>回顾一下决策树：<br>决策树通过Gini系数或者信息增益求出每个特征维度的分裂点，再通过分裂点把特征空间分割成一个一个的矩形的子特征空间，在每个子空间内应用简单的分类或回归手段，如多数类、平均数，作为该子空间的预测值。<br> $$x \in R_j \Rightarrow T(x)=\theta_j$$ </p>
+</blockquote>
+<p>提升树模型是这样的树加权和
+$$\begin{aligned}
+f(x) &=\sum_{m=1}^M\beta_m'T(x;\gamma_m')\\
+&=\sum_{m=1}^M\beta_m'\sum_{j=1}^{J_m}\theta_{mj}I(x\in R_{mj})\\
+&=\sum_{m=1}^M\sum_{j=1}^{J_m}\beta_m'\theta_{mj}I(x\in R_{mj})\\
+&=\sum_{m=1}^M\sum_{j=1}^{J_m}\beta_{mj}I(x\in R_{mj})
+\end{aligned} \tag2$$
+<br>这里令 $\beta_{mj}=\beta_m'\theta_{mj}$ ，这样相当于把树内的子空间当做弱学习器，预测值为样本是否在该子空间内 $I(x\in R_{mj})$ ，而权重为子空间的预测值 $\theta_{mj}$ 与该树权重 $\beta_m'$ 的乘积 $\beta_{mj}=\beta_m'\theta_{mj}$ 。更简单地，令 $\gamma_m=\{R_{mj}, \beta_{mj}\}_{j=1}^{J_m}$ ，式(2)也相当于学习不带权重参数的M棵树：<br> $$f(x) =\sum_{m=1}^M\sum_{j=1}^{J_m}\beta_{mj}I(x\in R_{mj})=\sum_{m=1}^MT(x;\gamma_m)$$ <br>这里每棵树内每个子空间的预测值就已经包含了该树在最终委员会模型中的权重信息，可以减少要学习的参数，加快学习速度。那么，GBDT每一步迭代的优化就成了
+$$\begin{aligned}\gamma_m
+&=\arg\min_{\gamma}\sum_{i=1}^ML\bigg(y_i, f_{m-1}(x_i)+T(x_i;\gamma_m)\bigg)\\
+&=\arg\min_{\beta, R}\sum_{i=1}^ML\bigg(y_i, f_{m-1}(x_i)+\sum_{j=1}^{J_m}\beta_{mj}I(x\in R_{mj})\bigg)\\
+\end{aligned}\tag3$$
+<br>根据<a href="/2017/08/06/boosting与平方损失/" title="boosting与平方损失">boosting与平方损失</a>中介绍的对任意可微损失函数的梯度提升算法，我们只需用 $T(x;\gamma_m)$ 去拟合当前迭代中的伪残差即可
+$$(\beta_m, R_m)=\arg\min_{\beta, R}\sum_{i=1}^ML(-\bigg[\frac{\partial L(y, f(x))}{\partial f(x)}\bigg]_{f(x)=f_{m-1}(x)}, \sum_{j=1}^{J_m}\beta_{mj}I(x\in R_{mj}))\tag4$$
+</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>从<a href="/2017/08/01/boosting与指数损失/" title="boosting与指数损失——Adaboost">boosting与指数损失——Adaboost</a>到<a href="/2017/08/06/boosting与平方损失/" title="boosting与平方损失">boosting与平方损失</a>，再到这篇博客，大致总结一下GBDT的由来：</p>
+<ol>
+<li>想把多个弱学习器组通过加权求和组成“不平等的委员会”，是一种基于学习器的加法模型
+$$f(x) = \sum_{m=1}^M \beta_m b(x; \gamma_m)$$ </li>
+<li>使用贪心的前向分步拟合算法，迭代地求解弱学习器，求解新的弱学习器时不改变已经求解好的弱学习器
+$$(\beta_m, \gamma_m)=\arg\min_{\beta, \gamma}\sum_{i=1}^NL\bigg(y_i, f_{m-1}(x_i)+\beta b(x_i;\gamma)\bigg)$$ 
+</li>
+<li>迭代中，由于加法模型的性质，求解新的弱学习器实际上是拟合当前残差
+$$\begin{aligned}
+&\min L\bigg(y, f_{m-1}(x)+\beta_m b(x;\gamma_m)\bigg) \\
+= &\min L\bigg(y-f_{m-1}(x), f_{m-1}(x)+\beta_m b(x;\gamma_m)-f_{m-1}(x)\bigg) \\
+= &\min L\bigg(r_{m-1}, \beta_m b(x;\gamma_m)\bigg)
+\end{aligned}$$ 
+</li>
+<li>梯度提升算法是在前向分步拟合的每次迭代中，找到经验损失相对于预测函数值的最速下降方向（负梯度方向），用弱学习器拟合负梯度，最终使梯度减少到接近0。当取平方经验损失时，当前残差就是当前负梯度。梯度提升算法还适用于别的损失函数，当前负梯度可以看做当前残差的近似，称为伪残差。而且负梯度方向是当前迭代中的最速下降方向，弱学习器拟合负梯度(伪残差)能获得更快的收敛速度。
+$$r_{m-1} \approx-\bigg[\frac{\partial L(y, f(x))}{\partial f(x)}\bigg]_{f(x)=f_{m-1}(x)}$$
+</li>
+<li>使用决策树作为弱学习的梯度提升算法是GBDT</li>
+</ol>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/boosting/" rel="tag"># boosting</a>
+          
+            <a href="/tags/ensamble/" rel="tag"># ensamble</a>
+          
+            <a href="/tags/梯度提升/" rel="tag"># 梯度提升</a>
+          
+            <a href="/tags/GBDT/" rel="tag"># GBDT</a>
+          
+            <a href="/tags/决策树/" rel="tag"># 决策树</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/06/boosting与平方损失/" rel="next" title="boosting与平方损失">
+                <i class="fa fa-chevron-left"></i> boosting与平方损失
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/10/13/正则化对假设空间的影响/" rel="prev" title="正则化对假设空间的影响">
+                正则化对假设空间的影响 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/7233064.jpg"
+               alt="Yiyang Peng" />
+          <p class="site-author-name" itemprop="name">Yiyang Peng</p>
+           
+              <p class="site-description motion-element" itemprop="description">小学生的学习之路</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">36</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">43</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/yiyang186" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/peng-yiyang-88" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  知乎
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#梯度提升-Gradient-boosting"><span class="nav-number">1.</span> <span class="nav-text">梯度提升(Gradient boosting)</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#GBDT"><span class="nav-number"></span> <span class="nav-text">GBDT</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number"></span> <span class="nav-text">总结</span></a></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yiyang Peng</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://yiyang186.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2017/08/10/从梯度提升到GBDT/';
+          this.page.identifier = '2017/08/10/从梯度提升到GBDT/';
+          this.page.title = '从梯度提升到GBDT';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://yiyang186.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

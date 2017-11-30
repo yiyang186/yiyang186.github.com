@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="ESL,EM," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="介绍EM算法的材料里，我目前看过且觉得比较好的就是NG老师的CS229讲义和李航老师的统计学习方法。我也提不出什么新东西，就结合混合高斯分布，在这两位牛人的基础上，谈一点自己觉得看待EM算法很重要的2个必须弄清楚的问题：为什么要有EM算法，为什么叫E步和M步，还解释了一些介绍EM算法时免不了要提到的公式。如果不把这些问">
+<meta name="keywords" content="ESL,EM">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何理解EM算法">
+<meta property="og:url" content="http://yoursite.com/2017/05/06/如何理解EM算法/index.html">
+<meta property="og:site_name" content="小学之路">
+<meta property="og:description" content="介绍EM算法的材料里，我目前看过且觉得比较好的就是NG老师的CS229讲义和李航老师的统计学习方法。我也提不出什么新东西，就结合混合高斯分布，在这两位牛人的基础上，谈一点自己觉得看待EM算法很重要的2个必须弄清楚的问题：为什么要有EM算法，为什么叫E步和M步，还解释了一些介绍EM算法时免不了要提到的公式。如果不把这些问题和公式解释清楚真的能理解em吗？我想可能不能 为什么要有EM算法我把EM算法当">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-11-30T11:09:14.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="如何理解EM算法">
+<meta name="twitter:description" content="介绍EM算法的材料里，我目前看过且觉得比较好的就是NG老师的CS229讲义和李航老师的统计学习方法。我也提不出什么新东西，就结合混合高斯分布，在这两位牛人的基础上，谈一点自己觉得看待EM算法很重要的2个必须弄清楚的问题：为什么要有EM算法，为什么叫E步和M步，还解释了一些介绍EM算法时免不了要提到的公式。如果不把这些问题和公式解释清楚真的能理解em吗？我想可能不能 为什么要有EM算法我把EM算法当">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/05/06/如何理解EM算法/"/>
+
+
+
+
+
+  <title>如何理解EM算法 | 小学之路</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3b9de7582df94dad7be13b2e75675386";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">小学之路</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/06/如何理解EM算法/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Yiyang Peng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/7233064.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小学之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">如何理解EM算法</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-06T10:16:00+08:00">
+                2017-05-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/机器学习/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/05/06/如何理解EM算法/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/05/06/如何理解EM算法/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>介绍EM算法的材料里，我目前看过且觉得比较好的就是NG老师的CS229讲义和李航老师的统计学习方法。<br>我也提不出什么新东西，就结合混合高斯分布，在这两位牛人的基础上，谈一点自己觉得看待EM算法很重要的2个必须弄清楚的问题：为什么要有EM算法，为什么叫E步和M步，还解释了一些介绍EM算法时免不了要提到的公式。如果不把这些问题和公式解释清楚真的能理解em吗？我想可能不能</p>
+<h1 id="为什么要有EM算法"><a href="#为什么要有EM算法" class="headerlink" title="为什么要有EM算法"></a>为什么要有EM算法</h1><p>我把EM算法当做最大似然估计的拓展，解决难以给出解析解的最大似然估计（MLE）问题。<br>考虑高斯分布，它的最大似然估计是这样的：</p>
+$$\begin{aligned} \theta^*=\arg\max_\theta \sum_X \log L(\theta|X) \end{aligned}{\tag 1}$$
+<p>其中，$\theta =(\mu, \sigma), \theta^* =(\mu^*, \sigma^*), \log L(\theta|X) = \log P(X; \theta)$是对数似然函数，分号左边是随机变量，右边是模型参数。$P(X;\theta)$表示X的概率值函数，它是一个以$\theta$为参数的函数（很多人看不懂EM算法就是因为符号问题）。这里对$\theta$求导很容易解出$\theta^*$。</p>
+<p>但如果这是个含有隐量Y的模型比如混合高斯模型，<br>$$P(X;\theta)=\sum_{k=1}^K\pi_kN(x; \mu_k, \sigma_k)=\sum_YP(Y;\pi)P(X|Y;\mu,\sigma){\tag 2}$$</p>
+<p>上面假设共有K个高斯模型混合.每个高斯模型的参数为$\theta_k=(\mu_k, \sigma_k)$,每个高斯模型占总模型的比重为$\pi_k$。隐变量$Y \in {y_1,y_2,…,y_K}$表示样本$x_i$来自于哪一个高斯分布。分布列为：</p>
+<table>
+<thead>
+<tr>
+<th>Y</th>
+<th>$y_1$</th>
+<th>$y_2$</th>
+<th>$y_3$</th>
+<th>…</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$p(y)$</td>
+<td>$\pi_1$</td>
+<td>$\pi_2$</td>
+<td>$\pi_3$</td>
+<td>…</td>
+</tr>
+</tbody>
+</table>
+<p>可以认为，混合高斯分布的观测值是这样产生的：先以概率$\pi_k$抽取一个高斯分布$y_k$，再以该高斯分布$N(x;\mu_k, \sigma_k)$去生成观测x。其实这里的$\pi_k$ 就是Y的先验分布$P(Y;\pi)$ (这里特地加上； $\pi$ 表示P(Y)的参数是 $\pi$ ,你需要求出 $\pi$ 才能表示这个先验分布),而 $N(x; \mu_k, \sigma_k)$ 就是给定Y下的条件概率 $P(X|Y;\mu,\sigma)$<br>这时，令$\theta =(\mu, \sigma, \pi), \theta^* =(\mu^*, \sigma^*, \pi^*)$, 最大似然估计成了</p>
+
+$$\begin{aligned} 
+\theta^* &= \arg\max_\theta \sum_X \log P(X;\theta) \\
+&=\arg\max_\theta \sum_X \log  \sum_YP(Y;\pi)P(X|Y;\mu,\sigma) \\
+&=\arg\max_\theta \sum_X \log  \sum_YP(X,Y;\theta)
+\end{aligned}\tag 3$$
+
+<p>据群众反映，求和、取对数、再求和，这种形式求偏导较为费劲（到底有多费劲。。。其实放在混合高斯这里也不是那么费劲，有的情形远比混合高斯复杂）要是能把\log 拿到求和的最里层就好了，直接对最里层的式子求偏导岂不快哉？于是就有了EM算法</p>
+<h1 id="为什么要分E步和M步"><a href="#为什么要分E步和M步" class="headerlink" title="为什么要分E步和M步"></a>为什么要分E步和M步</h1><p>为了解决这个问题，有人想到了Jensen（琴生）不等式. $\log$ 是个凹函数，以隐变量Y的任一函数$f(Y)$举个例子：<br>$$\log E[f(Y)]=\log \sum_Y P(Y)f(Y) \geq \sum_Y P(Y)\log f(Y)=E[\log f(Y)]\tag 4$$<br>根据琴生不等式的性质，当随机变量函数 f(Y) 为常数时，不等式取等号。上式中的期望换成条件期望，分布 P(Y) 换成条件分布也是一样的。</p>
+<p>注意(3)中的联合分布$P(X,Y;\theta)$在执行$\sum_Y$时可以把X看做是定值，此时我们可以把这个联合分布当做Y的随机变量函数（它除以P(Y)当然还是Y的随机变量函数）来考虑，并且引入一个关于Y的分布Q(Y)，具体是啥分布还不清楚,可能是给定某某的条件分布，只知道它是一个关于$\theta$的函数：</p>
+
+$$\begin{aligned}
+max &=\max_\theta \sum_X \log  \sum_YP(X,Y;\theta) \\
+&=\max_\theta \sum_X \log  \sum_Y Q(Y;\theta) \cdot \frac{P(X,Y;\theta)}{Q(Y;\theta)} \\
+&=\max_\theta \sum_X \log  E_Q[\frac{P(X,Y;\theta)}{P(Y;\theta)}] \\
+&\geq \max_\theta \sum_X E_Q[\log  \frac{P(X,Y;\theta)}{Q(Y;\theta)}] \\
+&= \max_\theta \sum_X \sum_Y Q(Y;\theta) \log  \frac{P(X,Y;\theta)}{Q(Y;\theta)}
+\end{aligned}\tag 5$$
+
+<p>只有当<br>$$\frac{P(X,Y;\theta)}{Q(Y;\theta)}=c\tag 6$$<br>式(5)才能取等号，注意到Q是Y的某一分布，有$\sum_Y Q(Y;\theta)=1$这个性质，因此<br>
+$$\begin{aligned}
+Q(Y;\theta) &= \frac{P(X,Y;\theta)}{c} = \frac{P(X,Y;\theta)}{c \cdot \sum_Y Q(Y;\theta)} \\
+&= \frac{P(X,Y;\theta)}{\sum_Y c \cdot Q(Y;\theta)} = \frac{P(X,Y;\theta)}{\sum_Y P(X,Y;\theta)} \\
+&= \frac{P(X,Y;\theta)}{P(X;\theta)} = P(Y|X;\theta)
+\end{aligned}\tag 7$$
+<br>所以只需要把Q取为给定X下，Y的后验分布，就能使式(5)取等号，下一步只需要最大化就行了.这时(5)为<br>$$\theta^* = \arg\max_\theta \sum_X \sum_Y P(Y|X;\theta) \log  \frac{P(X,Y;\theta)}{P(Y|X;\theta)}\tag 8$$</p>
+<p>其中：<br>$$P(X,Y;\theta) = P(Y;\pi)P(X|Y;\mu,\sigma)= \pi_kN(x_i; \mu_k, \sigma_k)\tag 9$$<br>$$P(Y|X;\theta) = \frac{P(X,Y;\theta)}{\sum_Y P(X,Y;\theta)}= \frac{\pi_kN(x_i; \mu_k, \sigma_k)}{\sum_{k=1}^K \pi_kN(x_i; \mu_k, \sigma_k)}\tag{10}$$<br>好吧，直接对$(\mu, \sigma, \pi)$求导还是很麻烦，不过已经可以用迭代来最大化啦。</p>
+<p>1）先根据式(10)，由$(\mu^{(j)}, \sigma^{(j)}, \pi^{(j)})$求后验概率<br>$$Q^{(j)}=P(Y|X;\theta^{(j)})$$</p>
+<p>2）再把$Q^{(j)}$带入(8)中，</p>
+
+$$\begin{aligned}
+\theta^{(j+1)} &= \arg\max_\theta \sum_X \sum_Y Q^{(j)} \log  \frac{P(X,Y;\theta)}{Q^{(j)}} \\
+&= \arg\max_\theta \sum_X \sum_Y (Q^{(j)} \log  P(X,Y;\theta)-Q^{(j)} \log  Q^{(j)}) \\
+&= \arg\max_\theta \sum_X \sum_Y Q^{(j)} \log  P(X,Y;\theta)
+\end{aligned}\tag{11}$$
+
+<p>就只需要最大化联合分布$P(X,Y;\theta)$了，最大化求出$(\mu^{(j+1)}, \sigma^{(j+1)}, \pi^{(j+1)})$后重复这2步。</p>
+<p>M步很显然，就是最大化那一步，E步又从何谈起呢？式(11)可以写成</p>
+
+$$\begin{aligned}
+\theta^{(j+1)} &= \arg\max_\theta \sum_X \sum_Y Q^{(j)} \log  P(X,Y;\theta) \\
+&= \arg\max_\theta \sum_X E_{Q^{(j)}} [\log  P(X,Y;\theta)] \\
+&= \arg\max_\theta \sum_X E_{Y|X;\theta^{(j)}} [\log  P(X,Y;\theta)] \\
+&= \arg\max_\theta \sum_X E_Y [\log  P(X,Y;\theta)|X;\theta^{(j)}]
+\end{aligned}\tag{12}$$
+
+<p>其实，E步就是求给定X下的条件期望，也就是后验期望，使得式(5)的琴生不等式能够取等号，是对琴声不等式中,小的那一端进行放大，使其等于大的那一端，这是一次放大；M步最大化联合分布，通过0梯度，拉格朗日法等方法求极值点，又是一次放大。只要似然函数是有界的，只要M步中的0梯度点是极大值点，一直放大下去就能找到最终所求。</p>
+<p><a href="https://www.yhihu.com/question/27976634/answer/163164402" target="_blank" rel="external">我的知乎回答</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ESL/" rel="tag"># ESL</a>
+          
+            <a href="/tags/EM/" rel="tag"># EM</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/05/03/优化基础问题/" rel="next" title="优化问题基础">
+                <i class="fa fa-chevron-left"></i> 优化问题基础
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/05/20/对偶问题的简化几何解释/" rel="prev" title="对偶问题的简化几何解释">
+                对偶问题的简化几何解释 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/7233064.jpg"
+               alt="Yiyang Peng" />
+          <p class="site-author-name" itemprop="name">Yiyang Peng</p>
+           
+              <p class="site-description motion-element" itemprop="description">小学生的学习之路</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">36</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">43</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/yiyang186" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/peng-yiyang-88" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  知乎
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#为什么要有EM算法"><span class="nav-number">1.</span> <span class="nav-text">为什么要有EM算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#为什么要分E步和M步"><span class="nav-number">2.</span> <span class="nav-text">为什么要分E步和M步</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yiyang Peng</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://yiyang186.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2017/05/06/如何理解EM算法/';
+          this.page.identifier = '2017/05/06/如何理解EM算法/';
+          this.page.title = '如何理解EM算法';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://yiyang186.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

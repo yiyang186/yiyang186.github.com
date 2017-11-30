@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="boosting,损失函数,ensamble,adaboost," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="boosting-不平等的委员会boosting提升方法的动机是合并许多“弱”学习器输出以产生有效的“委员会”。从这一角度看，boosting与同为ensamble集成方法的bagging袋装方法非常相似。其实这种相似是非常表面的，boosting与bagging有着本质的区别。 boosting的过程就是不断地修改数">
+<meta name="keywords" content="boosting,损失函数,ensamble,adaboost">
+<meta property="og:type" content="article">
+<meta property="og:title" content="boosting与指数损失——Adaboost">
+<meta property="og:url" content="http://yoursite.com/2017/08/01/boosting与指数损失/index.html">
+<meta property="og:site_name" content="小学之路">
+<meta property="og:description" content="boosting-不平等的委员会boosting提升方法的动机是合并许多“弱”学习器输出以产生有效的“委员会”。从这一角度看，boosting与同为ensamble集成方法的bagging袋装方法非常相似。其实这种相似是非常表面的，boosting与bagging有着本质的区别。 boosting的过程就是不断地修改数据集，在此之上应用弱学习器，由此产生一个弱学习器序列$b(x;\gamma_m)">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-11-30T11:06:20.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="boosting与指数损失——Adaboost">
+<meta name="twitter:description" content="boosting-不平等的委员会boosting提升方法的动机是合并许多“弱”学习器输出以产生有效的“委员会”。从这一角度看，boosting与同为ensamble集成方法的bagging袋装方法非常相似。其实这种相似是非常表面的，boosting与bagging有着本质的区别。 boosting的过程就是不断地修改数据集，在此之上应用弱学习器，由此产生一个弱学习器序列$b(x;\gamma_m)">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/08/01/boosting与指数损失/"/>
+
+
+
+
+
+  <title>boosting与指数损失——Adaboost | 小学之路</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3b9de7582df94dad7be13b2e75675386";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">小学之路</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/08/01/boosting与指数损失/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Yiyang Peng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/7233064.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小学之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">boosting与指数损失——Adaboost</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-01T15:59:22+08:00">
+                2017-08-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/机器学习/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/08/01/boosting与指数损失/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/08/01/boosting与指数损失/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="boosting-不平等的委员会"><a href="#boosting-不平等的委员会" class="headerlink" title="boosting-不平等的委员会"></a>boosting-不平等的委员会</h1><p>boosting提升方法的动机是合并许多“弱”学习器输出以产生有效的“委员会”。从这一角度看，boosting与同为ensamble集成方法的bagging袋装方法非常相似。其实这种相似是非常表面的，boosting与bagging有着本质的区别。</p>
+<p>boosting的过程就是不断地修改数据集，在此之上应用弱学习器，由此产生一个弱学习器序列$b(x;\gamma_m), m = 1, 2, ..., M$。最后通过加权的多数表决来合并每个弱学习器的预测结果。总的学习器可以写成：<br>
+$$f(x) = \sum_{m=1}^M \beta_m b(x; \gamma_m) \tag 1$$
+<br>其中，$\beta_m > 0$为若学习器$b(x;\gamma_m)$的权重，$\gamma_m$为$b_m(x)$的模型参数。显然，Boosting是加权表决，和Bagging的平均表决有着本质区别：前者的委员会是不平等的，后者的委员会是一人一票的。这也导致二者修改数据集的方式不相同。从这里开始，Boosting和Bagging彻底不同了。</p>
+<h1 id="Boosting与加法模型"><a href="#Boosting与加法模型" class="headerlink" title="Boosting与加法模型"></a>Boosting与加法模型</h1><p>观测式(1),可以发现Boosting是一种建立在弱学习器集合上的加法模型。<br>
+$$f(x) = \sum_{m=1}^M \beta_m b(x; \gamma_m)$$
+</p>
+<blockquote>
+<ul>
+<li>在单隐藏层神经网络中，$b(x;w_m,b_m)=\sigma(w_m^Tx+b_m)$，其中$\gamma_m=(w_m,b_m)$是偏置和连接上的权重<br></li>
+<li>在小波变换里，$b(x;j_m,k_m)=2^{j_m/2}\phi(2^{j_m}x-k_m)$, 其中$\gamma_m=(j_m,k_m)$是对母小波$\phi$(如Haar，symmlet)的缩放和位移</li>
+<li>在MARS多元自适应回归样条里,$b_m(x;t_m)=b_i(x)(x-t_m)_+ + b_i(x)(t_m-x)_+, i \leq m$, 其中$\gamma_m=t_m$是分段函数的扭结</li>
+<li>对于树，$b(x;R_{mj},\theta_m)=\sum_{j=1}^J\theta_{mj}I(x \in R_{mj})$，其中$\gamma_m=(R_{mj},\theta_{mj})$是树的矩形子空间划分和每个子空间上的均值(回归)或多数类(分类)</li>
+</ul>
+</blockquote>
+<p>模型求解策略一般都是最小化经验损失，如<br>
+$$\min_{\beta_m, \gamma_m}\sum_{i=1}^NL\bigg(y_i, \sum_{m=1}^M\beta_m b(x_i;\gamma_m)\bigg)\tag 2$$
+<br>但是数值求解boosting“委员会”时，“委员会”中还有多个弱学习器，所有弱学习器一同求解是比较困难的(当时是90年代)，但是贪心地，迭代地，一次只拟合一个弱学习器则是可行且快速的解决方案。</p>
+<h1 id="前向分步拟合Boosting"><a href="#前向分步拟合Boosting" class="headerlink" title="前向分步拟合Boosting"></a>前向分步拟合Boosting</h1><p>通过相继添加新的弱学习器到“委员会”（总的模型）里，而不调整已添加的弱学习器的模型参数及其在委员会中的权重系数，来逼近式(2)的解。算法如下</p>
+<blockquote>
+<p>前向分步拟合算法</p>
+<ol>
+<li>初始化$f_0(x)=0$</li>
+<li>对于m=1到M:<br>(a)计算 <bt>$$(\beta_m, \gamma_m)=\arg\min_{\beta, \gamma}\sum_{i=1}^NL\bigg(y_i, f_{m-1}(x_i)+\beta b(x_i;\gamma)\bigg) \tag 3$$ <br>(b)更新$f_m(x)=f_{m-1}(x)+\beta_m b(x; \gamma_m)$</bt></li>
+</ol>
+</blockquote>
+<p>算法的要点是：在第m次迭代中，求解最优的弱学习器$b(x;\gamma_m)$和响应的系数$\beta_m$,并将其添加到当前的“委员会”$f_{m-1}(x)$中，由此产生新的“委员会”$f_{m}(x)$。之前添加的项并不会改变，每次都添加最优的弱学习器，这包含着<strong>贪心</strong>的思想。</p>
+<h1 id="前向分步拟合-指数损失-Adaboost"><a href="#前向分步拟合-指数损失-Adaboost" class="headerlink" title="前向分步拟合+指数损失=Adaboost"></a>前向分步拟合+指数损失=Adaboost</h1><h2 id="指数经验损失"><a href="#指数经验损失" class="headerlink" title="指数经验损失"></a>指数经验损失</h2><p>考虑一个2分类问题，数据集为$\{x_i, y_i\}_{i=1}^N$，其中 $y_i \in \{ -1, 1\}$。面对分类问题，有时我们会使用指数损失：<br>$$L(y,f(x))=\exp(-yf(x))$$<br>对式(3)我们使用指数损失：</p>
+
+$$\begin{aligned}(\beta_m, \gamma_m) 
+    &= \arg\min_{\beta, \gamma}\sum_{i=1}^N \exp[-y_i(f_{m-1}(x_i)+\beta b(x_i;\gamma))] \\
+    &= \arg\min_{\beta, \gamma}\sum_{i=1}^N \exp(-y_if_{m-1}(x_i))\exp(-y_i\beta b(x_i;\gamma)) \\
+    &= \arg\min_{\beta, \gamma}\sum_{i=1}^N w_i^{(m)}\exp(-y_i\beta b(x_i;\gamma))
+\end{aligned}\tag 4 $$
+
+<p>由于$\exp(-y_if_{m-1}(x_i))$和$\beta, \gamma$无关，可以看做数值优化求解过程中的常数，但它与i,m有关，即和样本、迭代次数有关，令<br>$$w_i^{(m)}=\exp(-y_if_{m-1}(x_i)) \tag 5$$<br>把它看做第m次迭代时，样本i的损失权重，样本权重根据迭代而改变。</p>
+<h2 id="求解弱学习器参数"><a href="#求解弱学习器参数" class="headerlink" title="求解弱学习器参数"></a>求解弱学习器参数</h2>$\beta$与$\gamma$不存在相互依赖的关系，可以分开优化，对于任意的$\beta > 0$与样本无关,因此<br><br>
+$$\begin{aligned}
+\gamma_m & = \arg\min_{\gamma}\sum_{i=1}^N w_i^{(m)}\exp(-y_i\beta b(x_i;\gamma)) \\
+& = \arg\min_{\gamma}\exp(\beta)\sum_{i=1}^N w_i^{(m)}\exp(-y_i b(x_i;\gamma)) \\
+& = \arg\min_{\gamma}\sum_{i=1}^N w_i^{(m)}\exp(-y_i b(x_i;\gamma)) \\
+& = \arg\min_{\gamma}\sum_{i=1}^N w_i^{(m)}I(y_i \neq b(x_i;\gamma))
+\end{aligned} \tag 6 $$
+
+<blockquote>
+<p>注意$y_i$的取值为{+1，-1}，当$y_i=b(x;\gamma)$时，$\exp(-y_i b(x_i;\gamma))$和$I(y_i \neq b(x_i;\gamma))$都取到各自的最小值;当$y_i \neq b(x;\gamma)$时，$\exp(-y_i b(x_i;\gamma))$和$I(y_i \neq b(x_i;\gamma))$都取到各自的最大值。</p>
+</blockquote>
+<h2 id="求解弱学习器在boosting中的系数"><a href="#求解弱学习器在boosting中的系数" class="headerlink" title="求解弱学习器在boosting中的系数"></a>求解弱学习器在boosting中的系数</h2><p>对$\gamma$的优化变成了对单弱学习器参数的求解，得到$\gamma_m$。下面优化系数$\beta_m$。</p>
+
+$$\begin{aligned}
+\beta_m & = \arg\min_{\beta}\sum_{i=1}^N w_i^{(m)}\exp(-y_i\beta b(x_i;\gamma_m)) \\
+& = \arg\min_{\beta}\sum_{i=1}^N \bigg\{ \begin{matrix}w_i^{(m)}\exp(-\beta) & y_i = b(x; \gamma_m) \\ w_i^{(m)}\exp(\beta) & y_i \neq b(x; \gamma_m)\end{matrix} \\
+& = \arg\min_{\beta}\sum_{y_i = b(x; \gamma_m)} w_i^{(m)}e^{-\beta} + \sum_{y_i \neq b(x; \gamma_m)} w_i^{(m)}e^{\beta}\\
+& = \arg\min_{\beta} \bigg(e^{-\beta}\sum_{y_i = b(x; \gamma_m)} w_i^{(m)} + e^{\beta}\sum_{y_i \neq b(x; \gamma_m)} w_i^{(m)}\bigg) \\
+& = \arg\min_{\beta} \bigg(e^{-\beta}\sum_{y_i = b(x; \gamma_m)} w_i^{(m)} + e^{-\beta}\sum_{y_i \neq b(x; \gamma_m)} w_i^{(m)} - e^{-\beta}\sum_{y_i \neq b(x; \gamma_m)} w_i^{(m)} + e^{\beta}\sum_{y_i \neq b(x; \gamma_m)} w_i^{(m)}\bigg) \\
+& = \arg\min_{\beta} \bigg(e^{-\beta}\sum_{i=1}^N w_i^{(m)} + (e^{\beta}-e^{-\beta})\sum_{y_i \neq b(x; \gamma_m)} w_i^{(m)} \bigg)\\
+& = \arg\min_{\beta} \bigg(e^{-\beta}\sum_{i=1}^N w_i^{(m)} + (e^{\beta}-e^{-\beta})\sum_{i=1}^N w_i^{(m)}I(y_i \neq b(x; \gamma_m))\bigg)
+\end{aligned}\tag 7$$
+
+<p>式(7)可以看做是$\beta$的一元函数优化问题，由于$e^{-\beta}$与$e^{\beta}$都是凸函数，它们的组合也是凸函数，因此0梯度点是全局最优解。令目标函数导数为0</p>
+
+$$\begin{aligned}
+& \frac{\partial}{\partial \beta} \bigg(e^{-\beta}\sum_{i=1}^N w_i^{(m)} + (e^{\beta}-e^{-\beta})\sum_{i=1}^N w_i^{(m)}I(y_i \neq b(x; \gamma_m))\bigg) \\
+& = -e^{\beta}\sum_{i=1}^N w_i^{(m)} + 2e^{-\beta}\sum_{i=1}^N w_i^{(m)}I(y_i \neq b(x; \gamma_m)) = 0
+\end{aligned} \tag 8$$
+
+<p>解式(8)得<br>$$\beta_m=\frac{1}{2}\log\frac{1-err_m}{err_m} \tag 9$$<br>其中<br>$$err_m=\frac{\sum_{i=1}^Nw_i^{(m)}I(y_i \neq b(x; \gamma_m))}{\sum_{i=1}^Nw_i^{(m)}} \tag{10}$$<br>是最小化的、当前迭代中的、单个弱学习器的、带权的误差率。这样我们可以更新“委员会”了：<br>$$f_m(x)=f_{m-1}(x)+\beta_m b(x; \gamma_m)$$<br>别忘了前面定义的样本损失权重式(5),它与迭代次数m有关，每次迭代都需要更新</p>
+
+$$\begin{aligned}
+w_i^{(m+1)} & = \exp(-y_if_m(x_i)) \\
+& = \exp \Big(-y_i(f_{m-1}(x_i)+\beta_m b(x_i; \gamma_m))\Big) \\
+& = \exp(-y_if_{m-1}(x_i)) \cdot \exp(-y_i\beta_m b(x_i; \gamma_m)) \\
+& = w_i^{(m)} \cdot \exp(-\beta_m y_i b(x_i; \gamma_m)) \\
+& = w_i^{(m)} \cdot \exp \Big(\beta_m \cdot (2I(y_i \neq b(x_i; \gamma_m))-1)\Big) \\
+& = w_i^{(m)} \cdot \exp \Big(2\beta_m I(y_i \neq b(x_i; \gamma_m))-\beta_m \Big) \\
+& = w_i^{(m)} \cdot \exp \Big(2\beta_m I(y_i \neq b(x_i; \gamma_m))\Big)e^{-\beta_m}
+\end{aligned}  \tag{11}$$
+
+<h2 id="导出与adaboost的等价性"><a href="#导出与adaboost的等价性" class="headerlink" title="导出与adaboost的等价性"></a>导出与adaboost的等价性</h2><p>因为每个样本的权重都乘以因子$e^{-\beta_m}$,所以乘不乘都没关系，令<br>$$\alpha_m = 2\beta_m = \log\frac{1-err_m}{err_m} \tag{12}$$<br>有<br>$$w_i^{(m+1)} = w_i^{(m)} \cdot \exp \Big(\alpha_m I(y_i \neq b(x_i; \gamma_m))\Big) \tag{13}$$<br>最后，每个弱学习器的系数都乘以2，学习器间的权重分布未变，总模型“委员会”为<br>$$f(x)=sign\Big( \sum_{m=1}^M \alpha_m b_m(x)\Big)$$</p>
+<p>我们把上面的过程简化，写成算法的形式：</p>
+<blockquote>
+<ol>
+<li>初始化样本权重$w_i=1/N,i=1,2,...,N$<br></li>
+<li>对于m=1,…,M:<br><br>(a)在样本权重为$w_i$的训练集上拟合一个弱学习器$b(x;\gamma_m)$<br>(b)计算<br>$$err_m=\frac{\sum_{i=1}^Nw_i^{(m)}I(y_i \neq b(x; \gamma_m))}{\sum_{i=1}^Nw_i^{(m)}}$$ (c)计算<br> $$\alpha_m = \log\frac{1-err_m}{err_m}$$ (d)更新样本权重$w_i^{(m+1)} = w_i^{(m)} \cdot \exp \Big(\alpha_m I(y_i \neq b(x_i; \gamma_m))\Big),i=1,2,...,N$</li>
+<li>输出最终模型$f(x)=sign\Big( \sum_{m=1}^M \alpha_m b_m(x)\Big)$</li>
+</ol>
+</blockquote>
+<p>我们惊奇地发现，这个算法和Adaboost一模一样。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/boosting/" rel="tag"># boosting</a>
+          
+            <a href="/tags/损失函数/" rel="tag"># 损失函数</a>
+          
+            <a href="/tags/ensamble/" rel="tag"># ensamble</a>
+          
+            <a href="/tags/adaboost/" rel="tag"># adaboost</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/30/加法模型/" rel="next" title="加法模型感想">
+                <i class="fa fa-chevron-left"></i> 加法模型感想
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/06/boosting与平方损失/" rel="prev" title="boosting与平方损失">
+                boosting与平方损失 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/7233064.jpg"
+               alt="Yiyang Peng" />
+          <p class="site-author-name" itemprop="name">Yiyang Peng</p>
+           
+              <p class="site-description motion-element" itemprop="description">小学生的学习之路</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">36</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">43</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/yiyang186" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/peng-yiyang-88" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  知乎
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#boosting-不平等的委员会"><span class="nav-number">1.</span> <span class="nav-text">boosting-不平等的委员会</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Boosting与加法模型"><span class="nav-number">2.</span> <span class="nav-text">Boosting与加法模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#前向分步拟合Boosting"><span class="nav-number">3.</span> <span class="nav-text">前向分步拟合Boosting</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#前向分步拟合-指数损失-Adaboost"><span class="nav-number">4.</span> <span class="nav-text">前向分步拟合+指数损失=Adaboost</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#指数经验损失"><span class="nav-number">4.1.</span> <span class="nav-text">指数经验损失</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#求解弱学习器参数"><span class="nav-number">4.2.</span> <span class="nav-text">求解弱学习器参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#求解弱学习器在boosting中的系数"><span class="nav-number">4.3.</span> <span class="nav-text">求解弱学习器在boosting中的系数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#导出与adaboost的等价性"><span class="nav-number">4.4.</span> <span class="nav-text">导出与adaboost的等价性</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yiyang Peng</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://yiyang186.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2017/08/01/boosting与指数损失/';
+          this.page.identifier = '2017/08/01/boosting与指数损失/';
+          this.page.title = 'boosting与指数损失——Adaboost';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://yiyang186.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="矩阵," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="定义 广义逆$A_{m \times n}, X_{m \times n}$，若X满足moore-penrose条件   AXA=A XAX=X $(AX)^H=AX$ $(XA)^H=XA$中的一部分，称X是A的广义逆矩阵, 简称广义逆   伪逆$A^+$  如果X满足上述所有moore-penrose条件，则称X是">
+<meta name="keywords" content="矩阵">
+<meta property="og:type" content="article">
+<meta property="og:title" content="矩阵的广义逆">
+<meta property="og:url" content="http://yoursite.com/2016/02/01/3 广义逆矩阵/index.html">
+<meta property="og:site_name" content="小学之路">
+<meta property="og:description" content="定义 广义逆$A_{m \times n}, X_{m \times n}$，若X满足moore-penrose条件   AXA=A XAX=X $(AX)^H=AX$ $(XA)^H=XA$中的一部分，称X是A的广义逆矩阵, 简称广义逆   伪逆$A^+$  如果X满足上述所有moore-penrose条件，则称X是A的伪逆，或加号逆（M-P逆），记为$A^+$, 若A可逆，则$A^{-1} =">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://img.blog.csdn.net/20160201113818041">
+<meta property="og:updated_time" content="2017-11-30T11:05:24.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="矩阵的广义逆">
+<meta name="twitter:description" content="定义 广义逆$A_{m \times n}, X_{m \times n}$，若X满足moore-penrose条件   AXA=A XAX=X $(AX)^H=AX$ $(XA)^H=XA$中的一部分，称X是A的广义逆矩阵, 简称广义逆   伪逆$A^+$  如果X满足上述所有moore-penrose条件，则称X是A的伪逆，或加号逆（M-P逆），记为$A^+$, 若A可逆，则$A^{-1} =">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20160201113818041">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/02/01/3 广义逆矩阵/"/>
+
+
+
+
+
+  <title>矩阵的广义逆 | 小学之路</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3b9de7582df94dad7be13b2e75675386";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">小学之路</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/02/01/3 广义逆矩阵/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Yiyang Peng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/7233064.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小学之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">矩阵的广义逆</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-02-01T17:30:00+08:00">
+                2016-02-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数学/" itemprop="url" rel="index">
+                    <span itemprop="name">数学</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/02/01/3 广义逆矩阵/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2016/02/01/3 广义逆矩阵/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h1><ul>
+<li>广义逆<br>$A_{m \times n}, X_{m \times n}$，若X满足moore-penrose条件</li>
+</ul>
+<ol>
+<li>AXA=A</li>
+<li>XAX=X</li>
+<li>$(AX)^H=AX$</li>
+<li>$(XA)^H=XA$<br>中的一部分，称X是A的广义逆矩阵, 简称广义逆</li>
+</ol>
+<ul>
+<li><p>伪逆$A^+$</p>
+<ul>
+<li>如果X满足上述所有moore-penrose条件，则称X是A的伪逆，或加号逆（M-P逆），记为$A^+$, 若A可逆，则$A^{-1} = A^+$。</li>
+<li>$\forall A_{n \times n} \in C，A^+$ 存在且唯一。</li>
+<li>性质</li>
+</ul>
+<ol>
+<li>$AA^+A=A$</li>
+<li>$A^+A A^+= A^+$</li>
+<li>$(AA^+)^H = AA^+$</li>
+<li>$(A^+A)^H = A^+A$</li>
+</ol>
+</li>
+<li><p>伪逆的运算<br>设$A_{n \times n} \in C$，则</p>
+</li>
+</ul>
+<ol>
+<li>伪逆的伪逆是自己，$(A^+)^+ = A$</li>
+<li>共轭转置的伪逆=伪逆的共轭转置，$(A^H)^+ = (A^+)^H$</li>
+<li>转置的伪逆=伪逆的转置，$(A^T)^+ = (A^+)^T$</li>
+<li>$(A^HA)^+ = A^+(A^H)^+，(AA^H)^+ = (A^H)^+A^+$</li>
+<li>一般的伪逆不能去括号，$(AB)^+ ≠ B^+A^+$</li>
+<li>一般地，A乘A的伪逆不等于单位阵，$A^+A ≠ AA^+ ≠ I$</li>
+<li>伪逆的秩=本身的秩，$r(A^+) = r(A)$</li>
+<li>$A^+ = (A^HA)^+A^H = A^H (AA^H)^+$ </li>
+<li>伪逆的像空间=共轭转置的像空间$R(A^+) = R(A^H)$</li>
+<li>伪逆的核空间=共轭转置的核空间$N(A^+) = N(A^H)$<br><img src="http://img.blog.csdn.net/20160201113818041" alt="这里写图片描述"></li>
+</ol>
+<ul>
+<li>A的{n}逆<br>满足第n个moore-pensore条件的广义逆叫做A的{n}逆，记作A(n), n=1,2,3,4，如：</li>
+</ul>
+<ol>
+<li>满足第1个mp条件为A的{1}逆，可写作A(1)，常记作$A^-$，也叫A的减号逆</li>
+<li>满足第2,3个mp条件的为A的{2,3}逆，可写作A(2,3)<br>以上均是A的广义逆</li>
+</ol>
+<h1 id="伪逆-A-的求法"><a href="#伪逆-A-的求法" class="headerlink" title="伪逆$A^+$的求法"></a>伪逆$A^+$的求法</h1><ul>
+<li>满秩分解求A+<br>对于$A_{m \times n}^r$, r &gt; 0, A有满秩分解 $A=F_{m \times r}G_{r \times n}$(列满秩×行满秩),则<br>$A^+ = G^H(GG^H)^{-1}(F^HF)^{-1}F^H = G^H(F^HAG^H)^{-1}F^H$<br>特别地，<br>当A列满秩，r=n时，$A^+ = (A^HA)^{-1}A^H$<br>当A行满秩，r=m时，$A^+ = A^H (AA^H)^{-1}$</li>
+</ul>
+<ul>
+<li>奇异值分解求$A^+$<br>对于$A_{m \times n}^r, r > 0$, A有奇异值分解</li>
+</ul>
+
+$$A=V\left(
+\begin{matrix}
+S_r & 0 \\
+0 & 0
+\end{matrix}
+\right)U^H$$
+
+<p>则有</p>
+
+$$A^+=U\left(
+\begin{matrix}
+S_r^{-1} & 0 \\
+0 & 0
+\end{matrix}
+\right)V^H$$
+
+<p>即UV位置对换，Sr取逆，对角元全变倒数：$Sr^{-1} = diag(σ_1^{-1}, … σ_r^{-1})$<br>或者，只需要U, $U=(U_1, U_2)$, 则$A^+ = U_1Λ_r^{-1}U_1^HA^H$, 这里$Λ_r=S_r^2=diag(λ_1, …, λ_n)$</p>
+<ul>
+<li>奇异值分解求A+的简化步骤：</li>
+</ul>
+<ol>
+<li>求出$A^HA$的r个非0特征值</li>
+<li>求出相应的特征向量，并schmidt正交化，组成酉高矩阵$U_1$</li>
+<li></li>
+</ol>
+
+$$A^+=U_1\left(
+\begin{matrix}
+λ_1^{-1} &  & \\
+ &  \ddots  &  \\
+ & & λ_r^{-1} \\
+\end{matrix}
+\right)U_1^HA^H$$
+
+<ul>
+<li>秩1公式求$A^+$：若r(A)=1, 则$$A^+={1 \over \sum |a_{ij}|^2}A^H$$</li>
+</ul>
+<ul>
+<li>谱分解求$A^+$ (这个部分有些问题。。。有空再改)<br>$A^HA$有k个相异的特征值，$A^HA$的谱分解为$$A^HA= \sum_{i=1}^k λ_iG_i$$<br>这里$G_i = X_iY_i$，$X_i$是P的各列向量，$Y_i$是$P^{-1}$的各行向量，P是$A^HA$相似对角化时的可逆阵P, 则$$A^+=\sum_{i=1}^k λ_i{ \phi_i(A^HA) \over \phi_i(\lambda_i)}A^H$$
+其中$$\phi_i(\lambda)= \prod^k_{j=1, i≠j} (\lambda - \lambda_j)$$</li>
+</ul>
+<h1 id="广义逆与线性方程组"><a href="#广义逆与线性方程组" class="headerlink" title="广义逆与线性方程组"></a>广义逆与线性方程组</h1><ul>
+<li><p>方程组相容：<br>即Ax=b有解（当且仅当A列满秩时解唯一, $A_{m \times n}$）<br>Ax=b相容的充要条件为$AA^-b=b$, 其通解为：$$x=A^-b+(I_n-A^-A)y$$<br>y为n阶任意列向量，因为$A^+$是$A^-$的子集，所以将$A^-$替换为$A^+$也成立(这里的$I_n$的阶数与A的列数相等)： $$x=A^+b+(I_n-A^+A)y$$<br>极小范数解为：$$x_0=A^+b$$</p>
+</li>
+<li><p>方程组不相容：<br>x的最小二乘解的通解为：</p>
+$$x=A^+b+(I_n-A^+A)y$$
+<p>当且仅当A列满秩时，不相容方程组Ax=b的最小二乘解唯一，是：</p>
+$$x_0=A^+b$$
+<p>当A非列满秩时,最小二乘解不唯一，但上式是极小范数最小二乘解, 且唯一。</p>
+</li>
+</ul>
+<h1 id="A的-1-逆-A-的求法"><a href="#A的-1-逆-A-的求法" class="headerlink" title="A的{1}逆$A^-$的求法"></a>A的{1}逆$A^-$的求法</h1><p>对于$A_{m \times n}, \exists  P_m, Q_n$可逆，使得</p>
+
+$$PAQ=\left(
+\begin{matrix}
+I_r & 0 \\
+0 & 0
+\end{matrix}
+\right)U^H$$
+
+<p>则 </p>
+
+$$A^-=\left \{
+\begin{array}{c|c}
+Q\left(\begin{matrix}I_r & X_{12} \\
+X_{21} & X_{22} 
+\end{matrix} \right)P &X_{12},X_{21},X_{22}为任意适当阶子块
+\end{array} \right \}$$
+
+$X_{12}^{r \times (m-r)}， X_{12}^{(n-r) \times r}，X_{22}^{(n-r) \times (m-r)}$可取0, 则<br><br>
+$$A^-=Q\left( \begin{matrix} I_r & 0 \\
+ 0 & 0 \end{matrix} \right)P$$
+
+<p>特别地，当$A_{n \times n}$ 为方阵且可逆时，有$$PAQ=I_n$$此时$$A^- = QI_nP=QP=A^{-1}$$</p>
+<ul>
+<li>初等行变换求P, Q</li>
+</ul>
+
+$$
+\left(\begin{matrix}A_{m \times n} & I_m \\
+I_n & 0\end{matrix}\right) \longrightarrow \left(\begin{matrix} \left(\begin{matrix}I_n & 0 \\
+ 0 & 0\end{matrix}\right) & P \\
+ Q & 0\end{matrix}\right)
+$$
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/矩阵/" rel="tag"># 矩阵</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/01/31/2 矩阵的分解/" rel="next" title="几种常用矩阵分解">
+                <i class="fa fa-chevron-left"></i> 几种常用矩阵分解
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/02/12/4矩阵分析/" rel="prev" title="矩阵的范数与导数">
+                矩阵的范数与导数 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/7233064.jpg"
+               alt="Yiyang Peng" />
+          <p class="site-author-name" itemprop="name">Yiyang Peng</p>
+           
+              <p class="site-description motion-element" itemprop="description">小学生的学习之路</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">36</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">43</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/yiyang186" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/peng-yiyang-88" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  知乎
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#定义"><span class="nav-number">1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#伪逆-A-的求法"><span class="nav-number">2.</span> <span class="nav-text">伪逆$A^+$的求法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#广义逆与线性方程组"><span class="nav-number">3.</span> <span class="nav-text">广义逆与线性方程组</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#A的-1-逆-A-的求法"><span class="nav-number">4.</span> <span class="nav-text">A的{1}逆$A^-$的求法</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yiyang Peng</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://yiyang186.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2016/02/01/3 广义逆矩阵/';
+          this.page.identifier = '2016/02/01/3 广义逆矩阵/';
+          this.page.title = '矩阵的广义逆';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://yiyang186.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
