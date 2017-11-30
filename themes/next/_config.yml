@@ -302,8 +302,8 @@ baidu_analytics: 3b9de7582df94dad7be13b2e75675386
 
 # Disqus
 disqus:
-  enable: false
-  shortname:
+  enable: true
+  shortname: yiyang186
   count: true
 
 # Hypercomments
