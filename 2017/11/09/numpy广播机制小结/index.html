@@ -102,7 +102,7 @@
 <meta property="og:description" content="广播numpy中数组的广播机制可以参考Array Broadcasting in numpy。numpy数组间的基础运算是element-by-element的，如a+b的结果就是a与b数组对应位相加，必须满足a.shape == b.shape。这要求维数相同，且各维度的长度相同。当运算中的2个数组的shape不同时，numpy将自动触发广播机制。如：1234567891011&amp;gt;&amp;gt;&amp;">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://scipy.github.io/old-wiki/pages/image0020619.gif?action=AttachFile&do=get&target=image002.gif">
-<meta property="og:updated_time" content="2017-11-09T16:39:01.687Z">
+<meta property="og:updated_time" content="2017-11-30T11:07:28.998Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Numpy广播机制小结">
 <meta name="twitter:description" content="广播numpy中数组的广播机制可以参考Array Broadcasting in numpy。numpy数组间的基础运算是element-by-element的，如a+b的结果就是a与b数组对应位相加，必须满足a.shape == b.shape。这要求维数相同，且各维度的长度相同。当运算中的2个数组的shape不同时，numpy将自动触发广播机制。如：1234567891011&amp;gt;&amp;gt;&amp;">
@@ -354,6 +354,17 @@
 
           
             
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/11/09/numpy广播机制小结/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/11/09/numpy广播机制小结/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
@@ -406,22 +417,7 @@
 <li>两个维度的长度是相等的或者有一方长度为1则称这两个维度兼容；</li>
 <li>广播机制可以提高代码执行效率并简化代码，但当广播后得到的中间结果所占空间大于空闲物理内存时，效率变得非常低，当中间结果所需空间大于可用虚拟内存时，内存溢出，引发<code>Memory Error</code>。</li>
 </ol>
-<p><div id="container"></div></p>
-<p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
-<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
-<script>
-var gitment = new Gitment({
-  id: 'numpy_broadcasting',
-  title: 'Numpy广播机制小结',
-  owner: 'yiyang186',
-  repo: 'blog_comment',
-  oauth: {
-    client_id: '2786ddc8538588bfc0c8',
-    client_secret: '83713f049f4b7296d27fe579a30cdfe9e2e45215',
-  },
-})
-gitment.render('container')
-</script>
+
       
     </div>
 
@@ -500,6 +496,13 @@ gitment.render('container')
 
           
   <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
     
   </div>
 
@@ -759,7 +762,31 @@ gitment.render('container')
   
 
 
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://yiyang186.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2017/11/09/numpy广播机制小结/';
+          this.page.identifier = '2017/11/09/numpy广播机制小结/';
+          this.page.title = 'Numpy广播机制小结';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://yiyang186.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
 <script type="text/x-mathjax-config">
   MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
 </script>
@@ -777,11 +804,7 @@ gitment.render('container')
 </script>
 <!-- End: Injected MathJax -->
 <!-- hexo-inject:end -->
-
-
-
-  
-
+    
 
   
 
@@ -797,10 +820,6 @@ gitment.render('container')
   
 
 
-
-
-
-  
 
 
 

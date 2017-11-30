@@ -103,7 +103,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://img.blog.csdn.net/20170524194815680?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcTF3MmUzcjQ0NzA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
 <meta property="og:image" content="http://img.blog.csdn.net/20170524194715913?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcTF3MmUzcjQ0NzA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
-<meta property="og:updated_time" content="2017-08-06T03:19:21.951Z">
+<meta property="og:updated_time" content="2017-11-30T11:08:59.356Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="前端实时更新后端处理进度">
 <meta name="twitter:description" content="交互逻辑 点击页面的“提交”button，向后台发送数据处理请求； 后台处理数据； 前端根据后台的处理进度实时更新进度条。  个人愚见：能在前端估计出进度的尽量在前端做伪实时的进度条(像发送文件那种)，这才是上策；实在没法估计后台计算时间，又实在是等的久的让人难熬的才这么干，这是下下策。  功能实现前端HTML Html页面用boostrap的进度条,  进度条由2个div嵌套而成，修改内层div">
@@ -355,6 +355,17 @@
 
           
             
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/05/24/前端实时更新后端处理进度/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/05/24/前端实时更新后端处理进度/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
@@ -400,23 +411,6 @@
 <hr>
 <h1 id="实现效果"><a href="#实现效果" class="headerlink" title="实现效果"></a>实现效果</h1><p>未完成形态<br><img src="http://img.blog.csdn.net/20170524194815680?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcTF3MmUzcjQ0NzA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"></p>
 <p>完成形态<br><img src="http://img.blog.csdn.net/20170524194715913?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcTF3MmUzcjQ0NzA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"></p>
-<hr>
-<p><div id="container"></div></p>
-<p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
-<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
-<script>
-var gitment = new Gitment({
-  id: 'backend_progress',
-  title: '前端实时更新后端处理进度',
-  owner: 'yiyang186',
-  repo: 'blog_comment',
-  oauth: {
-    client_id: '2786ddc8538588bfc0c8',
-    client_secret: '83713f049f4b7296d27fe579a30cdfe9e2e45215',
-  },
-})
-gitment.render('container')
-</script>
 
       
     </div>
@@ -498,6 +492,13 @@ gitment.render('container')
 
           
   <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
     
   </div>
 
@@ -757,7 +758,31 @@ gitment.render('container')
   
 
 
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://yiyang186.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2017/05/24/前端实时更新后端处理进度/';
+          this.page.identifier = '2017/05/24/前端实时更新后端处理进度/';
+          this.page.title = '前端实时更新后端处理进度';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://yiyang186.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
 <script type="text/x-mathjax-config">
   MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
 </script>
@@ -775,11 +800,7 @@ gitment.render('container')
 </script>
 <!-- End: Injected MathJax -->
 <!-- hexo-inject:end -->
-
-
-
-  
-
+    
 
   
 
@@ -795,10 +816,6 @@ gitment.render('container')
   
 
 
-
-
-
-  
 
 
 

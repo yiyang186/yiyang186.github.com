@@ -101,7 +101,7 @@
 <meta property="og:site_name" content="小学之路">
 <meta property="og:description" content="boosting-不平等的委员会boosting提升方法的动机是合并许多“弱”学习器输出以产生有效的“委员会”。从这一角度看，boosting与同为ensamble集成方法的bagging袋装方法非常相似。其实这种相似是非常表面的，boosting与bagging有着本质的区别。 boosting的过程就是不断地修改数据集，在此之上应用弱学习器，由此产生一个弱学习器序列$b(x;\gamma_m)">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-08-10T03:23:09.664Z">
+<meta property="og:updated_time" content="2017-11-30T11:06:20.560Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="boosting与指数损失——Adaboost">
 <meta name="twitter:description" content="boosting-不平等的委员会boosting提升方法的动机是合并许多“弱”学习器输出以产生有效的“委员会”。从这一角度看，boosting与同为ensamble集成方法的bagging袋装方法非常相似。其实这种相似是非常表面的，boosting与bagging有着本质的区别。 boosting的过程就是不断地修改数据集，在此之上应用弱学习器，由此产生一个弱学习器序列$b(x;\gamma_m)">
@@ -352,6 +352,17 @@
 
           
             
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/08/01/boosting与指数损失/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/08/01/boosting与指数损失/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
@@ -461,22 +472,6 @@ w_i^{(m+1)} & = \exp(-y_if_m(x_i)) \\
 </ol>
 </blockquote>
 <p>我们惊奇地发现，这个算法和Adaboost一模一样。</p>
-<p><div id="container"></div></p>
-<p><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"></p>
-<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
-<script>
-var gitment = new Gitment({
-  id: 'boosting_exponential_loss',
-  title: 'boosting与指数损失——Adaboost',
-  owner: 'yiyang186',
-  repo: 'blog_comment',
-  oauth: {
-    client_id: '2786ddc8538588bfc0c8',
-    client_secret: '83713f049f4b7296d27fe579a30cdfe9e2e45215',
-  },
-})
-gitment.render('container')
-</script>
 
       
     </div>
@@ -562,6 +557,13 @@ gitment.render('container')
 
           
   <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
     
   </div>
 
@@ -821,7 +823,31 @@ gitment.render('container')
   
 
 
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://yiyang186.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2017/08/01/boosting与指数损失/';
+          this.page.identifier = '2017/08/01/boosting与指数损失/';
+          this.page.title = 'boosting与指数损失——Adaboost';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://yiyang186.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
 <script type="text/x-mathjax-config">
   MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
 </script>
@@ -839,11 +865,7 @@ gitment.render('container')
 </script>
 <!-- End: Injected MathJax -->
 <!-- hexo-inject:end -->
-
-
-
-  
-
+    
 
   
 
@@ -859,10 +881,6 @@ gitment.render('container')
   
 
 
-
-
-
-  
 
 
 
