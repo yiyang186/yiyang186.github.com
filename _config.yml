@@ -79,4 +79,4 @@ theme: next #landscape
 deploy:
   type: git
   repo: https://github.com/yiyang186/yiyang186.github.com.git
-  branch: master
+  branch: website
