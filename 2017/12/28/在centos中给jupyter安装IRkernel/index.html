@@ -77,7 +77,7 @@
 <link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="boosting,ensamble,梯度提升,GBDT,决策树," />
+  <meta name="keywords" content="R,jupyter," />
 
 
 
@@ -93,18 +93,20 @@
 
 
 
-<meta name="description" content="梯度提升(Gradient boosting)对于任意的可微的损失函数，我们可以在迭代的过程中求出梯度，再以弱学习器去拟合负梯度来完成梯度提升算法。在boosting与平方损失中，我们发现前向分步拟合算法每次迭代中，当前的残差就是经验损失相对于当前预测函数值的负梯度。需要注意:对于其他非平方损失的可微损失函数，负梯度不等于残差，而是残差的近似，因此在梯度提升算法中负梯度也被称为伪残差(pseudo">
-<meta name="keywords" content="boosting,ensamble,梯度提升,GBDT,决策树">
+<meta name="description" content="环境： os: centos7 R: 3.4.2 jupyter: 4.4.0  坑预告 R中无法安装git2r, devtools IRkernel::installspec()找不到jupyter  安装准备确保下面这些工具已经被安装在系统中1yum install gcc gcc-c++ gcc-gfortran pcre-devel tcl-devel zlib-devel bzip2-d">
+<meta name="keywords" content="R,jupyter">
 <meta property="og:type" content="article">
-<meta property="og:title" content="从梯度提升到GBDT">
-<meta property="og:url" content="http://yoursite.com/2017/08/10/从梯度提升到GBDT/index.html">
+<meta property="og:title" content="在centos中给jupyter安装IRkernel">
+<meta property="og:url" content="http://yoursite.com/2017/12/28/在centos中给jupyter安装IRkernel/index.html">
 <meta property="og:site_name" content="小学之路">
-<meta property="og:description" content="梯度提升(Gradient boosting)对于任意的可微的损失函数，我们可以在迭代的过程中求出梯度，再以弱学习器去拟合负梯度来完成梯度提升算法。在boosting与平方损失中，我们发现前向分步拟合算法每次迭代中，当前的残差就是经验损失相对于当前预测函数值的负梯度。需要注意:对于其他非平方损失的可微损失函数，负梯度不等于残差，而是残差的近似，因此在梯度提升算法中负梯度也被称为伪残差(pseudo">
+<meta property="og:description" content="环境： os: centos7 R: 3.4.2 jupyter: 4.4.0  坑预告 R中无法安装git2r, devtools IRkernel::installspec()找不到jupyter  安装准备确保下面这些工具已经被安装在系统中1yum install gcc gcc-c++ gcc-gfortran pcre-devel tcl-devel zlib-devel bzip2-d">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-11-30T11:08:00.007Z">
+<meta property="og:image" content="http://i4.fuimg.com/602416/ad3f949165a86dcc.png">
+<meta property="og:updated_time" content="2017-12-28T01:38:43.605Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="从梯度提升到GBDT">
-<meta name="twitter:description" content="梯度提升(Gradient boosting)对于任意的可微的损失函数，我们可以在迭代的过程中求出梯度，再以弱学习器去拟合负梯度来完成梯度提升算法。在boosting与平方损失中，我们发现前向分步拟合算法每次迭代中，当前的残差就是经验损失相对于当前预测函数值的负梯度。需要注意:对于其他非平方损失的可微损失函数，负梯度不等于残差，而是残差的近似，因此在梯度提升算法中负梯度也被称为伪残差(pseudo">
+<meta name="twitter:title" content="在centos中给jupyter安装IRkernel">
+<meta name="twitter:description" content="环境： os: centos7 R: 3.4.2 jupyter: 4.4.0  坑预告 R中无法安装git2r, devtools IRkernel::installspec()找不到jupyter  安装准备确保下面这些工具已经被安装在系统中1yum install gcc gcc-c++ gcc-gfortran pcre-devel tcl-devel zlib-devel bzip2-d">
+<meta name="twitter:image" content="http://i4.fuimg.com/602416/ad3f949165a86dcc.png">
 
 
 
@@ -132,13 +134,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2017/08/10/从梯度提升到GBDT/"/>
+  <link rel="canonical" href="http://yoursite.com/2017/12/28/在centos中给jupyter安装IRkernel/"/>
 
 
 
 
 
-  <title>从梯度提升到GBDT | 小学之路</title>
+  <title>在centos中给jupyter安装IRkernel | 小学之路</title>
   
 
 
@@ -287,7 +289,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/08/10/从梯度提升到GBDT/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/28/在centos中给jupyter安装IRkernel/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Yiyang Peng">
@@ -304,7 +306,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">从梯度提升到GBDT</h1>
+          <h1 class="post-title" itemprop="name headline">在centos中给jupyter安装IRkernel</h1>
         
 
         <div class="post-meta">
@@ -316,8 +318,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-10T11:24:01+08:00">
-                2017-08-10
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-28T09:10:00+08:00">
+                2017-12-28
               </time>
             
 
@@ -339,8 +341,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/机器学习/" itemprop="url" rel="index">
-                    <span itemprop="name">机器学习</span>
+                  <a href="/categories/操作/" itemprop="url" rel="index">
+                    <span itemprop="name">操作</span>
                   </a>
                 </span>
 
@@ -357,9 +359,9 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2017/08/10/从梯度提升到GBDT/#comments" itemprop="discussionUrl">
+                <a href="/2017/12/28/在centos中给jupyter安装IRkernel/#comments" itemprop="discussionUrl">
                   <span class="post-comments-count disqus-comment-count"
-                        data-disqus-identifier="2017/08/10/从梯度提升到GBDT/" itemprop="commentCount"></span>
+                        data-disqus-identifier="2017/12/28/在centos中给jupyter安装IRkernel/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -384,59 +386,24 @@
       
 
       
-        <h2 id="梯度提升-Gradient-boosting"><a href="#梯度提升-Gradient-boosting" class="headerlink" title="梯度提升(Gradient boosting)"></a>梯度提升(Gradient boosting)</h2><p>对于任意的可微的损失函数，我们可以在迭代的过程中求出梯度，再以弱学习器去拟合负梯度来完成梯度提升算法。在<a href="/2017/08/06/boosting与平方损失/" title="boosting与平方损失">boosting与平方损失</a>中，我们发现前向分步拟合算法每次迭代中，当前的残差就是经验损失相对于当前预测函数值的负梯度。需要注意:对于其他非平方损失的可微损失函数，负梯度不等于残差，而是残差的近似，因此在梯度提升算法中负梯度也被称为伪残差(pseudo-residuals)。<br>再次提一下：<strong>当使用平方损失时，伪残差就是真残差，直接计算真残差就好了！但是梯度提升的适用范围更为广阔，所以我们没有提及用那种损失函数时，还是得说“伪残差”！！</strong><br>
-$$r_{m}\approx -\bigg[\frac{\partial L(y, f(x))}{\partial f(x)}\bigg]_{f(x)=f_{m}(x)} \tag{11}$$
-<br>这与<a href="/2017/08/06/boosting与平方损失/" title="boosting与平方损失">boosting与平方损失</a>中的梯度提升算法相比，我们仍然是拟合真实的梯度，仍然是在拟合的梯度方向上下降。不同点是我们得到了一个好处：可以使用任意的可微的损失函数。此外，负梯度方向是当前迭代中的最速下降方向，弱学习器拟合负梯度(伪残差)能获得更快的收敛速度，在前向分步拟合的迭代中，弱学习器拟合残差是贪婪的，拟合梯度也是贪婪的，都是近似解，何不要收敛更快的方法？</p>
-<blockquote>
-<p>梯度提升算法</p>
-<ol>
-<li>初始化$f_0(x)$为常量 <br>$$\gamma_0=\arg\min_{\gamma}L(y, b(x;\gamma))$$ $$f_0(x)=b(x;\gamma_0)$$</li>
-<li>对于m=1到M:<br>(a)计算伪残差，即负梯度<br>$$r_{m-1}=-\bigg[\frac{\partial L(y, f(x))}{\partial f(x)}\bigg]_{f(x)=f_{m-1}(x)}$$ 若梯度接近与0，可提前结束迭代<br> (b)以$b(x;\gamma_m)$拟合伪残差,估计模型参数$\gamma_m$<br>(c)估计最优步长 <bt>$$\beta_m = \arg\min_{\beta}L(r_{m-1}, \beta b(x;\gamma_m)) = \arg\min_{\beta}L(y, f_{m-1}(x)+\beta b(x;\gamma_m)) $$ (d)更新模型<br>$$f_m(x)=f_{m-1}(x)+\beta_m b(x; \gamma_m)$$</bt></li>
-</ol>
-</blockquote>
-<p><br></p>
-<blockquote>
-<p><strong>注意</strong>：这里的初始化与以往的前向分步拟合算法的初始化不同，其实只是把第二步中的第一次迭代放到初始化里来。此外，第一个弱学习器的权重为1。大家都有权重，其中一个权重设为1，相当于所有权重同乘以一个因子，对结果并没有影响。</p>
-</blockquote>
-<p>直到这里一直都没说用什么弱学习器$b(x;\gamma)$来拟合梯度（ $-r_m$ ）,下面用决策树来拟合梯度，导出GBDT（Gradient Boosting Decision Tree,也叫 MART, Multiple Additive Regression Tree）算法。</p>
-<h1 id="GBDT"><a href="#GBDT" class="headerlink" title="GBDT"></a>GBDT</h1><p>从名字“梯度提升决策树”Gradient Boosting Decision Tree里可以看出，GBDT就是在梯度提升算法中用上决策树来做弱学习器$b(x;\gamma)$，下面我们用T代替b来表示决策树<br> $$T(x;\gamma')=\sum_{j=1}^J\theta_jI(x\in R_j)$$ <br>其中参数J为子空间的数量（即叶子节点）， $\gamma'=\{R_j, \theta_j\}_1^J$ ,  $R_j$ 为一个子特征空间， $\theta_j$ 为该空间上的常数预测值。</p>
-<blockquote>
-<p>回顾一下决策树：<br>决策树通过Gini系数或者信息增益求出每个特征维度的分裂点，再通过分裂点把特征空间分割成一个一个的矩形的子特征空间，在每个子空间内应用简单的分类或回归手段，如多数类、平均数，作为该子空间的预测值。<br> $$x \in R_j \Rightarrow T(x)=\theta_j$$ </p>
-</blockquote>
-<p>提升树模型是这样的树加权和
-$$\begin{aligned}
-f(x) &=\sum_{m=1}^M\beta_m'T(x;\gamma_m')\\
-&=\sum_{m=1}^M\beta_m'\sum_{j=1}^{J_m}\theta_{mj}I(x\in R_{mj})\\
-&=\sum_{m=1}^M\sum_{j=1}^{J_m}\beta_m'\theta_{mj}I(x\in R_{mj})\\
-&=\sum_{m=1}^M\sum_{j=1}^{J_m}\beta_{mj}I(x\in R_{mj})
-\end{aligned} \tag2$$
-<br>这里令 $\beta_{mj}=\beta_m'\theta_{mj}$ ，这样相当于把树内的子空间当做弱学习器，预测值为样本是否在该子空间内 $I(x\in R_{mj})$ ，而权重为子空间的预测值 $\theta_{mj}$ 与该树权重 $\beta_m'$ 的乘积 $\beta_{mj}=\beta_m'\theta_{mj}$ 。更简单地，令 $\gamma_m=\{R_{mj}, \beta_{mj}\}_{j=1}^{J_m}$ ，式(2)也相当于学习不带权重参数的M棵树：<br> $$f(x) =\sum_{m=1}^M\sum_{j=1}^{J_m}\beta_{mj}I(x\in R_{mj})=\sum_{m=1}^MT(x;\gamma_m)$$ <br>这里每棵树内每个子空间的预测值就已经包含了该树在最终委员会模型中的权重信息，可以减少要学习的参数，加快学习速度。那么，GBDT每一步迭代的优化就成了
-$$\begin{aligned}\gamma_m
-&=\arg\min_{\gamma}\sum_{i=1}^ML\bigg(y_i, f_{m-1}(x_i)+T(x_i;\gamma_m)\bigg)\\
-&=\arg\min_{\beta, R}\sum_{i=1}^ML\bigg(y_i, f_{m-1}(x_i)+\sum_{j=1}^{J_m}\beta_{mj}I(x\in R_{mj})\bigg)\\
-\end{aligned}\tag3$$
-<br>根据<a href="/2017/08/06/boosting与平方损失/" title="boosting与平方损失">boosting与平方损失</a>中介绍的对任意可微损失函数的梯度提升算法，我们只需用 $T(x;\gamma_m)$ 去拟合当前迭代中的伪残差即可
-$$(\beta_m, R_m)=\arg\min_{\beta, R}\sum_{i=1}^ML(-\bigg[\frac{\partial L(y, f(x))}{\partial f(x)}\bigg]_{f(x)=f_{m-1}(x)}, \sum_{j=1}^{J_m}\beta_{mj}I(x\in R_{mj}))\tag4$$
-</p>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>从<a href="/2017/08/01/boosting与指数损失/" title="boosting与指数损失——Adaboost">boosting与指数损失——Adaboost</a>到<a href="/2017/08/06/boosting与平方损失/" title="boosting与平方损失">boosting与平方损失</a>，再到这篇博客，大致总结一下GBDT的由来：</p>
-<ol>
-<li>想把多个弱学习器组通过加权求和组成“不平等的委员会”，是一种基于学习器的加法模型
-$$f(x) = \sum_{m=1}^M \beta_m b(x; \gamma_m)$$ </li>
-<li>使用贪心的前向分步拟合算法，迭代地求解弱学习器，求解新的弱学习器时不改变已经求解好的弱学习器
-$$(\beta_m, \gamma_m)=\arg\min_{\beta, \gamma}\sum_{i=1}^NL\bigg(y_i, f_{m-1}(x_i)+\beta b(x_i;\gamma)\bigg)$$ 
-</li>
-<li>迭代中，由于加法模型的性质，求解新的弱学习器实际上是拟合当前残差
-$$\begin{aligned}
-&\min L\bigg(y, f_{m-1}(x)+\beta_m b(x;\gamma_m)\bigg) \\
-= &\min L\bigg(y-f_{m-1}(x), f_{m-1}(x)+\beta_m b(x;\gamma_m)-f_{m-1}(x)\bigg) \\
-= &\min L\bigg(r_{m-1}, \beta_m b(x;\gamma_m)\bigg)
-\end{aligned}$$ 
-</li>
-<li>梯度提升算法是在前向分步拟合的每次迭代中，找到经验损失相对于预测函数值的最速下降方向（负梯度方向），用弱学习器拟合负梯度，最终使梯度减少到接近0。当取平方经验损失时，当前残差就是当前负梯度。梯度提升算法还适用于别的损失函数，当前负梯度可以看做当前残差的近似，称为伪残差。而且负梯度方向是当前迭代中的最速下降方向，弱学习器拟合负梯度(伪残差)能获得更快的收敛速度。
-$$r_{m-1} \approx-\bigg[\frac{\partial L(y, f(x))}{\partial f(x)}\bigg]_{f(x)=f_{m-1}(x)}$$
-</li>
-<li>使用决策树作为弱学习的梯度提升算法是GBDT</li>
-</ol>
+        <h1 id="环境："><a href="#环境：" class="headerlink" title="环境："></a>环境：</h1><ul>
+<li>os: centos7</li>
+<li>R: 3.4.2</li>
+<li>jupyter: 4.4.0</li>
+</ul>
+<h1 id="坑预告"><a href="#坑预告" class="headerlink" title="坑预告"></a>坑预告</h1><ul>
+<li>R中无法安装git2r, devtools</li>
+<li>IRkernel::installspec()找不到jupyter</li>
+</ul>
+<h1 id="安装准备"><a href="#安装准备" class="headerlink" title="安装准备"></a>安装准备</h1><p>确保下面这些工具已经被安装在系统中<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">yum install gcc gcc-c++ gcc-gfortran pcre-devel tcl-devel zlib-devel bzip2-devel readline-devel libXt-devel tk-devel tetex-latex gnutls-devel.x86_64 libcurl libcurl-devel libxml2 libxml2-devel openssl openssl-devel</div></pre></td></tr></table></figure></p>
+<h1 id="安装步骤"><a href="#安装步骤" class="headerlink" title="安装步骤"></a>安装步骤</h1><p>1.<strong>一定要sudo进入R</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo R</div></pre></td></tr></table></figure></p>
+<p>2.先试试git2r能不能安装成功<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">install.packages(&quot;git2r&quot;)</div></pre></td></tr></table></figure></p>
+<p>不过不行的话，退出R, 在外边下载安装git2r<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">git clone https://github.com/ropensci/git2r</div><div class="line">sudu R CMD INSTALL git2r</div></pre></td></tr></table></figure></p>
+<p>3.在sudo回到R下，按照<a href="https://irkernel.github.io/installation/" target="_blank" rel="external">官网文档</a>的步骤做。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">install.packages(c(&apos;repr&apos;, &apos;IRdisplay&apos;, &apos;evaluate&apos;, &apos;crayon&apos;, &apos;pbdZMQ&apos;, &apos;devtools&apos;, &apos;uuid&apos;, &apos;digest&apos;))</div><div class="line">devtools::install_github(&apos;IRkernel/IRkernel&apos;)</div><div class="line">IRkernel::installspec(user = FALSE)</div></pre></td></tr></table></figure></p>
+<p>如果提示”jupyter-client has to be installed but “jupyter kernelspec –version” exited with code 127.”。那么需要把已经安装好的jupyter链接到/usr/bin下，使R可以比较方便地找到jupyter<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo ln -s /home/pyy/tool/anaconda3/bin/jupyter /usr/bin/jupyter</div></pre></td></tr></table></figure></p>
+<p>“/home/pyy/tool/anaconda3/bin/jupyter”是我的jupyter的完整路径</p>
+<h1 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h1><p>最后，打开jupyter-lab里就自动出现R kernel了</p>
+<p><img src="http://i4.fuimg.com/602416/ad3f949165a86dcc.png" alt="Markdown"></p>
 
       
     </div>
@@ -466,15 +433,9 @@ $$r_{m-1} \approx-\bigg[\frac{\partial L(y, f(x))}{\partial f(x)}\bigg]_{f(x)=f_
       
         <div class="post-tags">
           
-            <a href="/tags/boosting/" rel="tag"># boosting</a>
+            <a href="/tags/R/" rel="tag"># R</a>
           
-            <a href="/tags/ensamble/" rel="tag"># ensamble</a>
-          
-            <a href="/tags/梯度提升/" rel="tag"># 梯度提升</a>
-          
-            <a href="/tags/GBDT/" rel="tag"># GBDT</a>
-          
-            <a href="/tags/决策树/" rel="tag"># 决策树</a>
+            <a href="/tags/jupyter/" rel="tag"># jupyter</a>
           
         </div>
       
@@ -487,8 +448,8 @@ $$r_{m-1} \approx-\bigg[\frac{\partial L(y, f(x))}{\partial f(x)}\bigg]_{f(x)=f_
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/08/06/boosting与平方损失/" rel="next" title="boosting与平方损失">
-                <i class="fa fa-chevron-left"></i> boosting与平方损失
+              <a href="/2017/11/20/梯度求解学习小结2/" rel="next" title="梯度求解学习小结2">
+                <i class="fa fa-chevron-left"></i> 梯度求解学习小结2
               </a>
             
           </div>
@@ -496,10 +457,6 @@ $$r_{m-1} \approx-\bigg[\frac{\partial L(y, f(x))}{\partial f(x)}\bigg]_{f(x)=f_
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/10/13/正则化对假设空间的影响/" rel="prev" title="正则化对假设空间的影响">
-                正则化对假设空间的影响 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -656,7 +613,7 @@ $$r_{m-1} \approx-\bigg[\frac{\partial L(y, f(x))}{\partial f(x)}\bigg]_{f(x)=f_
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#梯度提升-Gradient-boosting"><span class="nav-number">1.</span> <span class="nav-text">梯度提升(Gradient boosting)</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#GBDT"><span class="nav-number"></span> <span class="nav-text">GBDT</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number"></span> <span class="nav-text">总结</span></a></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#环境："><span class="nav-number">1.</span> <span class="nav-text">环境：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#坑预告"><span class="nav-number">2.</span> <span class="nav-text">坑预告</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装准备"><span class="nav-number">3.</span> <span class="nav-text">安装准备</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装步骤"><span class="nav-number">4.</span> <span class="nav-text">安装步骤</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#结果"><span class="nav-number">5.</span> <span class="nav-text">结果</span></a></li></ol></div>
             
 
           </div>
@@ -806,9 +763,9 @@ $$r_{m-1} \approx-\bigg[\frac{\partial L(y, f(x))}{\partial f(x)}\bigg]_{f(x)=f_
     
       <script type="text/javascript">
         var disqus_config = function () {
-          this.page.url = 'http://yoursite.com/2017/08/10/从梯度提升到GBDT/';
-          this.page.identifier = '2017/08/10/从梯度提升到GBDT/';
-          this.page.title = '从梯度提升到GBDT';
+          this.page.url = 'http://yoursite.com/2017/12/28/在centos中给jupyter安装IRkernel/';
+          this.page.identifier = '2017/12/28/在centos中给jupyter安装IRkernel/';
+          this.page.title = '在centos中给jupyter安装IRkernel';
         };
         var d = document, s = d.createElement('script');
         s.src = 'https://yiyang186.disqus.com/embed.js';

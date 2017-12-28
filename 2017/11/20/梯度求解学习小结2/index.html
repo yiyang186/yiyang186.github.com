@@ -77,7 +77,7 @@
 <link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="numpy,loss," />
+  <meta name="keywords" content="loss,numpy," />
 
 
 
@@ -94,7 +94,7 @@
 
 
 <meta name="description" content="问题在梯度求解学习小结1中，学习了如何求解损失对打分的梯度，尤其是平均损失对打分矩阵的梯度。对于基于batch随机梯度下降的求解方法而言，需要求的是平均损失对每一层网络参数W和b的梯度。又因为层与层之间，梯度通过激活值传到，因此也需要求平均损失对每一层输入值(是前一层的激活值)X的梯度。因此本小节将总结对dW, db, dX的求解，重点放在线性代数部分，凭借强大的numpy，python代码其实就">
-<meta name="keywords" content="numpy,loss">
+<meta name="keywords" content="loss,numpy">
 <meta property="og:type" content="article">
 <meta property="og:title" content="梯度求解学习小结2">
 <meta property="og:url" content="http://yoursite.com/2017/11/20/梯度求解学习小结2/index.html">
@@ -549,9 +549,9 @@ $$\begin{aligned}db
       
         <div class="post-tags">
           
-            <a href="/tags/numpy/" rel="tag"># numpy</a>
-          
             <a href="/tags/loss/" rel="tag"># loss</a>
+          
+            <a href="/tags/numpy/" rel="tag"># numpy</a>
           
         </div>
       
@@ -573,6 +573,10 @@ $$\begin{aligned}db
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/12/28/在centos中给jupyter安装IRkernel/" rel="prev" title="在centos中给jupyter安装IRkernel">
+                在centos中给jupyter安装IRkernel <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -652,7 +656,7 @@ $$\begin{aligned}db
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">37</span>
+                <span class="site-state-item-count">38</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
