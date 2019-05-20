@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="loss,numpy," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="问题在梯度求解学习小结1中，学习了如何求解损失对打分的梯度，尤其是平均损失对打分矩阵的梯度。对于基于batch随机梯度下降的求解方法而言，需要求的是平均损失对每一层网络参数W和b的梯度。又因为层与层之间，梯度通过激活值传到，因此也需要求平均损失对每一层输入值(是前一层的激活值)X的梯度。因此本小节将总结对dW, db, dX的求解，重点放在线性代数部分，凭借强大的numpy，python代码其实就">
+<meta name="keywords" content="loss,numpy">
+<meta property="og:type" content="article">
+<meta property="og:title" content="梯度求解学习小结2">
+<meta property="og:url" content="http://yoursite.com/2017/11/20/梯度求解学习小结2/index.html">
+<meta property="og:site_name" content="小学之路">
+<meta property="og:description" content="问题在梯度求解学习小结1中，学习了如何求解损失对打分的梯度，尤其是平均损失对打分矩阵的梯度。对于基于batch随机梯度下降的求解方法而言，需要求的是平均损失对每一层网络参数W和b的梯度。又因为层与层之间，梯度通过激活值传到，因此也需要求平均损失对每一层输入值(是前一层的激活值)X的梯度。因此本小节将总结对dW, db, dX的求解，重点放在线性代数部分，凭借强大的numpy，python代码其实就">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-12-19T03:43:37.241Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="梯度求解学习小结2">
+<meta name="twitter:description" content="问题在梯度求解学习小结1中，学习了如何求解损失对打分的梯度，尤其是平均损失对打分矩阵的梯度。对于基于batch随机梯度下降的求解方法而言，需要求的是平均损失对每一层网络参数W和b的梯度。又因为层与层之间，梯度通过激活值传到，因此也需要求平均损失对每一层输入值(是前一层的激活值)X的梯度。因此本小节将总结对dW, db, dX的求解，重点放在线性代数部分，凭借强大的numpy，python代码其实就">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/11/20/梯度求解学习小结2/"/>
+
+
+
+
+
+  <title>梯度求解学习小结2 | 小学之路</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3b9de7582df94dad7be13b2e75675386";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">小学之路</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/11/20/梯度求解学习小结2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Yiyang Peng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/7233064.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小学之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">梯度求解学习小结2</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-20T19:53:00+08:00">
+                2017-11-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/机器学习/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/11/20/梯度求解学习小结2/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/11/20/梯度求解学习小结2/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h1><p>在<a href="/2017/11/20/梯度求解学习小结1/" title="梯度求解学习小结1">梯度求解学习小结1</a>中，学习了如何求解损失对打分的梯度，尤其是平均损失对打分矩阵的梯度。对于基于batch随机梯度下降的求解方法而言，需要求的是平均损失对每一层网络参数W和b的梯度。又因为层与层之间，梯度通过激活值传到，因此也需要求平均损失对每一层输入值(是前一层的激活值)X的梯度。因此本小节将总结对dW, db, dX的求解，重点放在线性代数部分，凭借强大的numpy，python代码其实就只需要一行。</p>
+<h1 id="梯度推导过程中的trick"><a href="#梯度推导过程中的trick" class="headerlink" title="梯度推导过程中的trick"></a>梯度推导过程中的trick</h1><h2 id="链式法则"><a href="#链式法则" class="headerlink" title="链式法则"></a>链式法则</h2>$L^{(i)}=L(f(x_i; W), y_i)$中若$L(.)$非常复杂，则需要借助链式法则求解。如f是K维的向量，则<br>
+
+$$\frac{\partial L^{(i)}}{\partial W} 
+=\sum_{j=1}^K\frac{\partial L^{(i)}}{\partial f_j}\cdot \frac{\partial f_j}{\partial W} 
+=\left(\begin{matrix} \frac{\partial L^{(i)}}{\partial f_1} & \cdots & \frac{\partial L^{(i)}}{\partial f_K} \end{matrix}\right) \cdot \left(\begin{matrix} \frac{\partial f_1}{\partial W} \\ \vdots \\ \frac{\partial f_K}{\partial W}\end{matrix}\right) 
+=\bigg(\frac{\partial L^{(i)}}{\partial f}\bigg)^T \cdot\frac{\partial f}{\partial W}$$
+<p>若模型f为多层神经网络，$\partial f_j/\partial W$的求解也需使用链式法则，此处不展开。</p>
+<h2 id="矩阵求导"><a href="#矩阵求导" class="headerlink" title="矩阵求导"></a>矩阵求导</h2><p>众所周知，求解的目标是$\frac{\partial L}{\partial W}$, 对于一条样本而言，$loss_i=L(f(x_i;W), y_i)$的W是一个向量(2分类)或者矩阵(多分类)，如在神经网络中，每一层的W都以矩阵的形式存在。很显然W的形状由输入和输出的维度决定：<br>
+
+$$X_{(1 \times D)} \cdot W_{(D \times K)} = Y_{(1 \times K)}$$
+$$X_{(2 \times D)} \cdot W_{(D \times K)} = Y_{(2 \times K)}$$
+$$……$$
+$$X_{(N \times D)} \cdot W_{(D \times K)} = Y_{(N \times K)}$$</p>
+<p>因为损失函数的输出是实数，在<a href="/2016/02/12/4矩阵分析/" title="矩阵分析">矩阵分析</a>中，学习过，实数函数对向量或矩阵求导就是实数函数对向量或矩阵中的每个分量求偏导，若W是一个$D \times 1$的行向量则：<br>
+
+$$\frac{\partial L}{\partial W}=\bigg(\frac{\partial L}{\partial W_1}, \frac{\partial L}{\partial W_2}, ..., \frac{\partial L}{\partial W_D}\bigg)$$</p>
+<p>若W是一个$D \times K$的矩阵则：<br>
+
+$$\frac{\partial L}{\partial W}=\left(\begin{matrix}
+\frac{\partial L}{\partial W_{11}} & \frac{\partial L}{\partial W_{12}} & ... &\frac{\partial L}{\partial W_{1K}} \\
+\frac{\partial L}{\partial W_{21}} & \frac{\partial L}{\partial W_{22}} & ... &\frac{\partial L}{\partial W_{2K}} \\
+\vdots & \vdots &  & \vdots \\
+\frac{\partial L}{\partial W_{D1}} & \frac{\partial L}{\partial W_{D2}} & ... &\frac{\partial L}{\partial W_{DK}} 
+\end{matrix}\right)$$</p>
+<p>也可以表示成行向量的形式：<br>
+
+$$\frac{\partial L}{\partial W}=\bigg(\frac{\partial L}{\partial W_{\cdot 1}}, \frac{\partial L}{\partial W_{\cdot 2}}, ..., \frac{\partial L}{\partial W_{\cdot K}}\bigg)$$<br>其中$\frac{\partial L}{\partial W_{\cdot j}}$表示矩阵表达式中的第j列:<br>
+
+$$\frac{\partial L}{\partial W_{\cdot j}}=\bigg(\frac{\partial L}{\partial W_{1j}}, \frac{\partial L}{\partial W_{2j}}, ..., \frac{\partial L}{\partial W_{Dj}}\bigg)^T$$</p>
+<h1 id="实际中的例子——全连接层"><a href="#实际中的例子——全连接层" class="headerlink" title="实际中的例子——全连接层"></a>实际中的例子——全连接层</h1><p>全连接层，也叫仿射层或线性层，其计算模型为</p>
+<p>$$s^T=f(x; W) = x^T \cdot W$$<br>其中，x为一条1xD的输入,W为DxK的矩阵</p>
+<h2 id="使用链式法则"><a href="#使用链式法则" class="headerlink" title="使用链式法则"></a>使用链式法则</h2><p>根据链式法则，有<br>
+
+$$\frac{\partial L}{\partial W}=\sum_{j=1}^K\frac{\partial L}{\partial s_j}\cdot\frac{\partial s_j}{\partial W}$$</p>
+<p>L为实数函数，$s_j$为实数，因此$\partial L/\partial s_j$也为实数, 而$\partial s_j/\partial W$为与W形状相同的矩阵。<br>同样地，有
+
+$$\frac{\partial L}{\partial x}=\sum_{j=1}^K\frac{\partial L}{\partial s_j}\cdot\frac{\partial s_j}{\partial x}$$</p>
+<h2 id="求dW"><a href="#求dW" class="headerlink" title="求dW"></a>求dW</h2><p>对于上面链式法则求和式中的第二部分偏导$\partial s_j/\partial W$，因为<br>
+
+$$s_j=x^T \cdot W_{\cdot j}$$
+$$\frac{\partial s_j}{\partial x}=W_{\cdot j}$$
+$$\frac{\partial s_j}{\partial W_{\cdot j}}=x$$<br>注意这里把x当做<strong>列向量</strong>对待，$W_{\cdot j}$表示矩阵W的第j列，所以：<br>
+
+$$\begin{aligned}\frac{\partial s_j}{\partial W} &=\bigg(\frac{\partial s_j}{\partial W_{\cdot 1}}, ..., \frac{\partial s_j}{\partial W_{\cdot j}}, ..., \frac{\partial s_j}{\partial W_{\cdot K}}\bigg) \\
+& = \bigg(0, ..., \frac{\partial s_j}{\partial W_{\cdot j}}, ..., 0\bigg)
+\end{aligned}$$</p>
+<h3 id="求单样本损失梯度"><a href="#求单样本损失梯度" class="headerlink" title="求单样本损失梯度"></a>求单样本损失梯度</h3><p>根据链式法则，有
+
+$$\begin{aligned}\frac{\partial L}{\partial W}
+&= \sum_{j=1}^K\frac{\partial L}{\partial s_j}\cdot\frac{\partial s_j}{\partial W} \\
+&= \sum_{j=1}^K\frac{\partial L}{\partial s_j} \cdot \bigg(0, ..., \frac{\partial s_j}{\partial W_{\cdot j}}, ..., 0\bigg)\\
+&= \sum_{j=1}^K\frac{\partial L}{\partial s_j} \cdot \bigg(0, ..., x, ..., 0\bigg)\\
+&= \bigg(\frac{\partial L}{\partial s_1} \cdot x, ...,\frac{\partial L}{\partial s_K} \cdot x\bigg) \\
+&= x \cdot \bigg(\frac{\partial L}{\partial s_1}, ...,\frac{\partial L}{\partial s_K}\bigg) \\
+&=x \cdot \bigg(\frac{\partial L}{\partial s}\bigg)^T
+\end{aligned}$$<br>其中($\partial L/\partial s)^T$是与$s^T$形状相同的行向量($1 \times K$)。又x本身是列向量($D \times 1$)，所以二者点积为矩阵($D \times K$)，与W形状相同。($\partial L/\partial s)^T$的分量$\partial L/\partial s_j$前面已经求过，即已经求出单样本损失对W的梯度。</p>
+<blockquote>
+<p><strong>注意</strong>：上式倒数第二步</p>
+$$\left(\begin{matrix} 1 \cdot \left(\begin{matrix} 3 \\ 4 \end{matrix}\right), & 2\cdot \left(\begin{matrix} 3 \\ 4 \end{matrix}\right) \end{matrix}\right) = \left(\begin{matrix} 3 \\ 4 \end{matrix}\right) \cdot (1 ,2)$$
+</blockquote>
+<h3 id="求平均损失梯度"><a href="#求平均损失梯度" class="headerlink" title="求平均损失梯度"></a>求平均损失梯度</h3><p>我们所要求的损失指的是期望损失，也就是平均损失。若第i条样本的损失为$L^{(i)}$，则N条样本的平均损失为<br>
+
+$$\bar L= \frac{1}{N}\sum_{i=1}^N L^{(i)}$$<br>因此平均损失对W的梯度为
+
+$$\begin{aligned}dW
+&= \frac{1}{N}\sum_{i=1}^N \frac{\partial L^{(i)}}{\partial W} \\
+&= \frac{1}{N}\sum_{i=1}^N x^{(i)} \cdot \bigg(\frac{\partial L^{(i)}}{\partial s^{(i)}_1}, ...,\frac{\partial L^{(i)}}{\partial s^{(i)}_K}\bigg) \\
+&= \Big(x^{(1)}, ..., x^{(N)}\Big) \cdot \left(\begin{matrix}\frac{\partial L^{(1)}}{\partial s^{(1)}_1} & \cdots & \frac{\partial L^{(1)}}{\partial s^{(1)}_K} \\ \vdots & \ddots & \vdots \\ \frac{\partial L^{(N)}}{\partial s^{(N)}_1} & \cdots & \frac{\partial L^{(N)}}{\partial s^{(N)}_K}\end{matrix}\right) / N\\
+&= X^T \cdot dS
+\end{aligned}$$<br>其中矩阵dS中的元素为<br>
+
+$$(dS)_{ij} = \frac{1}{N}\frac{\partial L^{(i)}}{\partial s_j^{(i)}} $$<br>而$X^T$是D行N列的矩阵，是输入矩阵X的转置。</p>
+<h3 id="编码实现"><a href="#编码实现" class="headerlink" title="编码实现"></a>编码实现</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="string">'''</span></div><div class="line">- X: Input, numpy array, of shape (N, D)</div><div class="line">- dS: Upstream derivative, of shape (N, K)</div><div class="line">'''</div><div class="line">dW = X.T.dot(dS)</div></pre></td></tr></table></figure>
+<h2 id="求dX"><a href="#求dX" class="headerlink" title="求dX"></a>求dX</h2><p>与求dW类似地，
+
+$$\begin{aligned}\frac{\partial L}{\partial x}
+&= \sum_{j=1}^K\frac{\partial L}{\partial s_j}\cdot\frac{\partial s_j}{\partial x} \\
+&= \sum_{j=1}^K\frac{\partial L}{\partial s_j} \cdot W_{\cdot j} \\
+&= \sum_{j=1}^K W_{\cdot j} \cdot \frac{\partial L}{\partial s_j} \\
+&= \bigg(W_{\cdot 1}, ...,W_{\cdot K}\bigg) \cdot \left(\begin{matrix} \frac{\partial L}{\partial s_1} \\ \vdots \\ \frac{\partial L}{\partial s_K}\end{matrix}\right)\\
+&= W \cdot \frac{\partial L}{\partial s}
+\end{aligned}$$</p>
+<p>平均损失对X的梯度为
+
+$$\begin{aligned}dX
+&= \frac{1}{N}\sum_{i=1}^N \frac{\partial L^{(i)}}{\partial X} \\
+&= \frac{1}{N}\sum_{i=1}^N \left(\begin{matrix} \frac{\partial L^{(i)}}{\partial X_{1 \cdot}} \\ \vdots \\ \frac{\partial L^{(i)}}{\partial X_{N \cdot}}\end{matrix}\right) = \frac{1}{N}\sum_{i=1}^N \left(\begin{matrix} \vdots \\ \frac{\partial L^{(i)}}{\partial X_{i \cdot}} \\ \vdots \end{matrix}\right) = \frac{1}{N}\left(\begin{matrix} \frac{\partial L^{(1)}}{\partial X_{1 \cdot}} \\ \vdots \\ \frac{\partial L^{(N)}}{\partial X_{N \cdot}}\end{matrix}\right)\\
+&= \frac{1}{N}\left(\begin{matrix} \big(\frac{\partial L^{(1)}}{\partial x^{(1)}}\big)^T \\ \vdots \\ \big(\frac{\partial L^{(N)}}{\partial x^{(N)}}\big)^T\end{matrix}\right) = \frac{1}{N}\left(\begin{matrix} \big(W \cdot \frac{\partial L^{(1)}}{\partial s^{(1)}}\big)^T \\ \vdots \\ \big(W \cdot \frac{\partial L^{(N)}}{\partial s^{(N)}}\big)^T\end{matrix}\right) = \frac{1}{N}\left(\begin{matrix} \big(\frac{\partial L^{(1)}}{\partial s^{(1)}}\big)^T \\ \vdots \\ \big(\frac{\partial L^{(N)}}{\partial s^{(N)}}\big)^T\end{matrix}\right) \cdot W^T\\
+&= \frac{1}{N} \left(\begin{matrix}\frac{\partial L^{(1)}}{\partial s^{(1)}_1} & \cdots & \frac{\partial L^{(1)}}{\partial s^{(1)}_K} \\ \vdots & \ddots & \vdots \\ \frac{\partial L^{(N)}}{\partial s^{(N)}_1} & \cdots & \frac{\partial L^{(N)}}{\partial s^{(N)}_K}\end{matrix}\right) \cdot W^T \\
+&= dS \cdot W^T
+\end{aligned}$$</p>
+<p><strong>编码实现</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="string">'''</span></div><div class="line">- W: Weight, numpy array, of shape (D, K)</div><div class="line">- dS: Upstream derivative, of shape (N, K)</div><div class="line">'''</div><div class="line">dX = dS.dot(W.T)</div></pre></td></tr></table></figure>
+<h2 id="求db"><a href="#求db" class="headerlink" title="求db"></a>求db</h2><p>若网络模型中带有偏置，如b是长度为K的向量，长度与类别的数目相等</p>
+<p>$$s^T=f(x; W, b) = x^T \cdot W + b^T$$<br>它与</p>
+<p>$$s=f(x; W, b) = W \cdot x + b$$<br>是一个意思， 前面加上转职是希望直观上与数据相符，便于想象，如$X$为输入数据，$x^T$是$X$中的一行。因此，
+
+$$s_j= x^T \cdot W_{\cdot j}+ b_j$$
+
+$$\frac{\partial s_j}{\partial b_j}=1$$
+
+$$\begin{aligned}\frac{\partial s_j}{\partial b} &=\bigg(\frac{\partial s_j}{\partial b_1}, ..., \frac{\partial s_j}{\partial b_j}, ..., \frac{\partial s_j}{\partial b_K}\bigg)^T \\
+& = \bigg(0, ..., \frac{\partial s_j}{\partial b_j}, ..., 0\bigg)^T
+\end{aligned}$$
+<br>根据链式法则有，
+
+$$\begin{aligned}\frac{\partial L}{\partial b}
+&= \sum_{j=1}^K\frac{\partial L}{\partial s_j}\cdot\frac{\partial s_j}{\partial b} \\
+&= \sum_{j=1}^K\frac{\partial L}{\partial s_j} \cdot \bigg(0, ..., \frac{\partial s_j}{\partial b_j}, ..., 0\bigg)^T\\
+&= \sum_{j=1}^K\frac{\partial L}{\partial s_j} \cdot \bigg(0, ..., 1, ..., 0\bigg)^T \\
+&= \bigg(\frac{\partial L}{\partial s_1}, ...,\frac{\partial L}{\partial s_K}\bigg)^T \\
+&= \frac{\partial L}{\partial s}
+\end{aligned}$$</p>
+<p>平均损失对b的梯度为，
+
+$$\begin{aligned}db
+&= \frac{1}{N}\sum_{i=1}^N \frac{\partial L^{(i)}}{\partial b} \\
+&= \sum_{i=1}^N \bigg(\frac{\partial L^{(i)}}{\partial s^{(i)}_1}, ...,\frac{\partial L^{(i)}}{\partial s^{(i)}_K}\bigg)^T / N\\
+&= \sum_{i=1}^N \Big( (dS)_{i1}, ...,(dS)_{iK} \Big)^T \\
+&= \sum_{i=1}^N (dS)_{i \cdot}^T
+\end{aligned}$$<br>可见，平均损失对偏置的梯度db为<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db = dS.sum(axis=<span class="number">0</span>)</div></pre></td></tr></table></figure></p>
+<p>公式中的转置想表达的是db为列向量，而dS求和后为行向量，因此需要转置。而编码中对于一维的array, 转不转置，意义不大，因此不需要转置。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>通过上面的例子，求一层全连接神经网络的梯度计算基本理清楚了，不带正则项部分的计算被限制在这种形式下<br>
+
+$$\begin{aligned}dW
+&= X^T \cdot dS
+\end{aligned}$$
+
+$$\begin{aligned}dX
+&= dS \cdot W^T  
+\end{aligned}$$
+
+$$\begin{aligned}db
+&= \sum_{i=1}^N (dS)_{i \cdot}^T 
+\end{aligned}$$<br>其中矩阵dS中元素平均损失对该全链接层输出的梯度。我们可以根据这些来完成全连接层前向和后项的编码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 该代码借用了cs231n作业中的格式，但为了符合上面的推导做了较多改变，千万别用到作业中哦^_^</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">affine_forward</span><span class="params">(X, W, b)</span>:</span></div><div class="line">  <span class="string">"""</span></div><div class="line">  Computes the forward pass for an affine (fully-connected) layer.</div><div class="line"></div><div class="line">  Inputs:</div><div class="line">  - X: A numpy array containing input data, of shape (N, D)</div><div class="line">  - W: A numpy array of weights, of shape (D, K)</div><div class="line">  - b: A numpy array of biases, of shape (K,)</div><div class="line"></div><div class="line">  Returns a tuple of:</div><div class="line">  - S: output, of shape (N, K)</div><div class="line">  - cache: (X, W, b)</div><div class="line">  """</div><div class="line">  S = X.dot(w) + b</div><div class="line">  cache = (X, W, b)</div><div class="line">  <span class="keyword">return</span> S, cache</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">affine_backward</span><span class="params">(dS, cache)</span>:</span></div><div class="line">  <span class="string">"""</span></div><div class="line">  Computes the backward pass for an affine layer.</div><div class="line"></div><div class="line">  Inputs:</div><div class="line">  - dS: Upstream derivative, of shape (N, K)</div><div class="line">  - cache: Tuple of:</div><div class="line">    - X: Input data, of shape (N, D)</div><div class="line">    - W: Weights, of shape (D, K)</div><div class="line"></div><div class="line">  Returns a tuple of:</div><div class="line">  - dX: Gradient with respect to x, of shape (N, D)</div><div class="line">  - dW: Gradient with respect to w, of shape (D, K)</div><div class="line">  - db: Gradient with respect to b, of shape (K,)</div><div class="line">  """</div><div class="line">  X, W, b = cache</div><div class="line">  dX = dS.dot(W.T)</div><div class="line">  dW = X.T.dot(dS)</div><div class="line">  db = dS.sum(axis=<span class="number">0</span>)</div><div class="line">  <span class="keyword">return</span> dx, dw, db</div></pre></td></tr></table></figure>
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/loss/" rel="tag"># loss</a>
+          
+            <a href="/tags/numpy/" rel="tag"># numpy</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/11/20/梯度求解学习小结1/" rel="next" title="梯度求解学习小结1">
+                <i class="fa fa-chevron-left"></i> 梯度求解学习小结1
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/12/28/在centos中给jupyter安装IRkernel/" rel="prev" title="在centos中给jupyter安装IRkernel">
+                在centos中给jupyter安装IRkernel <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/7233064.jpg"
+               alt="Yiyang Peng" />
+          <p class="site-author-name" itemprop="name">Yiyang Peng</p>
+           
+              <p class="site-description motion-element" itemprop="description">小学生的学习之路</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">38</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">43</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/yiyang186" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/peng-yiyang-88" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  知乎
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#问题"><span class="nav-number">1.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#梯度推导过程中的trick"><span class="nav-number">2.</span> <span class="nav-text">梯度推导过程中的trick</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#链式法则"><span class="nav-number">2.1.</span> <span class="nav-text">链式法则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#矩阵求导"><span class="nav-number">2.2.</span> <span class="nav-text">矩阵求导</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实际中的例子——全连接层"><span class="nav-number">3.</span> <span class="nav-text">实际中的例子——全连接层</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用链式法则"><span class="nav-number">3.1.</span> <span class="nav-text">使用链式法则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#求dW"><span class="nav-number">3.2.</span> <span class="nav-text">求dW</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#求单样本损失梯度"><span class="nav-number">3.2.1.</span> <span class="nav-text">求单样本损失梯度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#求平均损失梯度"><span class="nav-number">3.2.2.</span> <span class="nav-text">求平均损失梯度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编码实现"><span class="nav-number">3.2.3.</span> <span class="nav-text">编码实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#求dX"><span class="nav-number">3.3.</span> <span class="nav-text">求dX</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#求db"><span class="nav-number">3.4.</span> <span class="nav-text">求db</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yiyang Peng</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://yiyang186.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2017/11/20/梯度求解学习小结2/';
+          this.page.identifier = '2017/11/20/梯度求解学习小结2/';
+          this.page.title = '梯度求解学习小结2';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://yiyang186.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
