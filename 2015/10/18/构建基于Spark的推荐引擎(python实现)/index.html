@@ -101,7 +101,7 @@
 <meta property="og:site_name" content="小学之路">
 <meta property="og:description" content="这几天在看由人民邮电出版社出版的《Spark机器学习》（Machine Learning with Spark，Nick Pentreath），看的很是郁闷。这本书一会儿用python, 一会儿用scala。由于我很喜欢用python, 所以用Python把这本书的scala代码又实现了一遍。收获很大，比直接对着书敲scala要理解的更多，对整个推荐过程的理解更加深刻。当然，与实际应用中的推荐系统">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-07-26T14:32:12.000Z">
+<meta property="og:updated_time" content="2017-11-30T12:06:08.379Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="构建基于Spark的小推荐系统demo">
 <meta name="twitter:description" content="这几天在看由人民邮电出版社出版的《Spark机器学习》（Machine Learning with Spark，Nick Pentreath），看的很是郁闷。这本书一会儿用python, 一会儿用scala。由于我很喜欢用python, 所以用Python把这本书的scala代码又实现了一遍。收获很大，比直接对着书敲scala要理解的更多，对整个推荐过程的理解更加深刻。当然，与实际应用中的推荐系统">
@@ -395,7 +395,7 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 给789用户推荐的前10个商品</span></div><div class="line">topKRecs = model.recommendProducts(<span class="number">789</span>, <span class="number">10</span>)</div><div class="line">topKRecs</div></pre></td></tr></table></figure>
 <p>[Rating(user=789, product=708, rating=5.645492560638761),<br>     Rating(user=789, product=482, rating=5.632324542725622),<br>     Rating(user=789, product=502, rating=5.621572563993868),<br>     Rating(user=789, product=603, rating=5.5589276689720055),<br>     Rating(user=789, product=23, rating=5.552174994200555),<br>     Rating(user=789, product=182, rating=5.429093418196553),<br>     Rating(user=789, product=484, rating=5.424060744309293),<br>     Rating(user=789, product=479, rating=5.416303074919905),<br>     Rating(user=789, product=1020, rating=5.350687998038177),<br>     Rating(user=789, product=494, rating=5.341673625528914)]</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">movies = sc.textFile(<span class="string">'hdfs:///user/yy/ml-100k/u.item'</span>)</div><div class="line">movies.first()</div></pre></td></tr></table></figure>
-<p>u’1|Toy Story (1995)|01-Jan-1995||<a href="http://us.imdb.com/M/title-exact?Toy%20Story%20(1995)|0|0|0|1|1|1|0|0|0|0|0|0|0|0|0|0|0|0|0" target="_blank" rel="external">http://us.imdb.com/M/title-exact?Toy%20Story%20(1995)|0|0|0|1|1|1|0|0|0|0|0|0|0|0|0|0|0|0|0</a>‘</p>
+<p>u’1|Toy Story (1995)|01-Jan-1995||<a href="http://us.imdb.com/M/title-exact?Toy%20Story%20(1995)|0|0|0|1|1|1|0|0|0|0|0|0|0|0|0|0|0|0|0" target="_blank" rel="noopener">http://us.imdb.com/M/title-exact?Toy%20Story%20(1995)|0|0|0|1|1|1|0|0|0|0|0|0|0|0|0|0|0|0|0</a>‘</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">movies_fields = movies.map(<span class="keyword">lambda</span> line: line.split(<span class="string">'|'</span>))</div><div class="line">title_data = movies_fields.map(<span class="keyword">lambda</span> fields: (int(fields[<span class="number">0</span>]), fields[<span class="number">1</span>])).collect()</div><div class="line">titles = dict(title_data)</div><div class="line">titles[<span class="number">123</span>]</div></pre></td></tr></table></figure>
 <p>u’Frighteners, The (1996)’</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># keyBy从ratings RDD创建一个键值对RDD，选取user为主键</span></div><div class="line"><span class="comment"># lookup返回给定键的数据</span></div><div class="line">moviesForUser = ratings.keyBy(<span class="keyword">lambda</span> rating: rating.user).lookup(<span class="number">789</span>) <span class="comment"># 返回的是list</span></div><div class="line">moviesForUser[<span class="number">0</span>:<span class="number">10</span>] <span class="comment"># 结果为789对他看过的电影给出的评分</span></div></pre></td></tr></table></figure>
@@ -568,7 +568,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">36</span>
+                <span class="site-state-item-count">39</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -579,7 +579,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-count">6</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -590,7 +590,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">43</span>
+                <span class="site-state-item-count">44</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -652,7 +652,7 @@
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2017</span>
+  <span itemprop="copyrightYear">2019</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

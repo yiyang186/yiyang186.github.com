@@ -103,7 +103,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://img.blog.csdn.net/20160117232525303">
 <meta property="og:image" content="http://img.blog.csdn.net/20160117233401568">
-<meta property="og:updated_time" content="2017-07-26T14:39:14.000Z">
+<meta property="og:updated_time" content="2017-11-30T12:06:08.371Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="在spark上做简单的文本分类">
 <meta name="twitter:description" content="数据集选的是20_newsgroups，我按7：3分的训练集和测试集。 总的流程如下： 这里把数据集中的每一条文本都表示成TFTDF向量，用训练集的TFTDF向量来训练模型，用测试集的TFTDF向量进行分类测试，最后统计测试准确率。  ###初始化 12345678910111213141516171819# 设置训练集，测试集路径。trainPath = &quot;hdfs:///user/yy/20_">
@@ -426,7 +426,7 @@
 <p>###总结spark上如何将文档转换成tfidf向量</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 构建哈希表用于映射所有单词</span></div><div class="line"><span class="keyword">from</span> pyspark.mllib.feature <span class="keyword">import</span> HashingTF</div><div class="line">hasingTF = HashingTF(<span class="number">2</span> ** <span class="number">16</span>) <span class="comment"># 维数需要大于不同单词的总数</span></div><div class="line"></div><div class="line"><span class="comment"># 将文档映射为tf向量，这里的trainTokens为rdd类型</span></div><div class="line">trainTf = hasingTF.transform(trainTokens)</div><div class="line">testTf = hasingTF.transform(testTokens)</div><div class="line"></div><div class="line"><span class="comment"># 构建IDF模型，训练集和测试集都用它</span></div><div class="line"><span class="keyword">from</span> pyspark.mllib.feature <span class="keyword">import</span> IDF</div><div class="line">idf = IDF().fit(trainTf)</div><div class="line"></div><div class="line"><span class="comment"># 将tf向量转换为tfidf向量</span></div><div class="line">trainTfidf = idf.transform(trainTf)</div><div class="line">testTfidf = idf.transform(testTf)</div></pre></td></tr></table></figure>
 <hr>
-<p>###相关阅读<br><a href="https://en.wikipedia.org/wiki/Tf%E2%80%93idf" target="_blank" rel="external">https://en.wikipedia.org/wiki/Tf%E2%80%93idf</a><br><a href="https://en.wikipedia.org/wiki/Natural_Language_Toolkit" target="_blank" rel="external">https://en.wikipedia.org/wiki/Natural_Language_Toolkit</a></p>
+<p>###相关阅读<br><a href="https://en.wikipedia.org/wiki/Tf%E2%80%93idf" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Tf%E2%80%93idf</a><br><a href="https://en.wikipedia.org/wiki/Natural_Language_Toolkit" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Natural_Language_Toolkit</a></p>
 
       
     </div>
@@ -565,7 +565,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">36</span>
+                <span class="site-state-item-count">39</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -576,7 +576,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-count">6</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -587,7 +587,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">43</span>
+                <span class="site-state-item-count">44</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -665,7 +665,7 @@
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2017</span>
+  <span itemprop="copyrightYear">2019</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="深度学习," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="Baseline &amp;amp; MotivationCenterNet以CornerNet为baseline, CornerNet产生2个heatmaps(左上和右下Corner), 每个heatmap表达每个不同类别的keypoint的位置, 并赋予它们confience score, heatmap还生成em">
+<meta name="keywords" content="深度学习">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CenterNet笔记">
+<meta property="og:url" content="http://yoursite.com/2019/05/20/centerNetNote/index.html">
+<meta property="og:site_name" content="小学之路">
+<meta property="og:description" content="Baseline &amp;amp; MotivationCenterNet以CornerNet为baseline, CornerNet产生2个heatmaps(左上和右下Corner), 每个heatmap表达每个不同类别的keypoint的位置, 并赋予它们confience score, heatmap还生成embedding(用于辨别2个corner是否来自同一个物体), 和相对于每个corner">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://wx1.sinaimg.cn/mw1024/3ff1a76fgy1g2zmisp903j20pd06bn0s.jpg">
+<meta property="og:image" content="https://wx3.sinaimg.cn/mw1024/3ff1a76fgy1g2zmiywwrgj20c206saal.jpg">
+<meta property="og:image" content="https://wx2.sinaimg.cn/mw1024/3ff1a76fgy1g2zmj2cx13j20p506wtdr.jpg">
+<meta property="og:image" content="https://wx4.sinaimg.cn/mw1024/3ff1a76fgy1g2zmj5fz37j20hb06f3z3.jpg">
+<meta property="og:image" content="https://wx2.sinaimg.cn/mw1024/3ff1a76fgy1g2zmj87hpkj20qs0gqdki.jpg">
+<meta property="og:updated_time" content="2019-05-20T15:43:07.392Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CenterNet笔记">
+<meta name="twitter:description" content="Baseline &amp;amp; MotivationCenterNet以CornerNet为baseline, CornerNet产生2个heatmaps(左上和右下Corner), 每个heatmap表达每个不同类别的keypoint的位置, 并赋予它们confience score, heatmap还生成embedding(用于辨别2个corner是否来自同一个物体), 和相对于每个corner">
+<meta name="twitter:image" content="https://wx1.sinaimg.cn/mw1024/3ff1a76fgy1g2zmisp903j20pd06bn0s.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/05/20/centerNetNote/"/>
+
+
+
+
+
+  <title>CenterNet笔记 | 小学之路</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3b9de7582df94dad7be13b2e75675386";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">小学之路</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/20/centerNetNote/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Yiyang Peng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/7233064.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小学之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">CenterNet笔记</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-20T07:33:00+08:00">
+                2019-05-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/目标检测/" itemprop="url" rel="index">
+                    <span itemprop="name">目标检测</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/05/20/centerNetNote/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2019/05/20/centerNetNote/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Baseline-amp-Motivation"><a href="#Baseline-amp-Motivation" class="headerlink" title="Baseline &amp; Motivation"></a>Baseline &amp; Motivation</h1><p>CenterNet以CornerNet为baseline, CornerNet产生2个heatmaps(左上和右下Corner), 每个heatmap表达每个不同类别的keypoint的位置, 并赋予它们confience score, heatmap还生成embedding(用于辨别2个corner是否来自同一个物体), 和相对于每个corner的offset(offset学习输入图片到heatmap的映射). 为了生成物体的bounding boxes, 根据heatmaps的scores, 先挑选top-k个左上Corner和top-k个右下Corner, 再根据每对Corner的embedding向量的距离来确定每对Corner是否属于一个物体. 当embdding距离小鱼某阈值时, 生成一个bounding box, 并赋予它这对Corner的score的均值作为物体的score.<br>定义FD(false discovery = 1 - AP), 表示错误bounding box的比率, 如在coco上, FD[IoU=0.05]=32.7%, 意味着每100个bounding boxes有32.7个bounding boxes与ground-truth的IoU低于0.05. CornerNet的FD[IoU=0.5]=43.8. FD这么高的原因可能是CornetNet不能学习到 bounding boxes 的内部区域的视觉模式, two-stage detector里的RoI pooling可以帮助CornetNet学习bounding boxes内的视觉模式. 不过作者提出了更高效的one-stage 的 CenterNet, 对于每个物体, 使用3个keypoints表示, 继承了Rol pooling的功能, 且只关注物体中心区域的信息, 开销小, 关键在于center pooling和cascade corner pooling. </p>
+<h1 id="Object-Detection-as-Keypoint-Triplets"><a href="#Object-Detection-as-Keypoint-Triplets" class="headerlink" title="Object Detection as Keypoint Triplets"></a>Object Detection as Keypoint Triplets</h1><p><img src="https://wx1.sinaimg.cn/mw1024/3ff1a76fgy1g2zmisp903j20pd06bn0s.jpg" alt="CenterNet结构"><br>CenterNet的结构, 在卷积网络主干上应用cascade corner pooling和center pooling来输出2个corner heatmaps和一个center keypoint heatmap. 与CornerNet相似, 一对corners和他们的embedding用于检测潜在的bounding box,然后center keypoints用于决定最终的bounding boxes. CenterNet在CornerNet的基础上, embed一个center keypoints的heatmap, 并预测center keypoint的offsets. 用类似CornerNet的方法生成top-k个bounding boxes. 为了过滤错误boungding boxes, (1)根据center keypoints的scores挑选top-k个center keypoints; (2)用相应的offsets重隐射center keypoints到输入图片; (3)为每个bounding boxes定义一个中心区域, 并检查这个中心区域是否包含相应类别的center keypoint; (4)若center keypoint在中心区域内, 保留这个bounding box, score为三个keypoint的平均score.<br>bounding box中心区域的大小影响检测结果. 例如, 对于小bounding boxes, 小中心区域导致低recall rate; 对于大bounding boxes, 大中心区域导致低precision. 因此它提出一个能使用bounding boxes大小的中心区域计算方法(scale-aware)(其实也就2种scale……)<br><img src="https://wx3.sinaimg.cn/mw1024/3ff1a76fgy1g2zmiywwrgj20c206saal.jpg" alt="中心区域计算方法"><br>
+$$ctl_x=\frac{(n+1)tl_x+(n-1)br_x}{2n}$$
+$$ctl_y=\frac{(n+1)tl_y+(n-1)br_y}{2n}$$
+$$cbr_x=\frac{(n-1)tl_x+(n+1)br_x}{2n}$$
+$$cbr_y=\frac{(n-1)tl_y+(n+1)br_y}{2n}$$
+<br>上式tl=top-left, br=bottom-right, c=center, n是一个决定中心区域尺度的奇数, 文中当中心区域scale<150时, n="3;" 当中心区域scale="">=150时, n=5. </150时,></p>
+<h1 id="Enriching-Center-and-Corner-Information"><a href="#Enriching-Center-and-Corner-Information" class="headerlink" title="Enriching Center and Corner Information"></a>Enriching Center and Corner Information</h1><h2 id="Center-pooling"><a href="#Center-pooling" class="headerlink" title="Center pooling"></a>Center pooling</h2><p>物体的几何中心不总能传达可识别的视觉模式(如人类的头包含更强的视觉模式, 而人的几何中心在身上), 所以他们提出center pooling捕捉更丰富,更可识别的视觉模式.<br><img src="https://wx2.sinaimg.cn/mw1024/3ff1a76fgy1g2zmj2cx13j20p506wtdr.jpg" alt="centerPooling"><br>(a)center pooling取横向和纵向的最大值;(b)conner pooling只取边界方向的最大值;(c)Cascade corner pooling取边界和内部方向的最大值.<br>对于不同边界的横向和纵向指的是:<br>topmost: 纵向向下<br>leftmost: 横向向右<br>bottommost: 纵向向上<br>rightmost: 横向向左</p>
+<p>center pooling的原则是: 网络主干输出feature map, 为了确定feature map上的一个pixel是够是center keypoint, 需要找到该pixel所在横向和纵向方向上的最大值, 并加到一起.</p>
+<h2 id="Cascade-corner-pooling"><a href="#Cascade-corner-pooling" class="headerlink" title="Cascade corner pooling"></a>Cascade corner pooling</h2><p>corner常常在物体外部, 它缺乏局部外形特征. CornetNet用corner pooling来处理这个问题, 其目标是找到边界方向上的最大值来确定corners. 但是这样会使conner对边缘敏感. 为了处理这个问题, 需要使corners看到物体的视觉模式, 于是提出cascade corner pooling, 它的原则是先沿着一个边界方向找最大值, 再以那个最大值为起点向目标内部方向找最大值, 最后把这两个最大值加到一起(另一个边界方向又有2个最大值).<br><img src="https://wx4.sinaimg.cn/mw1024/3ff1a76fgy1g2zmj5fz37j20hb06f3z3.jpg" alt="cascadeCornerPooling"><br>center pooling和cascade corner pooling的结构, 通过组合不同方向的corner pooling来实现. 如(a)横向的center pooling, 只需要串联left corner pooling和right cornet pooling; (b)为cascade top corner pooling, 它与CornerNet的不同时, 在top corner pooling前有一个left corner pooling.</p>
+<h1 id="Training-amp-Inference"><a href="#Training-amp-Inference" class="headerlink" title="Training &amp; Inference"></a>Training &amp; Inference</h1><h2 id="Training"><a href="#Training" class="headerlink" title="Training"></a>Training</h2><ul>
+<li>input image: 511 x 511</li>
+<li>headmaps size: 128 x 128</li>
+<li>optimization: Adam</li>
+<li>GPU: Tesla V100(32GB) x 8</li>
+<li>batch size: 48</li>
+<li>iteration: 480k</li>
+<li>learning rate: $2.5x10^(-4)$ for 450k iter, 2.5x10^(-5) for 30k iter</li>
+<li>training loss:$$L = L_{co/det} + L_{ce/det} + αL_{co/pull} +βL_{co/push} + γ(L_{co/off} + L_{ce/off})$$
+L=loss, co=corner, ce=center, det=detection, off=offset<br>L(co/det)和 L(ce/det) 是检测corner和center的focal loss, 细节参考ConerNet<br>L(co/pull)用于最小化同一物体的embedding vectors的距离, L(co/push)用于最大化不同物体的embedding vectors的距离, 细节参考ConerNet<br>L(co/off), L(ce/off) 分别是corner和center offset的L1 loss<br>系数α, β, γ取0.1, 0.1, 1</li>
+</ul>
+<h2 id="Inference"><a href="#Inference" class="headerlink" title="Inference"></a>Inference</h2><ul>
+<li>input: 原图和水平翻转后的图片</li>
+<li>single-scale: 1</li>
+<li>multi-scale: 0.6, 1, 1.2, 1.5, 1.8</li>
+<li>top-k 选keypoints: top-70 for center keypoints和2个corner</li>
+<li>bounding boxes: 水平翻转后的图片得到的bounding boxes还要水平翻转回来,再和原图的boungding boxes混合.</li>
+<li>nms: Soft-nms</li>
+<li>output: 根据score输出top-100 bounding boxes</li>
+</ul>
+<h1 id="Comparisons-with-State-of-the-art-Detectors"><a href="#Comparisons-with-State-of-the-art-Detectors" class="headerlink" title="Comparisons with State-of-the-art Detectors"></a>Comparisons with State-of-the-art Detectors</h1><p><img src="https://wx2.sinaimg.cn/mw1024/3ff1a76fgy1g2zmj87hpkj20qs0gqdki.jpg" alt="evaluation"></p>
+<p>论文链接: <a href="http://cn.arxiv.org/abs/1904.08189" target="_blank" rel="noopener">CenterNet: Object Detection with Keypoint Triplets</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/深度学习/" rel="tag"># 深度学习</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/12/28/在centos中给jupyter安装IRkernel/" rel="next" title="在centos中给jupyter安装IRkernel">
+                <i class="fa fa-chevron-left"></i> 在centos中给jupyter安装IRkernel
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/7233064.jpg"
+               alt="Yiyang Peng" />
+          <p class="site-author-name" itemprop="name">Yiyang Peng</p>
+           
+              <p class="site-description motion-element" itemprop="description">小学生的学习之路</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">39</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/yiyang186" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/peng-yiyang-88" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  知乎
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Baseline-amp-Motivation"><span class="nav-number">1.</span> <span class="nav-text">Baseline & Motivation</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Object-Detection-as-Keypoint-Triplets"><span class="nav-number">2.</span> <span class="nav-text">Object Detection as Keypoint Triplets</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Enriching-Center-and-Corner-Information"><span class="nav-number">3.</span> <span class="nav-text">Enriching Center and Corner Information</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Center-pooling"><span class="nav-number">3.1.</span> <span class="nav-text">Center pooling</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Cascade-corner-pooling"><span class="nav-number">3.2.</span> <span class="nav-text">Cascade corner pooling</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Training-amp-Inference"><span class="nav-number">4.</span> <span class="nav-text">Training & Inference</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Training"><span class="nav-number">4.1.</span> <span class="nav-text">Training</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Inference"><span class="nav-number">4.2.</span> <span class="nav-text">Inference</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Comparisons-with-State-of-the-art-Detectors"><span class="nav-number">5.</span> <span class="nav-text">Comparisons with State-of-the-art Detectors</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yiyang Peng</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://yiyang186.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2019/05/20/centerNetNote/';
+          this.page.identifier = '2019/05/20/centerNetNote/';
+          this.page.title = 'CenterNet笔记';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://yiyang186.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

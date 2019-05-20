@@ -101,7 +101,7 @@
 <meta property="og:site_name" content="小学之路">
 <meta property="og:description" content="正则项的引入可以降低模型的复杂度，增强模型的泛化能力，对于这一点我的理解比较模糊，直到学习到了正则项的贝叶斯解释才逐渐清晰。最终的推理逻辑是：  给优化目标加入正则项等价于给模型参数引入先验； 这种先验限制模型参数的置信空间，达到了限制模型假设空间的作用； 模型假设空间小了，表达能力削弱后不容易学习到噪声，因此不容易出现过拟合，泛化能力得到增强。  正则化的贝叶斯解释约定训练集：$\{x_i, y">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-11-30T11:10:10.000Z">
+<meta property="og:updated_time" content="2017-11-30T12:06:08.382Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="正则化对假设空间的影响">
 <meta name="twitter:description" content="正则项的引入可以降低模型的复杂度，增强模型的泛化能力，对于这一点我的理解比较模糊，直到学习到了正则项的贝叶斯解释才逐渐清晰。最终的推理逻辑是：  给优化目标加入正则项等价于给模型参数引入先验； 这种先验限制模型参数的置信空间，达到了限制模型假设空间的作用； 模型假设空间小了，表达能力削弱后不容易学习到噪声，因此不容易出现过拟合，泛化能力得到增强。  正则化的贝叶斯解释约定训练集：$\{x_i, y">
@@ -413,7 +413,7 @@ $$P(y|x, w)=\prod_i^NP(y_i|x_i, w) = \prod_i^N\frac{1}{b \sqrt{2 \pi}}exp(-\frac
 <p>其中第一行用到了贝叶斯公式，且贝叶斯公式的分母是定值，在最大化中被舍去；第二行引入了约定中的两个独立高斯假设；第五行舍去了两个常量$\ln \big( \frac{1}{b \sqrt{2 \pi}}\big)$和$\ln \big( \frac{1}{a \sqrt{2 \pi}}\big)$；倒数第三行给目标函数乘上常量$2b^2$；最后一行去掉负号改为最小化，并令</p>
 $$\lambda = \frac{b^2}{a^2}$$
 <p>最终，可见<strong>高斯噪声假设和高斯先验假设的最大化后验概率，等价于带L2正则项的最小化平方损失</strong>。</p>
-<h2 id="补充：拉普拉斯先验"><a href="#补充：拉普拉斯先验" class="headerlink" title="补充：拉普拉斯先验"></a>补充：拉普拉斯先验</h2><p>L1正则也是常用的正则化形式，为此我们将上面约定中对参数先验的假设改为<a href="https://zh.wikipedia.org/wiki/%E6%8B%89%E6%99%AE%E6%8B%89%E6%96%AF%E5%88%86%E5%B8%83" title="拉布拉斯分布" target="_blank" rel="external">拉布拉斯分布</a>，如</p>
+<h2 id="补充：拉普拉斯先验"><a href="#补充：拉普拉斯先验" class="headerlink" title="补充：拉普拉斯先验"></a>补充：拉普拉斯先验</h2><p>L1正则也是常用的正则化形式，为此我们将上面约定中对参数先验的假设改为<a href="https://zh.wikipedia.org/wiki/%E6%8B%89%E6%99%AE%E6%8B%89%E6%96%AF%E5%88%86%E5%B8%83" title="拉布拉斯分布" target="_blank" rel="noopener">拉布拉斯分布</a>，如</p>
 $$w_j \sim L(0,a), (a>0)$$
 <p>有</p>
 $$P(w) = \prod_j^K\frac{1}{2a}exp(-\frac{|w_j|}{a}), (a>0)$$
@@ -576,7 +576,7 @@ $$y=wx, w \sim N(0,20^2)$$
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">36</span>
+                <span class="site-state-item-count">39</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -587,7 +587,7 @@ $$y=wx, w \sim N(0,20^2)$$
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-count">6</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -598,7 +598,7 @@ $$y=wx, w \sim N(0,20^2)$$
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">43</span>
+                <span class="site-state-item-count">44</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -676,7 +676,7 @@ $$y=wx, w \sim N(0,20^2)$$
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2017</span>
+  <span itemprop="copyrightYear">2019</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
