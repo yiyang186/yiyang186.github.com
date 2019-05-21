@@ -101,7 +101,7 @@
 <meta property="og:site_name" content="小学之路">
 <meta property="og:description" content="前提 sql server 2008 注意1433端口是否打开[^1]  登陆数据库sqlcmd -S 数据库服务器地址 -U 用户名 -P 密码或sqlcmd -S 数据库服务器地址\数据库实例名 -U 用户名 -P 密码 查询数据库 查看有哪些数据库&amp;gt;1 SELECT name FROM sys.databases&amp;gt;2 GO每次输入sql语句都要打一行go, 下面不再赘述，sys.databa">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-07-27T01:50:44.000Z">
+<meta property="og:updated_time" content="2017-11-30T12:06:08.363Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sqlcmd简单指令">
 <meta name="twitter:description" content="前提 sql server 2008 注意1433端口是否打开[^1]  登陆数据库sqlcmd -S 数据库服务器地址 -U 用户名 -P 密码或sqlcmd -S 数据库服务器地址\数据库实例名 -U 用户名 -P 密码 查询数据库 查看有哪些数据库&amp;gt;1 SELECT name FROM sys.databases&amp;gt;2 GO每次输入sql语句都要打一行go, 下面不再赘述，sys.databa">
@@ -398,12 +398,12 @@
 </li>
 <li><p>查看表中的列名<br>SELECT name FROM syscolumns WHERE id=object_id(‘表名’)</p>
 </li>
-<li><p>其他<br>sql server用的sql语句叫做Transact-SQL（T-SQL）, 跟sql还有点不一样，具体请参见<a href="http://imdbt.blog.51cto.com/903896/218590" target="_blank" rel="external">T-SQL经典语句</a>，以及<a href="https://msdn.microsoft.com/zh-cn/library/ms177563(v=sql.100" target="_blank" rel="external">官方文档</a>.aspx)。</p>
+<li><p>其他<br>sql server用的sql语句叫做Transact-SQL（T-SQL）, 跟sql还有点不一样，具体请参见<a href="http://imdbt.blog.51cto.com/903896/218590" target="_blank" rel="noopener">T-SQL经典语句</a>，以及<a href="https://msdn.microsoft.com/zh-cn/library/ms177563(v=sql.100" target="_blank" rel="noopener">官方文档</a>.aspx)。</p>
 </li>
 </ol>
 <h1 id="从CSV文件导入数据库"><a href="#从CSV文件导入数据库" class="headerlink" title="从CSV文件导入数据库"></a>从CSV文件导入数据库</h1><p>先为要导入的数据建表<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> 表名( </div><div class="line">	列<span class="number">1</span> <span class="keyword">NVARCHAR</span>(<span class="keyword">MAX</span>), </div><div class="line">	列<span class="number">2</span> <span class="keyword">NVARCHAR</span>(<span class="keyword">MAX</span>), </div><div class="line">	列<span class="number">3</span> <span class="keyword">NVARCHAR</span>(<span class="keyword">MAX</span>) </div><div class="line">)</div></pre></td></tr></table></figure></p>
 <p>从csv文件中导入数据<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">BULK <span class="keyword">INSERT</span> 表名</div><div class="line"><span class="keyword">FROM</span> <span class="string">'csv文件路径名'</span></div><div class="line"><span class="keyword">WITH</span>(</div><div class="line">	FIELDTERMINATOR = <span class="string">','</span>,</div><div class="line">	ROWTERMINATOR = <span class="string">'\n'</span></div><div class="line">)</div></pre></td></tr></table></figure></p>
-<p>[^1]: 到sql server configuration manager里的network configuration里去设置tcp/ip的端口（IP Address选项卡拉到最下面）为1433，再重启sql server services即可，具体步骤请参见<a href="http://www.cnblogs.com/skynothing/archive/2010/08/26/1809125.html" target="_blank" rel="external">解决sqlserver 2008 sqlcmd无法登陆</a></p>
+<p>[^1]: 到sql server configuration manager里的network configuration里去设置tcp/ip的端口（IP Address选项卡拉到最下面）为1433，再重启sql server services即可，具体步骤请参见<a href="http://www.cnblogs.com/skynothing/archive/2010/08/26/1809125.html" target="_blank" rel="noopener">解决sqlserver 2008 sqlcmd无法登陆</a></p>
 
       
     </div>
@@ -538,7 +538,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">38</span>
+                <span class="site-state-item-count">39</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -549,7 +549,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-count">6</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -560,7 +560,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">43</span>
+                <span class="site-state-item-count">44</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -638,7 +638,7 @@
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2017</span>
+  <span itemprop="copyrightYear">2019</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

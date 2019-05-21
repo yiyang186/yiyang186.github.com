@@ -93,7 +93,7 @@
 
 
 
-<meta name="description" content="环境： os: centos7 R: 3.4.2 jupyter: 4.4.0  坑预告 R中无法安装git2r, devtools IRkernel::installspec()找不到jupyter  安装准备确保下面这些工具已经被安装在系统中1yum install gcc gcc-c++ gcc-gfortran pcre-devel tcl-devel zlib-devel bzip2-d">
+<meta name="description" content="环境： os: centos7 R: 3.4.2 jupyter: 4.4.0  坑预告 R中无法安装git2r, devtools IRkernel::installspec()找不到jupyter  安装准备确保下面这些工具已经被安装在系统中1yum install gcc gcc-c++ gcc-gfortran">
 <meta name="keywords" content="R,jupyter">
 <meta property="og:type" content="article">
 <meta property="og:title" content="在centos中给jupyter安装IRkernel">
@@ -102,7 +102,7 @@
 <meta property="og:description" content="环境： os: centos7 R: 3.4.2 jupyter: 4.4.0  坑预告 R中无法安装git2r, devtools IRkernel::installspec()找不到jupyter  安装准备确保下面这些工具已经被安装在系统中1yum install gcc gcc-c++ gcc-gfortran pcre-devel tcl-devel zlib-devel bzip2-d">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://i4.fuimg.com/602416/ad3f949165a86dcc.png">
-<meta property="og:updated_time" content="2017-12-28T01:38:43.605Z">
+<meta property="og:updated_time" content="2019-05-20T16:43:46.774Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="在centos中给jupyter安装IRkernel">
 <meta name="twitter:description" content="环境： os: centos7 R: 3.4.2 jupyter: 4.4.0  坑预告 R中无法安装git2r, devtools IRkernel::installspec()找不到jupyter  安装准备确保下面这些工具已经被安装在系统中1yum install gcc gcc-c++ gcc-gfortran pcre-devel tcl-devel zlib-devel bzip2-d">
@@ -399,7 +399,7 @@
 <h1 id="安装步骤"><a href="#安装步骤" class="headerlink" title="安装步骤"></a>安装步骤</h1><p>1.<strong>一定要sudo进入R</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo R</div></pre></td></tr></table></figure></p>
 <p>2.先试试git2r能不能安装成功<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">install.packages(&quot;git2r&quot;)</div></pre></td></tr></table></figure></p>
 <p>不过不行的话，退出R, 在外边下载安装git2r<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">git clone https://github.com/ropensci/git2r</div><div class="line">sudu R CMD INSTALL git2r</div></pre></td></tr></table></figure></p>
-<p>3.在sudo回到R下，按照<a href="https://irkernel.github.io/installation/" target="_blank" rel="external">官网文档</a>的步骤做。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">install.packages(c(&apos;repr&apos;, &apos;IRdisplay&apos;, &apos;evaluate&apos;, &apos;crayon&apos;, &apos;pbdZMQ&apos;, &apos;devtools&apos;, &apos;uuid&apos;, &apos;digest&apos;))</div><div class="line">devtools::install_github(&apos;IRkernel/IRkernel&apos;)</div><div class="line">IRkernel::installspec(user = FALSE)</div></pre></td></tr></table></figure></p>
+<p>3.在sudo回到R下，按照<a href="https://irkernel.github.io/installation/" target="_blank" rel="noopener">官网文档</a>的步骤做。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">install.packages(c(&apos;repr&apos;, &apos;IRdisplay&apos;, &apos;evaluate&apos;, &apos;crayon&apos;, &apos;pbdZMQ&apos;, &apos;devtools&apos;, &apos;uuid&apos;, &apos;digest&apos;))</div><div class="line">devtools::install_github(&apos;IRkernel/IRkernel&apos;)</div><div class="line">IRkernel::installspec(user = FALSE)</div></pre></td></tr></table></figure></p>
 <p>如果提示”jupyter-client has to be installed but “jupyter kernelspec –version” exited with code 127.”。那么需要把已经安装好的jupyter链接到/usr/bin下，使R可以比较方便地找到jupyter<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo ln -s /home/pyy/tool/anaconda3/bin/jupyter /usr/bin/jupyter</div></pre></td></tr></table></figure></p>
 <p>“/home/pyy/tool/anaconda3/bin/jupyter”是我的jupyter的完整路径</p>
 <h1 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h1><p>最后，打开jupyter-lab里就自动出现R kernel了</p>
@@ -457,6 +457,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/05/20/centerNetNote/" rel="prev" title="CenterNet笔记">
+                CenterNet笔记 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -536,7 +540,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">38</span>
+                <span class="site-state-item-count">39</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -547,7 +551,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-count">6</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -558,7 +562,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">43</span>
+                <span class="site-state-item-count">44</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -636,7 +640,7 @@
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2017</span>
+  <span itemprop="copyrightYear">2019</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

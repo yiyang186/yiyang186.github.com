@@ -112,7 +112,7 @@
 <meta property="og:image" content="http://img.blog.csdn.net/20160119151911393">
 <meta property="og:image" content="http://img.blog.csdn.net/20160119151926877">
 <meta property="og:image" content="http://img.blog.csdn.net/20160119152107317">
-<meta property="og:updated_time" content="2017-07-26T14:40:08.000Z">
+<meta property="og:updated_time" content="2017-11-30T12:06:08.360Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="在spark上做简单的回归">
 <meta name="twitter:description" content="###加载数据集数据集为Bike-Sharing-Dataset12345678path = &quot;hdfs:///user/yy/Bike-Sharing-Dataset/hour_noheader.csv&quot;raw_data = sc.textFile(path)num_data = raw_data.count()records = raw_data.map(lambda x: x.split(&quot;">
@@ -396,7 +396,7 @@
       
 
       
-        <p>###加载数据集<br>数据集为<a href="http://archive.ics.uci.edu/ml/datasets/Bike+Sharing+Dataset" target="_blank" rel="external">Bike-Sharing-Dataset</a><br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">path = <span class="string">"hdfs:///user/yy/Bike-Sharing-Dataset/hour_noheader.csv"</span></div><div class="line">raw_data = sc.textFile(path)</div><div class="line">num_data = raw_data.count()</div><div class="line">records = raw_data.map(<span class="keyword">lambda</span> x: x.split(<span class="string">","</span>))</div><div class="line">records.cache()</div><div class="line">first = records.first()</div><div class="line"><span class="keyword">print</span> first</div><div class="line"><span class="keyword">print</span> num_data</div></pre></td></tr></table></figure></p>
+        <p>###加载数据集<br>数据集为<a href="http://archive.ics.uci.edu/ml/datasets/Bike+Sharing+Dataset" target="_blank" rel="noopener">Bike-Sharing-Dataset</a><br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">path = <span class="string">"hdfs:///user/yy/Bike-Sharing-Dataset/hour_noheader.csv"</span></div><div class="line">raw_data = sc.textFile(path)</div><div class="line">num_data = raw_data.count()</div><div class="line">records = raw_data.map(<span class="keyword">lambda</span> x: x.split(<span class="string">","</span>))</div><div class="line">records.cache()</div><div class="line">first = records.first()</div><div class="line"><span class="keyword">print</span> first</div><div class="line"><span class="keyword">print</span> num_data</div></pre></td></tr></table></figure></p>
 <pre><code>[u&apos;1&apos;, u&apos;2011-01-01&apos;, u&apos;1&apos;, u&apos;0&apos;, u&apos;1&apos;, u&apos;0&apos;, u&apos;0&apos;, u&apos;6&apos;, u&apos;0&apos;, u&apos;1&apos;, u&apos;0.24&apos;, u&apos;0.2879&apos;, u&apos;0.81&apos;, u&apos;0&apos;, u&apos;3&apos;, u&apos;13&apos;, u&apos;16&apos;]
 17379
 </code></pre><hr>
@@ -730,7 +730,7 @@ L1 (100.0) number of zero weights: 58
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">38</span>
+                <span class="site-state-item-count">39</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -741,7 +741,7 @@ L1 (100.0) number of zero weights: 58
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-count">6</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -752,7 +752,7 @@ L1 (100.0) number of zero weights: 58
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">43</span>
+                <span class="site-state-item-count">44</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -814,7 +814,7 @@ L1 (100.0) number of zero weights: 58
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2017</span>
+  <span itemprop="copyrightYear">2019</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

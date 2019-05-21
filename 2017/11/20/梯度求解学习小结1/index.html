@@ -93,7 +93,7 @@
 
 
 
-<meta name="description" content="问题在机器学习中，设计合理、有效的目标函数是为人所津津乐道的技能（本小学生尚无此功力）。倘若设计出来的目标函数连自己都不会求解(优化)那就很尴尬了。像我这种小学生瞎鼓捣出来的目标函数,想知道究竟能不能work,不求解一下写成代码在数据集上跑一跑又如何知晓？ 纵观求解方法，有贪心的，动态规划的，蒙特卡洛的，期望最大的，梯度的等等（小学生无责任乱分）。前途无限的深度学习其求解方法全都依赖于梯度，在可以">
+<meta name="description" content="问题在机器学习中，设计合理、有效的目标函数是为人所津津乐道的技能（本小学生尚无此功力）。倘若设计出来的目标函数连自己都不会求解(优化)那就很尴尬了。像我这种小学生瞎鼓捣出来的目标函数,想知道究竟能不能work,不求解一下写成代码在数据集上跑一跑又如何知晓？ 纵观求解方法，有贪心的，动态规划的，蒙特卡洛的，期望最大的，梯">
 <meta name="keywords" content="loss,numpy">
 <meta property="og:type" content="article">
 <meta property="og:title" content="梯度求解学习小结1">
@@ -102,7 +102,7 @@
 <meta property="og:description" content="问题在机器学习中，设计合理、有效的目标函数是为人所津津乐道的技能（本小学生尚无此功力）。倘若设计出来的目标函数连自己都不会求解(优化)那就很尴尬了。像我这种小学生瞎鼓捣出来的目标函数,想知道究竟能不能work,不求解一下写成代码在数据集上跑一跑又如何知晓？ 纵观求解方法，有贪心的，动态规划的，蒙特卡洛的，期望最大的，梯度的等等（小学生无责任乱分）。前途无限的深度学习其求解方法全都依赖于梯度，在可以">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://i1.fuimg.com/602416/d0d3abc121ceeb01.png">
-<meta property="og:updated_time" content="2017-12-19T03:24:44.653Z">
+<meta property="og:updated_time" content="2019-05-20T16:43:46.774Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="梯度求解学习小结1">
 <meta name="twitter:description" content="问题在机器学习中，设计合理、有效的目标函数是为人所津津乐道的技能（本小学生尚无此功力）。倘若设计出来的目标函数连自己都不会求解(优化)那就很尴尬了。像我这种小学生瞎鼓捣出来的目标函数,想知道究竟能不能work,不求解一下写成代码在数据集上跑一跑又如何知晓？ 纵观求解方法，有贪心的，动态规划的，蒙特卡洛的，期望最大的，梯度的等等（小学生无责任乱分）。前途无限的深度学习其求解方法全都依赖于梯度，在可以">
@@ -388,7 +388,7 @@
       
         <h1 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h1><p>在机器学习中，设计合理、有效的目标函数是为人所津津乐道的技能（本小学生尚无此功力）。倘若设计出来的目标函数连自己都不会求解(优化)那就很尴尬了。像我这种小学生瞎鼓捣出来的目标函数,想知道究竟能不能work,不求解一下写成代码在数据集上跑一跑又如何知晓？</p>
 <p>纵观求解方法，有贪心的，动态规划的，蒙特卡洛的，期望最大的，梯度的等等（小学生无责任乱分）。前途无限的深度学习其求解方法全都依赖于梯度，在可以预计的将来极有可能成为大一统的求解方法。因此，如何求解损失函数（这里的目标函数可以称作损失函数）的梯度成了小学生心中最关键的一环。本小节将把叙述重心放在微分部分，也一并给出python编码。</p>
-<p>如何求解梯度建议先看看cs231n lecture 4 的<a href="http://10.254.1.82/cache/7/03/cs231n.stanford.edu/fa3f0bb005b28102ff19490aea79b536/cs231n_2017_lecture4.pdf" target="_blank" rel="external">ppt</a>或者<a href="https://www.youtube.com/watch?v=d14TUNcbn1k&amp;list=PL3FW7Lu3i5JvHM8ljYj-zLfQRF3EO8sYv" target="_blank" rel="external">vidio</a>(cs231n的其他学习资料在<a href="http://cs231n.stanford.edu/syllabus.html" target="_blank" rel="external">这里</a>)。</p>
+<p>如何求解梯度建议先看看cs231n lecture 4 的<a href="http://10.254.1.82/cache/7/03/cs231n.stanford.edu/fa3f0bb005b28102ff19490aea79b536/cs231n_2017_lecture4.pdf" target="_blank" rel="noopener">ppt</a>或者<a href="https://www.youtube.com/watch?v=d14TUNcbn1k&amp;list=PL3FW7Lu3i5JvHM8ljYj-zLfQRF3EO8sYv" target="_blank" rel="noopener">vidio</a>(cs231n的其他学习资料在<a href="http://cs231n.stanford.edu/syllabus.html" target="_blank" rel="noopener">这里</a>)。</p>
 <p>一些表达上的技巧可以帮助我们后面更好地计算梯度.</p>
 <h1 id="梯度推导过程中的trick"><a href="#梯度推导过程中的trick" class="headerlink" title="梯度推导过程中的trick"></a>梯度推导过程中的trick</h1><h2 id="逻辑判断"><a href="#逻辑判断" class="headerlink" title="逻辑判断"></a>逻辑判断</h2><p>把一些分段函数化为便于求导的乘积形式，多少有点用吧。</p>
 <h3 id="二值选择"><a href="#二值选择" class="headerlink" title="二值选择"></a>二值选择</h3>
@@ -426,7 +426,7 @@ $$1\{x > 5 \lor x < 10\} = 1\{x > 5\} + 1\{x < 10\}$$</p>
 <h1 id="实际中的例子"><a href="#实际中的例子" class="headerlink" title="实际中的例子"></a>实际中的例子</h1><h2 id="Multiclass-SVM-loss"><a href="#Multiclass-SVM-loss" class="headerlink" title="Multiclass SVM loss"></a><div id="mcsvml">Multiclass SVM loss</div></h2>
 
 $$L=\sum_{k\neq y}^K\max(0, s_k-s_y+1)$$
-<p>其中s为某样本属于各类别的打分，若是k分类，s为长度为K的数组，为了表达它是一个行向量，以下标记为$s^T$, $s_k$为该样本属于第j类的打分，y为真实类别，详情请参见该<a href="http://10.254.1.82/cache/17/03/cs231n.stanford.edu/04621c4e4ccd36036cba1c24720d099d/cs231n_2017_lecture3.pdf" target="_blank" rel="external">ppt</a>。</p>
+<p>其中s为某样本属于各类别的打分，若是k分类，s为长度为K的数组，为了表达它是一个行向量，以下标记为$s^T$, $s_k$为该样本属于第j类的打分，y为真实类别，详情请参见该<a href="http://10.254.1.82/cache/17/03/cs231n.stanford.edu/04621c4e4ccd36036cba1c24720d099d/cs231n_2017_lecture3.pdf" target="_blank" rel="noopener">ppt</a>。</p>
 <h3 id="求"><a href="#求" class="headerlink" title="求"></a>求$\partial L/\partial s_j$</h3><p>把L中的二值选择用逻辑判断代替<br>
 
 $$\begin{aligned}L &= \sum_{m \neq y}^K \max(0, s_m-s_y+1)\\
@@ -661,7 +661,7 @@ $$1\{j \neq y\}p_j + 1\{j=y\}p_j = 1\{j \neq y \lor j=y\}p_j=p_j$$
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">38</span>
+                <span class="site-state-item-count">39</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -672,7 +672,7 @@ $$1\{j \neq y\}p_j + 1\{j=y\}p_j = 1\{j \neq y \lor j=y\}p_j=p_j$$
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-count">6</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -683,7 +683,7 @@ $$1\{j \neq y\}p_j + 1\{j=y\}p_j = 1\{j \neq y \lor j=y\}p_j=p_j$$
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">43</span>
+                <span class="site-state-item-count">44</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -761,7 +761,7 @@ $$1\{j \neq y\}p_j + 1\{j=y\}p_j = 1\{j \neq y \lor j=y\}p_j=p_j$$
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2017</span>
+  <span itemprop="copyrightYear">2019</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

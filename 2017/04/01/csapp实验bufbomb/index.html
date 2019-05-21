@@ -101,7 +101,7 @@
 <meta property="og:site_name" content="小学之路">
 <meta property="og:description" content="bufbomb是一个很有意思的，带有游戏性质的缓冲区溢出实验, 能够帮助你加深理解《Computer Systems A Programmer’s Perspective》书中第三章《Machine-Level Representation of Programs》中的内容。点 Self-Study Handout下载。或者，到下载地址找到Buffer Lab [Updated Sep 10, 2">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-11-30T11:06:38.000Z">
+<meta property="og:updated_time" content="2017-11-30T12:06:08.356Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="CSAPP实验bufbomb">
 <meta name="twitter:description" content="bufbomb是一个很有意思的，带有游戏性质的缓冲区溢出实验, 能够帮助你加深理解《Computer Systems A Programmer’s Perspective》书中第三章《Machine-Level Representation of Programs》中的内容。点 Self-Study Handout下载。或者，到下载地址找到Buffer Lab [Updated Sep 10, 2">
@@ -384,7 +384,7 @@
       
 
       
-        <p>bufbomb是一个很有意思的，带有游戏性质的缓冲区溢出实验, 能够帮助你加深理解《Computer Systems A Programmer’s Perspective》书中第三章《Machine-Level Representation of Programs》中的内容。<br>点 Self-Study Handout下载。<br>或者，到<a href="http://csapp.cs.cmu.edu/public/labs.html" target="_blank" rel="external">下载地址</a>找到Buffer Lab [Updated Sep 10, 2014] ( README, Writeup, Release Notes, Self-Study Handout )，点 Self-Study Handout下载。<br>解压命令</p>
+        <p>bufbomb是一个很有意思的，带有游戏性质的缓冲区溢出实验, 能够帮助你加深理解《Computer Systems A Programmer’s Perspective》书中第三章《Machine-Level Representation of Programs》中的内容。<br>点 Self-Study Handout下载。<br>或者，到<a href="http://csapp.cs.cmu.edu/public/labs.html" target="_blank" rel="noopener">下载地址</a>找到Buffer Lab [Updated Sep 10, 2014] ( README, Writeup, Release Notes, Self-Study Handout )，点 Self-Study Handout下载。<br>解压命令</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">tar -xvf buflab-handout.tar</div></pre></td></tr></table></figure>
 <p>解压后阅读buflab.pdf了解实验内容。</p>
 <h1 id="实验内容"><a href="#实验内容" class="headerlink" title="实验内容"></a>实验内容</h1><p>运行./bufbomb 会让你输入一些字符串，这些字符串将存储在一个临时变量字符数组中。这个字符数组没有进行边界检测，所以你可以输入任意长的字符串，直至覆盖这个数组边界之外的内存位置，根据我们输入的字符串的内容我们可以让程序做一些我们希望它作的事情，比如修改函数返回地址，让程序跳转到我们给它安排的位置去执行我们所写的代码。当然了，这里的代码不可能用C之类的高级语言写了，在执行过程中程序实际执行的是机器码，我们可以写一些汇编代码，然后转化为机器码，把这些机器码再转换成ASCII码字符串，当程序提示我们输入的时候，我们再将这些准备好的字符串输入给程序。这就等于我们把自己写的代码写入了程序，让它按我们的意愿执行。<br>这里要用到几个工具，objdump, gcc和gdb还有实验提供的一个将16进制数转化为ASCII码的工具hex2raw, 不知为什么我下了几个版本linux都无法执行hex2raw，无奈之下自己写了个简单版本的hex2raw,只能用文件输入输出，勉强代替原hex2raw的重定向功能，管道功能我就不管了。顺带一提，这个实验须用32位版本的linux才能运行，下载linux发行版时要注意是不是32位系统，反正我安装的64位ubuntu连./bufbomb都运行不了。<br>你在执行./bufbomb时要输入一个id，id是你任意指定的，每个id解法有所不同，我用的id是yy。bufbomb这个游戏有几个级别，每完成一级任务游戏就会升级，升级是对应一个id的，你想重玩一遍可以用另外一个id开始。</p>
@@ -620,7 +620,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">38</span>
+                <span class="site-state-item-count">39</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -631,7 +631,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-count">6</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -642,7 +642,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">43</span>
+                <span class="site-state-item-count">44</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -720,7 +720,7 @@
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2017</span>
+  <span itemprop="copyrightYear">2019</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
